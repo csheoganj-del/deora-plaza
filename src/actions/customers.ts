@@ -1,0 +1,103 @@
+"use server"
+
+import { queryDocuments, createDocument, updateDocument, getDocument, timestampToDate } from "@/lib/firebase/firestore"
+import { adminDb } from "@/lib/firebase/admin"
+
+export async function getCustomers() {
+    try {
+        const customers = await queryDocuments('customers', [], 'name', 'asc')
+        return customers.map((customer: any) => ({
+            ...customer,
+            createdAt: timestampToDate(customer.createdAt),
+            lastVisit: customer.lastVisit ? timestampToDate(customer.lastVisit) : null
+        }))
+    } catch (error) {
+        console.error('Error fetching customers:', error)
+        return []
+    }
+}
+
+export async function getCustomerByMobile(mobile: string) {
+    try {
+        const doc = await adminDb.collection('customers').doc(mobile).get()
+
+        if (!doc.exists) {
+            return null
+        }
+
+        const data = doc.data()
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: timestampToDate(data?.createdAt),
+            lastVisit: data?.lastVisit ? timestampToDate(data.lastVisit) : null
+        }
+    } catch (error) {
+        console.error('Error fetching customer:', error)
+        return null
+    }
+}
+
+export async function createCustomer(data: {
+    mobileNumber: string
+    name: string
+    email?: string
+    notes?: string
+}) {
+    try {
+        await adminDb.collection('customers').doc(data.mobileNumber).set({
+            mobileNumber: data.mobileNumber,
+            name: data.name,
+            email: data.email || null,
+            notes: data.notes || null,
+            visitCount: 0,
+            totalSpent: 0,
+            discountTier: 'regular',
+            preferredBusiness: null,
+            createdAt: new Date(),
+            lastVisit: null
+        })
+
+        return { success: true }
+    } catch (error) {
+        console.error('Error creating customer:', error)
+        return { success: false, error }
+    }
+}
+
+export async function updateCustomer(mobile: string, data: Partial<{
+    name: string
+    email: string
+    notes: string
+    discountTier: string
+}>) {
+    try {
+        await adminDb.collection('customers').doc(mobile).update(data)
+        return { success: true }
+    } catch (error) {
+        console.error('Error updating customer:', error)
+        return { success: false, error }
+    }
+}
+
+export async function getCustomerDetails(customerId: string) {
+    // customerId is typically the mobile number in our schema
+    return getCustomerByMobile(customerId)
+}
+
+export async function searchCustomers(query: string) {
+    try {
+        // Fetch all customers and filter in memory for now
+        // Optimization: Use Algolia or similar for real search in production
+        const customers = await getCustomers()
+        const lowerQuery = query.toLowerCase()
+
+        return customers.filter((c: any) =>
+            c.name.toLowerCase().includes(lowerQuery) ||
+            c.mobileNumber.includes(query)
+        )
+    } catch (error) {
+        console.error('Error searching customers:', error)
+        return []
+    }
+}
