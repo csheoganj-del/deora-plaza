@@ -91,9 +91,36 @@ export async function getBarOrders() {
             { field: 'status', operator: 'in' as const, value: ['pending', 'preparing', 'ready'] }
         ], 'createdAt', 'desc')
 
+        // Helper function to safely convert any timestamp to ISO string
+        const safeTimestampToISO = (ts: any): string | null => {
+            if (!ts) return null
+            if (typeof ts === 'string') return ts
+            try {
+                if (ts.toDate && typeof ts.toDate === 'function') return ts.toDate().toISOString()
+                if (ts._seconds !== undefined) return new Date(ts._seconds * 1000).toISOString()
+                if (ts.seconds !== undefined) return new Date(ts.seconds * 1000).toISOString()
+                if (ts instanceof Date) return ts.toISOString()
+                if (typeof ts === 'number') return new Date(ts).toISOString()
+                return null
+            } catch (e) {
+                console.error('Error converting timestamp:', e, ts)
+                return null
+            }
+        }
+
         return orders.map((order: any) => ({
             ...order,
-            createdAt: timestampToDate(order.createdAt)
+            createdAt: safeTimestampToISO(order.createdAt),
+            updatedAt: safeTimestampToISO(order.updatedAt),
+            pendingAt: safeTimestampToISO(order.pendingAt),
+            preparingAt: safeTimestampToISO(order.preparingAt),
+            readyAt: safeTimestampToISO(order.readyAt),
+            servedAt: safeTimestampToISO(order.servedAt),
+            completedAt: safeTimestampToISO(order.completedAt),
+            timeline: Array.isArray(order.timeline) ? order.timeline.map((entry: any) => ({
+                ...entry,
+                timestamp: safeTimestampToISO(entry.timestamp)
+            })) : order.timeline,
         }))
     } catch (error) {
         console.error('Error fetching bar orders:', error)

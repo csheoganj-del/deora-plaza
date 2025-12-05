@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { adminDb } from "@/lib/firebase/admin"
+import { adminDb, adminAuth } from "@/lib/firebase/admin"
 import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.username = token.username as string
                 session.user.role = token.role as string
                 session.user.businessUnit = token.businessUnit as string
+                session.firebaseToken = token.firebaseToken as string
             }
             return session
         },
@@ -75,6 +76,20 @@ export const authOptions: NextAuthOptions = {
                 token.role = user.role
                 token.businessUnit = user.businessUnit
             }
+
+            // Generate Firebase custom token if it doesn't exist
+            if (!token.firebaseToken && token.id) {
+                try {
+                    const firebaseToken = await adminAuth.createCustomToken(token.id as string, {
+                        role: token.role,
+                        businessUnit: token.businessUnit
+                    })
+                    token.firebaseToken = firebaseToken
+                } catch (error) {
+                    console.error("Error creating custom token:", error)
+                }
+            }
+
             return token
         },
     },

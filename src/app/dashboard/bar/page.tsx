@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Beer, UtensilsCrossed, Plus, Minus, Trash2, Search, Wine, GlassWater } from "lucide-react"
+import { Beer, UtensilsCrossed, Plus, Minus, Trash2, Search, Wine, GlassWater, ShoppingCart, Loader2 } from "lucide-react"
 import BarQueue from "@/components/bar/BarQueue"
 
 type MenuItem = {
@@ -97,190 +97,185 @@ export default function BarPage() {
             })
 
             if (result.success) {
-                // Calculate total from created orders
-                const total = result.orders ? result.orders.reduce((sum: number, order: any) => sum + order.totalAmount, 0) : 0
-
-                // Show success animation or toast (using alert for now)
-                alert(`Order Placed Successfully!\nTotal: ₹${total}`)
                 setCart([])
                 setTableNumber("")
-            } else {
-                alert("Failed to create order")
+                // Ideally show success toast here
             }
         } catch (error) {
-            console.error("Error submitting order:", error)
-            alert("An error occurred")
+            console.error("Failed to create order", error)
         } finally {
             setLoading(false)
         }
     }
 
+    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
     const filteredDrinks = drinkMenu.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    const filteredFood = foodMenu.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    const drinkTotal = cart.filter(i => i.type === "drink").reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const foodTotal = cart.filter(i => i.type === "food").reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const total = drinkTotal + foodTotal
+    const filteredFood = foodMenu.filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    if (loading) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-slate-50">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+            </div>
+        )
+    }
 
     return (
-        <div className="flex h-[calc(100vh-4rem)] gap-4 p-4 bg-black/95 text-white overflow-hidden">
-            {/* Left: Menu & Order Entry */}
-            <div className="flex-1 flex flex-col gap-4 min-w-0">
-                <div className="flex items-center justify-between">
+        <div className="flex h-screen bg-slate-50 overflow-hidden">
+            {/* Left Side - Menu */}
+            <div className="flex-1 flex flex-col p-6 overflow-hidden">
+                <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-600 bg-clip-text text-transparent">
-                            Bar Station
-                        </h1>
-                        <p className="text-gray-400 text-sm">Manage orders and inventory</p>
+                        <h1 className="text-2xl font-bold text-slate-900">Bar & POS</h1>
+                        <p className="text-slate-500 text-sm">Create orders and manage service</p>
                     </div>
                     <div className="relative w-64">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                         <Input
                             placeholder="Search menu..."
-                            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-amber-500"
+                            className="pl-9 bg-white border-slate-200 focus:ring-amber-500"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 flex gap-4 min-h-0">
-                    {/* Menu Grid */}
-                    <Card className="flex-1 bg-white/5 border-white/10 backdrop-blur-sm flex flex-col min-h-0">
-                        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-                            <div className="px-4 pt-4">
-                                <TabsList className="w-full bg-black/40 border border-white/10">
-                                    <TabsTrigger value="drinks" className="flex-1 data-[state=active]:bg-amber-600 data-[state=active]:text-white">
-                                        <Wine className="mr-2 h-4 w-4" /> Drinks
-                                    </TabsTrigger>
-                                    <TabsTrigger value="food" className="flex-1 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-                                        <UtensilsCrossed className="mr-2 h-4 w-4" /> Food (Cafe)
-                                    </TabsTrigger>
-                                </TabsList>
-                            </div>
+                <Tabs defaultValue="drinks" value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+                    <TabsList className="bg-white border border-slate-200 p-1 w-full justify-start mb-4">
+                        <TabsTrigger value="drinks" className="data-[state=active]:bg-slate-900 data-[state=active]:text-white text-slate-500 flex-1">
+                            <Wine className="mr-2 h-4 w-4" /> Drinks
+                        </TabsTrigger>
+                        <TabsTrigger value="food" className="data-[state=active]:bg-slate-900 data-[state=active]:text-white text-slate-500 flex-1">
+                            <UtensilsCrossed className="mr-2 h-4 w-4" /> Food & Snacks
+                        </TabsTrigger>
+                    </TabsList>
 
-                            <TabsContent value="drinks" className="flex-1 overflow-hidden p-0 m-0">
-                                <ScrollArea className="h-full p-4">
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                                        {filteredDrinks.map((item) => (
-                                            <button
-                                                key={item.id}
-                                                onClick={() => handleAddItem(item, "drink")}
-                                                className="flex flex-col items-start p-3 rounded-lg bg-white/5 hover:bg-amber-500/20 border border-white/5 hover:border-amber-500/50 transition-all group text-left"
-                                            >
-                                                <div className="flex w-full justify-between items-start mb-1">
-                                                    <span className="font-medium text-gray-200 group-hover:text-white truncate w-full pr-2">{item.name}</span>
-                                                    <span className="text-amber-400 font-bold">₹{item.price}</span>
-                                                </div>
-                                                <p className="text-xs text-gray-500 line-clamp-1">{item.description || "No description"}</p>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </ScrollArea>
-                            </TabsContent>
-
-                            <TabsContent value="food" className="flex-1 overflow-hidden p-0 m-0">
-                                <ScrollArea className="h-full p-4">
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                                        {filteredFood.map((item) => (
-                                            <button
-                                                key={item.id}
-                                                onClick={() => handleAddItem(item, "food")}
-                                                className="flex flex-col items-start p-3 rounded-lg bg-white/5 hover:bg-blue-500/20 border border-white/5 hover:border-blue-500/50 transition-all group text-left"
-                                            >
-                                                <div className="flex w-full justify-between items-start mb-1">
-                                                    <span className="font-medium text-gray-200 group-hover:text-white truncate w-full pr-2">{item.name}</span>
-                                                    <span className="text-blue-400 font-bold">₹{item.price}</span>
-                                                </div>
-                                                <p className="text-xs text-gray-500 line-clamp-1">{item.description || "No description"}</p>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </ScrollArea>
-                            </TabsContent>
-                        </Tabs>
-                    </Card>
-
-                    {/* Current Order Panel */}
-                    <Card className="w-80 bg-white/5 border-white/10 backdrop-blur-sm flex flex-col">
-                        <CardHeader className="pb-2 border-b border-white/10">
-                            <CardTitle className="text-white flex items-center gap-2">
-                                <GlassWater className="h-5 w-5 text-amber-500" />
-                                New Order
-                            </CardTitle>
-                            <Input
-                                placeholder="Table No."
-                                value={tableNumber}
-                                onChange={(e) => setTableNumber(e.target.value)}
-                                className="mt-2 bg-black/20 border-white/10 text-white h-8"
-                            />
-                        </CardHeader>
-                        <CardContent className="flex-1 overflow-hidden p-0 flex flex-col">
-                            <ScrollArea className="flex-1 p-3">
-                                {cart.length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center text-gray-500 opacity-50">
-                                        <Beer className="h-12 w-12 mb-2" />
-                                        <p className="text-sm">Empty Cart</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {cart.map((item) => (
-                                            <div key={item.id} className="bg-black/20 rounded p-2 flex items-center justify-between group">
-                                                <div className="flex-1 min-w-0 mr-2">
-                                                    <div className="flex items-center gap-1 mb-1">
-                                                        <Badge variant="outline" className={`h-4 px-1 text-[10px] ${item.type === 'drink' ? 'text-amber-400 border-amber-400/30' : 'text-blue-400 border-blue-400/30'}`}>
-                                                            {item.type === 'drink' ? 'D' : 'F'}
-                                                        </Badge>
-                                                        <span className="text-sm font-medium text-gray-200 truncate">{item.name}</span>
-                                                    </div>
-                                                    <div className="text-xs text-gray-500">₹{item.price} x {item.quantity}</div>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <button onClick={() => handleUpdateQuantity(item.id, -1)} className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-white"><Minus className="h-3 w-3" /></button>
-                                                    <span className="text-sm w-4 text-center font-medium text-white">{item.quantity}</span>
-                                                    <button onClick={() => handleUpdateQuantity(item.id, 1)} className="p-1 hover:bg-white/10 rounded text-gray-400 hover:text-white"><Plus className="h-3 w-3" /></button>
-                                                </div>
+                    <TabsContent value="drinks" className="flex-1 overflow-y-auto pr-2">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
+                            {filteredDrinks.map((item) => (
+                                <Card key={item.id} className="cursor-pointer hover:shadow-md transition-all border-slate-200 bg-white group" onClick={() => handleAddItem(item, "drink")}>
+                                    <CardContent className="p-4 flex flex-col justify-between h-full">
+                                        <div>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <Badge variant="outline" className="border-amber-200 text-amber-700 bg-amber-50">{item.category}</Badge>
+                                                <span className="font-bold text-slate-900">₹{item.price}</span>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </ScrollArea>
+                                            <h3 className="font-bold text-slate-800 mb-1 group-hover:text-amber-600 transition-colors">{item.name}</h3>
+                                            <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
+                                        </div>
+                                        <Button size="sm" variant="secondary" className="w-full mt-4 bg-slate-100 hover:bg-amber-50 hover:text-amber-600">
+                                            <Plus className="h-4 w-4 mr-1" /> Add
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </TabsContent>
 
-                            <div className="p-4 bg-black/40 border-t border-white/10 space-y-3">
-                                <div className="space-y-1 text-sm">
-                                    <div className="flex justify-between text-gray-400">
-                                        <span>Drinks</span>
-                                        <span>₹{drinkTotal}</span>
-                                    </div>
-                                    <div className="flex justify-between text-gray-400">
-                                        <span>Food</span>
-                                        <span>₹{foodTotal}</span>
-                                    </div>
-                                    <div className="flex justify-between text-lg font-bold text-white pt-2 border-t border-white/10">
-                                        <span>Total</span>
-                                        <span className="text-amber-400">₹{total}</span>
-                                    </div>
-                                </div>
-                                <Button
-                                    className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-bold shadow-lg shadow-orange-900/20"
-                                    disabled={cart.length === 0 || loading}
-                                    onClick={handleSubmitOrder}
-                                >
-                                    Place Order
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                    <TabsContent value="food" className="flex-1 overflow-y-auto pr-2">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
+                            {filteredFood.map((item) => (
+                                <Card key={item.id} className="cursor-pointer hover:shadow-md transition-all border-slate-200 bg-white group" onClick={() => handleAddItem(item, "food")}>
+                                    <CardContent className="p-4 flex flex-col justify-between h-full">
+                                        <div>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{item.category}</Badge>
+                                                <span className="font-bold text-slate-900">₹{item.price}</span>
+                                            </div>
+                                            <h3 className="font-bold text-slate-800 mb-1 group-hover:text-emerald-600 transition-colors">{item.name}</h3>
+                                            <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
+                                        </div>
+                                        <Button size="sm" variant="secondary" className="w-full mt-4 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-600">
+                                            <Plus className="h-4 w-4 mr-1" /> Add
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </TabsContent>
+                </Tabs>
             </div>
 
-            {/* Right: Active Queue */}
-            <div className="w-80 min-w-0 bg-white/5 border-l border-white/10 backdrop-blur-sm p-4 flex flex-col">
-                <BarQueue />
+            {/* Right Side - Cart & Queue */}
+            <div className="w-96 bg-white border-l border-slate-200 flex flex-col h-full shadow-xl z-20">
+                <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                    <h2 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+                        <ShoppingCart className="h-5 w-5 text-amber-500" />
+                        Current Order
+                    </h2>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-4">
+                    {cart.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
+                            <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center">
+                                <Beer className="h-8 w-8 text-slate-300" />
+                            </div>
+                            <p>Cart is empty</p>
+                            <p className="text-xs text-center max-w-[200px]">Select items from the menu to start a new order</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {cart.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                    <div className="flex-1">
+                                        <p className="font-medium text-slate-900 text-sm">{item.name}</p>
+                                        <p className="text-xs text-slate-500">₹{item.price} x {item.quantity}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-slate-200" onClick={() => handleUpdateQuantity(item.id, -1)}>
+                                            <Minus className="h-3 w-3" />
+                                        </Button>
+                                        <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
+                                        <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-slate-200" onClick={() => handleUpdateQuantity(item.id, 1)}>
+                                            <Plus className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="p-4 bg-slate-50 border-t border-slate-200 space-y-4">
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-sm text-slate-500">
+                            <span>Subtotal</span>
+                            <span>₹{totalAmount}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-slate-500">
+                            <span>Tax (5%)</span>
+                            <span>₹{Math.round(totalAmount * 0.05)}</span>
+                        </div>
+                        <Separator className="bg-slate-200" />
+                        <div className="flex justify-between font-bold text-lg text-slate-900">
+                            <span>Total</span>
+                            <span>₹{Math.round(totalAmount * 1.05)}</span>
+                        </div>
+                    </div>
+
+                    <Button
+                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold h-12 text-lg shadow-lg shadow-amber-500/20"
+                        disabled={cart.length === 0 || loading}
+                        onClick={handleSubmitOrder}
+                    >
+                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Place Order"}
+                    </Button>
+                </div>
+
+                {/* Active Orders Queue Preview */}
+                <div className="border-t border-slate-200 bg-slate-100 p-4 max-h-48 overflow-y-auto">
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Active Queue</h3>
+                    <BarQueue />
+                </div>
             </div>
         </div>
     )

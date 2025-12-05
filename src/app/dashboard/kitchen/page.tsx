@@ -13,7 +13,7 @@ export default function KitchenPage() {
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
                             Kitchen Display System
                         </h1>
-                        <p className="text-gray-400 mt-1">Live order feed • Cafe & Restaurant</p>
+                        <p className="text-gray-400 mt-1">Live order feed • Cafe, Restaurant & Hotel</p>
                     </div>
                 </div>
                 <div className="flex gap-4">

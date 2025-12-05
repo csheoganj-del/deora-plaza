@@ -23,31 +23,31 @@ export default function TableGrid({ initialTables }: { initialTables: Table[] })
         switch (status) {
             case "available":
                 return {
-                    badge: "bg-green-500/20 text-green-400 border-green-500/30",
-                    border: "border-green-500/20 hover:border-green-500/50",
-                    glow: "from-green-500/20 to-emerald-500/20",
-                    icon: "text-green-400"
+                    badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                    card: "bg-white border-slate-200 hover:border-emerald-300 hover:shadow-emerald-100",
+                    icon: "text-emerald-500",
+                    title: "text-slate-900"
                 }
             case "occupied":
                 return {
-                    badge: "bg-red-500/20 text-red-400 border-red-500/30",
-                    border: "border-red-500/20 hover:border-red-500/50",
-                    glow: "from-red-500/20 to-orange-500/20",
-                    icon: "text-red-400"
+                    badge: "bg-rose-50 text-rose-700 border-rose-200",
+                    card: "bg-rose-50/30 border-rose-200 hover:border-rose-300",
+                    icon: "text-rose-500",
+                    title: "text-slate-900"
                 }
             case "reserved":
                 return {
-                    badge: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-                    border: "border-amber-500/20 hover:border-amber-500/50",
-                    glow: "from-amber-500/20 to-yellow-500/20",
-                    icon: "text-amber-400"
+                    badge: "bg-amber-50 text-amber-700 border-amber-200",
+                    card: "bg-amber-50/30 border-amber-200 hover:border-amber-300",
+                    icon: "text-amber-500",
+                    title: "text-slate-900"
                 }
             default:
                 return {
-                    badge: "bg-gray-500/20 text-gray-400",
-                    border: "border-white/10",
-                    glow: "from-gray-500/20 to-gray-600/20",
-                    icon: "text-gray-400"
+                    badge: "bg-slate-100 text-slate-500 border-slate-200",
+                    card: "bg-slate-50 border-slate-200",
+                    icon: "text-slate-400",
+                    title: "text-slate-500"
                 }
         }
     }
@@ -64,31 +64,26 @@ export default function TableGrid({ initialTables }: { initialTables: Table[] })
                     <button
                         key={table.id}
                         onClick={() => handleTableClick(table)}
-                        className="group relative flex flex-col text-left transition-all duration-300 hover:-translate-y-1"
+                        className="group relative flex flex-col text-left transition-all duration-300 hover:-translate-y-1 w-full"
                     >
-                        <div className={cn(
-                            "absolute inset-0 rounded-xl bg-gradient-to-br opacity-0 transition-opacity duration-500 group-hover:opacity-100 blur-xl",
-                            styles.glow
-                        )} />
-
                         <Card className={cn(
-                            "relative w-full overflow-hidden bg-white/5 backdrop-blur-md transition-colors border",
-                            styles.border
+                            "relative w-full overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md border",
+                            styles.card
                         )}>
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
                                     <div className="flex flex-col">
-                                        <span className="text-xs text-gray-400 uppercase tracking-wider font-medium">Table</span>
-                                        <CardTitle className="text-3xl font-bold text-white">{table.tableNumber}</CardTitle>
+                                        <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Table</span>
+                                        <CardTitle className={cn("text-3xl font-bold font-serif", styles.title)}>{table.tableNumber}</CardTitle>
                                     </div>
-                                    <Badge variant="outline" className={cn("capitalize", styles.badge)}>
+                                    <Badge variant="outline" className={cn("capitalize font-medium", styles.badge)}>
                                         {table.status}
                                     </Badge>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center justify-between mt-2">
-                                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                                    <div className="flex items-center gap-2 text-sm text-slate-500">
                                         <Users className="h-4 w-4" />
                                         <span>
                                             {table.status === "occupied"

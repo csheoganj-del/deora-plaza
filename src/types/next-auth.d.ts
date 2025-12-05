@@ -10,6 +10,7 @@ declare module "next-auth" {
 
     interface Session {
         user: User & DefaultSession["user"]
+        firebaseToken?: string
     }
 }
 
@@ -19,5 +20,6 @@ declare module "next-auth/jwt" {
         username: string
         role: string
         businessUnit: string
+        firebaseToken?: string
     }
 }

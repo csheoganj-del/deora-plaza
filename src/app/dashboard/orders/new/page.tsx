@@ -48,15 +48,22 @@ function OrderPageContent() {
         loadMenu()
     }, [])
 
-    const handleAddItem = (item: MenuItem) => {
+    const handleAddItem = (item: MenuItem, quantityChange: number) => {
         setCart((prev) => {
             const existing = prev.find((i) => i.id === item.id)
             if (existing) {
+                const newQuantity = existing.quantity + quantityChange
+                if (newQuantity <= 0) {
+                    return prev.filter((i) => i.id !== item.id)
+                }
                 return prev.map((i) =>
-                    i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                    i.id === item.id ? { ...i, quantity: newQuantity } : i
                 )
             }
-            return [...prev, { id: item.id, name: item.name, price: item.price, quantity: 1 }]
+            if (quantityChange > 0) {
+                return [...prev, { id: item.id, name: item.name, price: item.price, quantity: quantityChange }]
+            }
+            return prev
         })
     }
 
@@ -122,7 +129,7 @@ function OrderPageContent() {
                     </div>
                     <CustomerLookup onSelectCustomer={setSelectedCustomer} />
                 </div>
-                <MenuGrid items={menuItems} onAddItem={handleAddItem} />
+                <MenuGrid items={menuItems} onAddItem={handleAddItem} cartItems={cart} />
             </div>
             <div className="w-96">
                 <OrderCart

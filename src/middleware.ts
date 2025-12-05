@@ -12,10 +12,11 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next()
     }
 
-    // Check for auth token
-    const token = request.cookies.get('auth-token')?.value
+    // Check for NextAuth session token
+    const sessionToken = request.cookies.get('next-auth.session-token')?.value ||
+        request.cookies.get('__Secure-next-auth.session-token')?.value
 
-    if (!token && pathname.startsWith('/dashboard')) {
+    if (!sessionToken && pathname.startsWith('/dashboard')) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 

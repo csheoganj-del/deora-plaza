@@ -37,8 +37,8 @@ export default function CustomerProfile({ customerId }: { customerId: string }) 
                 </div>
                 <div className="text-right">
                     <Badge className={`text-lg px-3 py-1 capitalize ${customer.discountTier === 'gold' ? 'bg-yellow-500' :
-                            customer.discountTier === 'silver' ? 'bg-slate-400' :
-                                customer.discountTier === 'bronze' ? 'bg-amber-700' : 'bg-slate-200 text-slate-800'
+                        customer.discountTier === 'silver' ? 'bg-slate-400' :
+                            customer.discountTier === 'bronze' ? 'bg-amber-700' : 'bg-slate-200 text-slate-800'
                         }`}>
                         {customer.discountTier} Member
                     </Badge>
@@ -63,7 +63,9 @@ export default function CustomerProfile({ customerId }: { customerId: string }) 
                 <Card>
                     <CardContent className="pt-6 flex flex-col items-center">
                         <Calendar className="h-8 w-8 mb-2 text-primary" />
-                        <div className="text-lg font-bold">{new Date(customer.lastVisit).toLocaleDateString()}</div>
+                        <div className="text-lg font-bold">
+                            {customer.lastVisit ? new Date(customer.lastVisit).toLocaleDateString() : 'Never'}
+                        </div>
                         <p className="text-xs text-muted-foreground">Last Visit</p>
                     </CardContent>
                 </Card>
@@ -74,29 +76,30 @@ export default function CustomerProfile({ customerId }: { customerId: string }) 
             <div>
                 <h3 className="text-lg font-semibold mb-4">Recent Orders</h3>
                 <div className="space-y-4">
-                    {customer.orders.map((order: any) => (
-                        <Card key={order.id}>
-                            <CardHeader className="pb-2">
-                                <div className="flex justify-between">
-                                    <CardTitle className="text-base">Order #{order.orderNumber}</CardTitle>
-                                    <span className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</span>
-                                </div>
-                                <CardDescription>
-                                    ₹{order.totalAmount.toFixed(2)} • {order.status}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="pb-4">
-                                <div className="text-sm">
-                                    {order.items.map((item: any) => (
-                                        <span key={item.id} className="mr-2 inline-block bg-secondary px-2 py-1 rounded-md text-xs">
-                                            {item.quantity}x {item.name}
-                                        </span>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                    {customer.orders.length === 0 && (
+                    {customer.orders && customer.orders.length > 0 ? (
+                        customer.orders.map((order: any) => (
+                            <Card key={order.id}>
+                                <CardHeader className="pb-2">
+                                    <div className="flex justify-between">
+                                        <CardTitle className="text-base">Order #{order.orderNumber}</CardTitle>
+                                        <span className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                    <CardDescription>
+                                        ₹{order.totalAmount.toFixed(2)} • {order.status}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="pb-4">
+                                    <div className="text-sm">
+                                        {order.items.map((item: any) => (
+                                            <span key={item.id} className="mr-2 inline-block bg-secondary px-2 py-1 rounded-md text-xs">
+                                                {item.quantity}x {item.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))
+                    ) : (
                         <p className="text-muted-foreground text-sm">No recent orders found.</p>
                     )}
                 </div>

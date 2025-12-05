@@ -1,58 +1,168 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useReactToPrint } from "react-to-print"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { generateBill, processPayment } from "@/actions/billing"
+import { getMenuItems } from "@/actions/menu"
+import { updateOrderItems } from "@/actions/orders"
 import { InvoiceTemplate } from "./InvoiceTemplate"
-import { Printer, CreditCard, Banknote } from "lucide-react"
+import CustomerAutocomplete from "./CustomerAutocomplete"
+import DiscountPanel from "./DiscountPanel"
+import { calculateBillTotals } from "@/lib/discount-utils"
+import { Printer, CreditCard, Banknote, Smartphone, Loader2, Plus, Trash2, X } from "lucide-react"
+import { getBusinessSettings } from "@/actions/businessSettings"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
 
 type BillGeneratorProps = {
     order: any
     onClose: () => void
+    onAddItems?: () => void
 }
 
-export default function BillGenerator({ order, onClose }: BillGeneratorProps) {
-    const [discount, setDiscount] = useState(0)
+type SelectedCustomer = {
+    id: string
+    name: string
+    mobileNumber: string
+    discountTier: string
+    customDiscountPercent?: number
+    totalSpent: number
+    visitCount: number
+    lastVisit: string | null
+}
+
+export default function BillGenerator({ order, onClose, onAddItems }: BillGeneratorProps) {
+    const [selectedCustomer, setSelectedCustomer] = useState<SelectedCustomer | null>(null)
+    const [discountPercent, setDiscountPercent] = useState(0)
     const [amountPaid, setAmountPaid] = useState(0)
     const [bill, setBill] = useState<any>(null)
     const [loading, setLoading] = useState(false)
+    const [businessSettings, setBusinessSettings] = useState<any>(null)
+    const [loadingBusinessSettings, setLoadingBusinessSettings] = useState(true)
+    const [gstEnabled, setGstEnabled] = useState(false)
+    const [gstPercentage, setGstPercentage] = useState(5)
+    const [orderSource, setOrderSource] = useState('dine-in')
+    const [paymentMethod, setPaymentMethod] = useState('cash')
+
+    // Item selector state
+    const [showItemSelector, setShowItemSelector] = useState(false)
+    const [menuItems, setMenuItems] = useState<any[]>([])
+    const [loadingMenu, setLoadingMenu] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [localItems, setLocalItems] = useState<any[]>(order.items.map((item: any) => ({ ...item })))
+
     const printRef = useRef<HTMLDivElement>(null)
 
     const handlePrint = useReactToPrint({
         contentRef: printRef,
     })
 
+    useEffect(() => {
+        const fetchSettings = async () => {
+            setLoadingBusinessSettings(true)
+            const settings = await getBusinessSettings()
+            setBusinessSettings(settings)
+            setLoadingBusinessSettings(false)
+        }
+        fetchSettings()
+    }, [])
+
+    const fetchMenuItems = async () => {
+        setLoadingMenu(true)
+        const items = await getMenuItems(order.businessUnit)
+        setMenuItems(items)
+        setLoadingMenu(false)
+    }
+
+    const calculateTotals = () => {
+        const subtotal = localItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
+        return calculateBillTotals(subtotal, discountPercent, gstEnabled ? gstPercentage : 0)
+    }
+
+    const handleAddMenuItem = (menuItem: any) => {
+        const existingIndex = localItems.findIndex(item => item.menuItemId === menuItem.id)
+        if (existingIndex >= 0) {
+            // Item already exists, increase quantity
+            const newItems = [...localItems]
+            newItems[existingIndex].quantity += 1
+            setLocalItems(newItems)
+        } else {
+            // Add new item
+            setLocalItems([...localItems, {
+                menuItemId: menuItem.id,
+                name: menuItem.name,
+                price: menuItem.price,
+                quantity: 1
+            }])
+        }
+    }
+
+    const handleRemoveItem = (index: number) => {
+        setLocalItems(localItems.filter((_, i) => i !== index))
+    }
+
+    const handleUpdateQuantity = (index: number, newQuantity: number) => {
+        if (newQuantity <= 0) {
+            handleRemoveItem(index)
+        } else {
+            const newItems = [...localItems]
+            newItems[index].quantity = newQuantity
+            setLocalItems(newItems)
+        }
+    }
+
+    const totals = calculateTotals()
+
     const handleGenerateBill = async () => {
+        if (!businessSettings) {
+            alert("Business settings are not loaded yet. Please wait.")
+            return
+        }
         setLoading(true)
-        const subtotal = order.totalAmount
-        const gst = subtotal * 0.05
-        const total = subtotal + gst - discount
+
+        // Update order with local items first
+        await updateOrderItems(order.id, localItems, totals.subtotal)
 
         const result = await generateBill({
             orderId: order.id,
             businessUnit: order.businessUnit,
-            subtotal,
-            gstPercent: 5,
-            gstAmount: gst,
-            grandTotal: total
+            customerMobile: selectedCustomer?.mobileNumber,
+            customerName: selectedCustomer?.name,
+            subtotal: totals.subtotal,
+            discountPercent: totals.discountPercent,
+            discountAmount: totals.discountAmount,
+            gstPercent: totals.gstPercent,
+            gstAmount: totals.gstAmount,
+            grandTotal: totals.grandTotal,
+            source: orderSource,
+            address: businessSettings.address,
+            items: localItems
         })
+
         if (result.success) {
             setBill({
                 id: result.billId,
                 billNumber: result.billNumber,
                 orderId: order.id,
                 businessUnit: order.businessUnit,
-                subtotal,
-                gstPercent: 5,
-                gstAmount: gst,
-                grandTotal: total,
+                customerMobile: selectedCustomer?.mobileNumber,
+                customerName: selectedCustomer?.name,
+                subtotal: totals.subtotal,
+                discountPercent: totals.discountPercent,
+                discountAmount: totals.discountAmount,
+                gstPercent: totals.gstPercent,
+                gstAmount: totals.gstAmount,
+                grandTotal: totals.grandTotal,
                 paymentStatus: 'paid',
-                createdAt: new Date()
+                source: orderSource,
+                address: businessSettings.address,
+                createdAt: new Date(),
+                items: localItems
             })
         } else {
             alert("Failed to generate bill")
@@ -60,10 +170,10 @@ export default function BillGenerator({ order, onClose }: BillGeneratorProps) {
         setLoading(false)
     }
 
-    const handlePayment = async (method: string) => {
+    const handlePayment = async () => {
         if (!bill) return
         setLoading(true)
-        const result = await processPayment(bill.id, method, amountPaid || bill.grandTotal)
+        const result = await processPayment(bill.id, paymentMethod, amountPaid || bill.grandTotal)
         if (result.success) {
             alert("Payment successful!")
             onClose()
@@ -73,101 +183,293 @@ export default function BillGenerator({ order, onClose }: BillGeneratorProps) {
         setLoading(false)
     }
 
+    // Payment View
     if (bill) {
         return (
-            <div className="flex gap-4">
-                <Card className="w-96">
+            <div className="p-6">
+                <Card className="max-w-md mx-auto">
                     <CardHeader>
-                        <CardTitle>Payment</CardTitle>
+                        <CardTitle className="text-center">Payment & Print</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex justify-between text-lg font-bold">
-                            <span>Total Due:</span>
-                            <span>₹{bill.grandTotal.toFixed(2)}</span>
+                        <div className="flex justify-between items-center bg-green-50 p-4 rounded-lg border border-green-200">
+                            <span className="font-medium text-green-800">Total Due</span>
+                            <span className="text-2xl font-bold text-green-700">₹{bill.grandTotal.toFixed(2)}</span>
                         </div>
 
                         <div className="space-y-2">
                             <Label>Amount Paid</Label>
-                            <Input
-                                type="number"
-                                value={amountPaid}
-                                onChange={(e) => setAmountPaid(parseFloat(e.target.value))}
-                                placeholder={bill.grandTotal.toString()}
-                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">₹</span>
+                                <Input
+                                    type="number"
+                                    value={amountPaid || bill.grandTotal}
+                                    onChange={(e) => setAmountPaid(parseFloat(e.target.value))}
+                                    className="pl-8"
+                                />
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button onClick={() => handlePayment("cash")} disabled={loading}>
-                                <Banknote className="mr-2 h-4 w-4" /> Cash
-                            </Button>
-                            <Button onClick={() => handlePayment("upi")} variant="outline" disabled={loading}>
-                                <CreditCard className="mr-2 h-4 w-4" /> UPI
-                            </Button>
+                        <div className="space-y-2">
+                            <Label>Payment Method</Label>
+                            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-3 gap-3">
+                                <div>
+                                    <RadioGroupItem value="cash" id="pay-cash" className="peer sr-only" />
+                                    <Label
+                                        htmlFor="pay-cash"
+                                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent peer-data-[state=checked]:border-primary cursor-pointer"
+                                    >
+                                        <Banknote className="mb-1 h-5 w-5" />
+                                        <span className="text-xs">Cash</span>
+                                    </Label>
+                                </div>
+                                <div>
+                                    <RadioGroupItem value="upi" id="pay-upi" className="peer sr-only" />
+                                    <Label
+                                        htmlFor="pay-upi"
+                                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent peer-data-[state=checked]:border-primary cursor-pointer"
+                                    >
+                                        <Smartphone className="mb-1 h-5 w-5" />
+                                        <span className="text-xs">UPI</span>
+                                    </Label>
+                                </div>
+                                <div>
+                                    <RadioGroupItem value="card" id="pay-card" className="peer sr-only" />
+                                    <Label
+                                        htmlFor="pay-card"
+                                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent peer-data-[state=checked]:border-primary cursor-pointer"
+                                    >
+                                        <CreditCard className="mb-1 h-5 w-5" />
+                                        <span className="text-xs">Card</span>
+                                    </Label>
+                                </div>
+                            </RadioGroup>
                         </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button variant="secondary" className="w-full" onClick={() => handlePrint()}>
+
+                        <Button onClick={handlePayment} className="w-full" disabled={loading}>
+                            {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                            Confirm Payment
+                        </Button>
+
+                        <Button variant="outline" className="w-full" onClick={() => handlePrint()}>
                             <Printer className="mr-2 h-4 w-4" /> Print Invoice
                         </Button>
-                    </CardFooter>
+                    </CardContent>
                 </Card>
 
                 <div className="hidden">
-                    <InvoiceTemplate ref={printRef} bill={bill} order={order} />
+                    <InvoiceTemplate ref={printRef} bill={bill} order={order} businessSettings={businessSettings} businessUnit={order.businessUnit} />
                 </div>
             </div>
         )
     }
 
-    const subtotal = order.totalAmount
-    const gst = subtotal * 0.05
-    const total = subtotal + gst - discount
-
+    // Main Billing Form - Compact & Scrollable
     return (
-        <Card className="w-full max-w-md mx-auto">
-            <CardHeader>
-                <CardTitle>Generate Bill</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    {order.items.map((item: any) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                            <span>{item.quantity}x {item.name}</span>
-                            <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+        <div className="max-h-[80vh] overflow-y-auto p-6">
+            <div className="max-w-2xl mx-auto space-y-4">
+                {/* Order Items - Editable with Item Selector */}
+                <Card>
+                    <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                        <CardTitle className="text-base">Order Items ({localItems.length})</CardTitle>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                setShowItemSelector(!showItemSelector)
+                                if (!showItemSelector && menuItems.length === 0) {
+                                    fetchMenuItems()
+                                }
+                            }}
+                        >
+                            {showItemSelector ? <X className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
+                            {showItemSelector ? 'Close' : 'Add Items'}
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        {/* Item Selector */}
+                        {showItemSelector && (
+                            <div className="mb-4 p-3 bg-slate-50 rounded-lg border">
+                                <Label className="text-sm font-medium mb-2 block">Select Items to Add</Label>
+                                
+                                {/* Search Input */}
+                                <Input
+                                    type="text"
+                                    placeholder="Search menu items..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="mb-2 h-8"
+                                />
+
+                                {loadingMenu ? (
+                                    <div className="flex items-center justify-center py-4">
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    </div>
+                                ) : (
+                                    <div className="max-h-48 overflow-y-auto space-y-1">
+                                        {menuItems
+                                            .filter(item => 
+                                                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                            )
+                                            .map((menuItem: any) => (
+                                            <div
+                                                key={menuItem.id}
+                                                className="flex items-center justify-between p-2 hover:bg-white rounded cursor-pointer"
+                                                onClick={() => handleAddMenuItem(menuItem)}
+                                            >
+                                                <div className="flex-1">
+                                                    <span className="text-sm font-medium">{menuItem.name}</span>
+                                                    <span className="text-xs text-gray-500 ml-2">₹{menuItem.price}</span>
+                                                </div>
+                                                <Plus className="h-4 w-4 text-gray-400" />
+                                            </div>
+                                        ))}
+                                        {menuItems.filter(item => 
+                                            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                        ).length === 0 && (
+                                            <div className="text-center py-4 text-sm text-gray-500">
+                                                No items found
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Current Items - Editable */}
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {localItems.map((item: any, index: number) => (
+                                <div key={index} className="flex items-center justify-between text-sm py-1 border-b last:border-0">
+                                    <span className="flex-1">{item.name}</span>
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) => handleUpdateQuantity(index, parseInt(e.target.value) || 0)}
+                                            className="w-16 h-7 text-center"
+                                            min="0"
+                                        />
+                                        <span className="w-16 text-right font-medium">₹{(item.price * item.quantity).toFixed(0)}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveItem(index)}
+                                            className="h-7 w-7 p-0"
+                                        >
+                                            <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <Separator />
-                <div className="space-y-1">
-                    <div className="flex justify-between">
-                        <span>Subtotal</span>
-                        <span>₹{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-muted-foreground">
-                        <span>GST (5%)</span>
-                        <span>₹{gst.toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                        <Label>Discount</Label>
-                        <Input
-                            type="number"
-                            className="w-24 h-8 text-right"
-                            value={discount}
-                            onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                    </CardContent>
+                </Card>
+
+
+                {/* Customer Details */}
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-base">Customer Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <CustomerAutocomplete onCustomerSelect={(customer) => setSelectedCustomer(customer)} />
+
+                        <div>
+                            <Label className="text-sm mb-2 block">Order Source</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {['dine-in', 'takeaway', 'zomato', 'swiggy'].map((source) => (
+                                    <Button
+                                        key={source}
+                                        variant={orderSource === source ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setOrderSource(source)}
+                                        className="capitalize"
+                                    >
+                                        {source}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Discounts & Taxes */}
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-base">Discounts & Taxes</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <DiscountPanel
+                            customerId={selectedCustomer?.mobileNumber}
+                            discountPercent={discountPercent}
+                            onDiscountChange={setDiscountPercent}
+                            subtotal={totals.subtotal}
                         />
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between font-bold text-lg">
-                        <span>Total</span>
-                        <span>₹{total.toFixed(2)}</span>
-                    </div>
-                </div>
-            </CardContent>
-            <CardFooter>
-                <Button className="w-full" onClick={handleGenerateBill} disabled={loading}>
-                    Generate Bill
-                </Button>
-            </CardFooter>
-        </Card>
+
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div className="flex items-center gap-2">
+                                <Checkbox
+                                    id="gst-toggle"
+                                    checked={gstEnabled}
+                                    onCheckedChange={(checked) => setGstEnabled(checked as boolean)}
+                                />
+                                <Label htmlFor="gst-toggle" className="cursor-pointer text-sm">Enable GST</Label>
+                            </div>
+                            {gstEnabled && (
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        type="number"
+                                        value={gstPercentage}
+                                        onChange={(e) => setGstPercentage(Number(e.target.value))}
+                                        className="w-16 h-8 text-sm"
+                                    />
+                                    <span className="text-sm">%</span>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Summary & Generate */}
+                <Card>
+                    <CardContent className="pt-6 space-y-3">
+                        <div className="flex justify-between text-sm">
+                            <span>Subtotal</span>
+                            <span>₹{totals.subtotal.toFixed(2)}</span>
+                        </div>
+
+                        {totals.discountPercent > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                                <span>Discount ({totals.discountPercent}%)</span>
+                                <span>-₹{totals.discountAmount.toFixed(2)}</span>
+                            </div>
+                        )}
+
+                        {gstEnabled && (
+                            <div className="flex justify-between text-sm">
+                                <span>GST ({gstPercentage}%)</span>
+                                <span>₹{totals.gstAmount.toFixed(2)}</span>
+                            </div>
+                        )}
+
+                        <Separator />
+
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold">Grand Total</span>
+                            <span className="text-2xl font-bold text-primary">₹{totals.grandTotal.toFixed(2)}</span>
+                        </div>
+
+                        <Button
+                            className="w-full"
+                            onClick={handleGenerateBill}
+                            disabled={loading || loadingBusinessSettings || !businessSettings}
+                        >
+                            {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                            {loading ? "Processing..." : "Generate Bill & Pay"}
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     )
 }

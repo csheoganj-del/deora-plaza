@@ -1,15 +1,22 @@
 "use server"
 
-import { queryDocuments, createDocument, updateDocument, getDocument } from "@/lib/firebase/firestore"
+import { queryDocuments, createDocument, updateDocument, getDocument, deleteDocument, serializeTimestamps } from "@/lib/firebase/firestore"
 
-export async function getTables(businessUnit: string): Promise<any[]> {
+export async function getTables(businessUnit?: string): Promise<any[]> {
     try {
-        const filters = [
+        const filters = businessUnit ? [
             { field: 'businessUnit', operator: '==' as const, value: businessUnit }
-        ]
+        ] : []
 
-        const tables = await queryDocuments('tables', filters, 'tableNumber', 'asc')
-        return tables.map((t: any) => ({
+        const tables = await queryDocuments('tables', filters)
+
+        // Sort in-memory to avoid missing index error on composite query
+        tables.sort((a: any, b: any) => String(a.tableNumber).localeCompare(String(b.tableNumber), undefined, { numeric: true }));
+
+        // Serialize timestamps to avoid passing non-plain objects to client components
+        const serializedTables = serializeTimestamps(tables);
+
+        return serializedTables.map((t: any) => ({
             id: t.id,
             tableNumber: t.tableNumber,
             businessUnit: t.businessUnit,
@@ -49,9 +56,40 @@ export async function createTable(data: {
             status: 'available',
             customerCount: 0
         })
-        return result
+
+        if (result.success && result.id) {
+            const newTable = await getDocument('tables', result.id);
+            return { success: true, table: serializeTimestamps(newTable) };
+        }
+
+        return { success: false, error: 'Failed to create table or get ID' }
     } catch (error) {
         console.error('Error creating table:', error)
-        return { success: false, error }
+        return { success: false, error: 'Failed to create table' }
+    }
+}
+
+export async function updateTable(tableId: string, data: { tableNumber?: string; capacity?: number }) {
+    try {
+        await updateDocument('tables', tableId, data)
+        return { success: true }
+    } catch (error) {
+        console.error('Error updating table:', error)
+        return { success: false, error: 'Failed to update table' }
+    }
+}
+
+export async function deleteTable(tableId: string, password?: string) {
+    try {
+        const DELETION_PASSWORD = 'KappuLokuHimu#1006'
+        if (password !== DELETION_PASSWORD) {
+            return { success: false, error: 'Invalid password' }
+        }
+
+        await deleteDocument('tables', tableId)
+        return { success: true }
+    } catch (error) {
+        console.error('Error deleting table:', error)
+        return { success: false, error: 'Failed to delete table' }
     }
 }

@@ -1,21 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { signIn } from "@/lib/firebase/auth"
-import { setAuthCookie } from "@/lib/firebase/auth-server"
+import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
+import { Loader2, Lock, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
-    const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
-        email: "",
+        username: "",
         password: ""
     })
 
@@ -25,112 +23,146 @@ export default function LoginPage() {
         setError("")
 
         try {
-            // Sign in with Firebase
-            const result = await signIn(formData.email, formData.password)
+            const result = await signIn("credentials", {
+                username: formData.username,
+                password: formData.password,
+                redirect: false,
+            })
 
-            if (!result.success) {
-                setError(result.error || "Failed to sign in")
+            if (result?.error) {
+                setError("Invalid username or password")
                 setLoading(false)
                 return
             }
 
-            // Get ID token
-            const token = await result.user?.getIdToken()
+            if (result?.ok) {
+                // Get user session to determine redirect
+                const response = await fetch('/api/auth/session')
+                const session = await response.json()
 
-            if (!token) {
-                setError("Failed to get authentication token")
-                setLoading(false)
-                return
+                const role = session?.user?.role
+                const businessUnit = session?.user?.businessUnit
+
+                // Redirect based on role and business unit
+                let redirectPath = '/dashboard'
+
+                if (role === 'super_admin' || role === 'owner') {
+                    redirectPath = '/dashboard'
+                } else if (businessUnit === 'garden') {
+                    redirectPath = '/dashboard/garden'
+                } else if (businessUnit === 'cafe') {
+                    redirectPath = '/dashboard/tables'
+                } else if (businessUnit === 'bar') {
+                    redirectPath = '/dashboard/bar'
+                } else if (businessUnit === 'hotel') {
+                    redirectPath = '/dashboard/hotel'
+                }
+
+                window.location.href = redirectPath
             }
-
-            // Set auth cookie
-            await setAuthCookie(token)
-
-            // Redirect to dashboard
-            router.push("/dashboard")
-            router.refresh()
-        } catch (err: any) {
-            setError(err.message || "An error occurred")
+        } catch (error) {
+            setError("An error occurred. Please try again.")
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-4">
-            {/* Animated background */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -inset-[10px] opacity-50">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+            <div className="w-full max-w-md">
+                <div className="text-center mb-8">
+                    <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-xl shadow-amber-500/20">
+                        <span className="font-bold text-white text-3xl font-serif">D</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-slate-900 font-serif tracking-tight">Deora Plaza</h1>
+                    <p className="text-slate-500 mt-2">Management System</p>
                 </div>
-            </div>
 
-            <Card className="w-full max-w-md relative z-10 bg-white/5 backdrop-blur-xl border-white/10 shadow-2xl">
-                <CardHeader className="space-y-1 text-center">
-                    <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                        <span className="text-3xl font-bold text-black">D</span>
-                    </div>
-                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                        DEORA PLAZA
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">
-                        Management System
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-gray-300">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="your@email.com"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                required
-                                className="bg-black/40 border-white/10 text-white placeholder:text-gray-500 focus:border-amber-500"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password" className="text-gray-300">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                required
-                                className="bg-black/40 border-white/10 text-white placeholder:text-gray-500 focus:border-amber-500"
-                            />
-                        </div>
-
-                        {error && (
-                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                                {error}
+                <Card className="bg-white border-slate-200 shadow-xl shadow-slate-200/50">
+                    <CardHeader className="space-y-1 text-center pb-6 border-b border-slate-100">
+                        <CardTitle className="text-xl font-semibold text-slate-900">
+                            Welcome Back
+                        </CardTitle>
+                        <CardDescription className="text-slate-500">
+                            Sign in to access your dashboard
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div className="space-y-2">
+                                <Label htmlFor="username" className="text-slate-700 font-medium">
+                                    Username
+                                </Label>
+                                <Input
+                                    id="username"
+                                    type="text"
+                                    placeholder="Enter your username"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                    required
+                                    className="border-slate-200 focus:ring-amber-500 focus:border-amber-500"
+                                />
                             </div>
-                        )}
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password" className="text-slate-700 font-medium">
+                                        Password
+                                    </Label>
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        required
+                                        className="border-slate-200 focus:ring-amber-500 focus:border-amber-500 pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
 
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold shadow-lg shadow-amber-900/20"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing in...
-                                </>
-                            ) : (
-                                "Sign In"
+                            {error && (
+                                <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-sm text-rose-600 flex items-center justify-center">
+                                    {error}
+                                </div>
                             )}
-                        </Button>
-                    </form>
 
-                    <div className="mt-6 text-center text-sm text-gray-500">
-                        <p>Powered by Firebase 🔥</p>
-                    </div>
-                </CardContent>
-            </Card>
+                            <Button
+                                type="submit"
+                                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium h-11"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Signing in...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="mr-2 h-4 w-4" />
+                                        Sign In
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+
+                <p className="text-center text-xs text-slate-400 mt-8">
+                    &copy; {new Date().getFullYear()} Deora Plaza. All rights reserved.
+                </p>
+            </div>
         </div>
     )
 }

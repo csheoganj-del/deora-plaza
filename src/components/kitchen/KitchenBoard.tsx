@@ -21,6 +21,8 @@ type Order = {
     orderNumber: string
     tableId: string | null
     table?: { tableNumber: string } | null
+    roomNumber?: string | null
+    businessUnit: string
     status: string
     createdAt: Date
     type: string
@@ -32,7 +34,7 @@ export default function KitchenBoard() {
     const [loading, setLoading] = useState(true)
 
     const fetchOrders = async () => {
-        const data = await getKitchenOrders("cafe")
+        const data = await getKitchenOrders()
         // @ts-ignore - Date serialization issue from server action
         setOrders(data)
         setLoading(false)
@@ -90,7 +92,11 @@ export default function KitchenBoard() {
                                 </Badge>
                             </div>
                             <CardTitle className="text-xl font-bold text-white truncate w-full">
-                                {order.table ? `Table ${order.table.tableNumber}` : "Counter"}
+                                {order.businessUnit === 'hotel' && `Room ${order.roomNumber}`}
+                                {order.businessUnit === 'cafe' && `Cafe Table ${order.table?.tableNumber}`}
+                                {order.businessUnit === 'restaurant' && `Restaurant Table ${order.table?.tableNumber}`}
+                                {order.businessUnit === 'bar' && 'Bar Order'}
+                                {!['hotel', 'cafe', 'restaurant', 'bar'].includes(order.businessUnit) && 'Counter Order'}
                             </CardTitle>
                         </div>
                     </CardHeader>
@@ -114,7 +120,16 @@ export default function KitchenBoard() {
                         </div>
                     </CardContent>
                     <CardFooter className="pt-3 pb-4 bg-white/5 border-t border-white/5">
-                        {order.status === "preparing" ? (
+                        {order.status === "pending" && (
+                            <Button
+                                className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium shadow-lg shadow-amber-900/20"
+                                onClick={() => handleStatusUpdate(order.id, "preparing")}
+                            >
+                                <ChefHat className="mr-2 h-4 w-4" />
+                                Start Preparing
+                            </Button>
+                        )}
+                        {order.status === "preparing" && (
                             <Button
                                 className="w-full bg-green-600 hover:bg-green-700 text-white font-medium shadow-lg shadow-green-900/20"
                                 onClick={() => handleStatusUpdate(order.id, "ready")}
@@ -122,14 +137,15 @@ export default function KitchenBoard() {
                                 <CheckCircle2 className="mr-2 h-4 w-4" />
                                 Mark Ready
                             </Button>
-                        ) : (
+                        )}
+                        {order.status === "ready" && (
                             <Button
                                 className="w-full border-white/20 text-white hover:bg-white/10"
                                 variant="outline"
-                                onClick={() => handleStatusUpdate(order.id, "served")}
+                                disabled
                             >
                                 <Utensils className="mr-2 h-4 w-4" />
-                                Mark Served
+                                Waiting for Waiter
                             </Button>
                         )}
                     </CardFooter>

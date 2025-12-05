@@ -1,71 +1,87 @@
 "use server"
 
-import { PrismaClient } from "@prisma/client"
+import { adminDb } from "@/lib/firebase/admin"
 import { revalidatePath } from "next/cache"
-
-const prisma = new PrismaClient()
+import { timestampToDate } from "@/lib/firebase/firestore"
 
 export async function getInventoryItems(businessUnit: string = "cafe") {
     try {
-        const items = await prisma.inventoryItem.findMany({
-            where: { businessUnit },
-            orderBy: { name: "asc" },
-        })
-        return items
+        const snapshot = await adminDb.collection('inventory')
+            .where('businessUnit', '==', businessUnit)
+            .get()
+
+        return snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }))
     } catch (error) {
-        console.error("Failed to fetch inventory items:", error)
+        console.error("Error fetching inventory:", error)
         return []
     }
 }
 
 export async function updateStock(id: string, quantity: number, type: "add" | "remove") {
     try {
-        const item = await prisma.inventoryItem.findUnique({ where: { id } })
-        if (!item) throw new Error("Item not found")
+        const docRef = adminDb.collection('inventory').doc(id)
+        const doc = await docRef.get()
 
-        const newQuantity = type === "add"
-            ? item.quantity + quantity
-            : Math.max(0, item.quantity - quantity)
+        if (!doc.exists) {
+            return { success: false, error: "Item not found" }
+        }
 
-        await prisma.inventoryItem.update({
-            where: { id },
-            data: { quantity: newQuantity },
+        const currentQuantity = doc.data()?.quantity || 0
+        const newQuantity = type === "add" ? currentQuantity + quantity : currentQuantity - quantity
+
+        if (newQuantity < 0) {
+            return { success: false, error: "Insufficient stock" }
+        }
+
+        await docRef.update({
+            quantity: newQuantity,
+            updatedAt: new Date()
         })
 
-        revalidatePath("/dashboard/inventory")
+        revalidatePath('/dashboard/inventory')
         return { success: true }
     } catch (error) {
-        console.error("Failed to update stock:", error)
-        return { success: false, error }
+        console.error("Error updating stock:", error)
+        return { success: false, error: "Failed to update stock" }
     }
 }
 
 export async function addInventoryItem(data: { name: string; quantity: number; unit: string; minThreshold: number; businessUnit: string }) {
     try {
-        await prisma.inventoryItem.create({
-            data
+        await adminDb.collection('inventory').add({
+            ...data,
+            createdAt: new Date(),
+            updatedAt: new Date()
         })
-        revalidatePath("/dashboard/inventory")
+
+        revalidatePath('/dashboard/inventory')
         return { success: true }
     } catch (error) {
-        console.error("Failed to add inventory item:", error)
-        return { success: false, error }
+        console.error("Error adding item:", error)
+        return { success: false, error: "Failed to add item" }
+    }
+}
+
+export async function deleteInventoryItem(id: string) {
+    try {
+        await adminDb.collection('inventory').doc(id).delete()
+        revalidatePath('/dashboard/inventory')
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting item:", error)
+        return { success: false, error: "Failed to delete item" }
     }
 }
 
 export async function checkLowStock(businessUnit: string = "cafe") {
     try {
-        const items = await prisma.inventoryItem.findMany({
-            where: {
-                businessUnit,
-                quantity: {
-                    lte: prisma.inventoryItem.fields.minThreshold
-                }
-            }
-        })
-        return items
+        const items = await getInventoryItems(businessUnit)
+        return items.filter((item: any) => item.quantity <= item.minThreshold)
     } catch (error) {
-        console.error("Failed to check low stock:", error)
+        console.error("Error checking low stock:", error)
         return []
     }
 }
