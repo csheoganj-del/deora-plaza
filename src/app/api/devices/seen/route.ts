@@ -15,7 +15,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Missing platform" }, { status: 400 })
     }
 
-    let userId = session?.user?.id as string | undefined
+    const anySession = session as any
+    let userId = anySession?.user?.id as string | undefined
     if (!userId && authHeader && authHeader.startsWith("Bearer ")) {
       const idToken = authHeader.slice(7)
       const decoded = await adminAuth.verifyIdToken(idToken)

@@ -17,7 +17,8 @@ async function debugKey() {
             }
 
         } catch (e) {
-            console.error('Error parsing:', e.message)
+            const msg = e instanceof Error ? e.message : String(e)
+            console.error('Error parsing:', msg)
         }
     }
     process.exit()
