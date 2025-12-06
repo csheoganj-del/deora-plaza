@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
-    // Public paths that don't require authentication
     const publicPaths = ['/login', '/api/auth']
     const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
 
@@ -12,7 +11,6 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next()
     }
 
-    // Check for NextAuth session token
     const sessionToken = request.cookies.get('next-auth.session-token')?.value ||
         request.cookies.get('__Secure-next-auth.session-token')?.value
 
