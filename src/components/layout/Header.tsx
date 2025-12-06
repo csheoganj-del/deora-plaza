@@ -22,7 +22,7 @@ export function Header() {
     const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false) // State for dialog visibility
 
     return (
-        <header className="sticky top-0 w-full z-40 h-16 flex items-center justify-between px-6 bg-white/80 backdrop-blur-md border-b border-slate-200/50 transition-all duration-300">
+        <header className="sticky top-0 w-full z-40 h-16 flex items-center justify-between px-6 glass-3d border-b border-slate-200/50 transition-all duration-300">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" className="md:hidden text-slate-600 hover:bg-slate-100">
                     <Menu className="h-5 w-5" />
@@ -43,7 +43,7 @@ export function Header() {
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-2 ring-slate-100 hover:ring-amber-500 transition-all">
+                        <Button variant="ghost" className="relative h-9 w-9 rounded-full glow-ring transition-all">
                             <Avatar className="h-9 w-9">
                                 <AvatarImage src="/avatars/01.png" alt={session?.user?.name || ""} />
                                 <AvatarFallback className="bg-slate-900 text-white font-bold">
@@ -52,7 +52,7 @@ export function Header() {
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 bg-white border-slate-100 shadow-xl" align="end" forceMount>
+                    <DropdownMenuContent className="w-56 glass-3d border-transparent elevation-2" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
                                 <p className="text-sm font-medium leading-none text-slate-900">{session?.user?.name}</p>

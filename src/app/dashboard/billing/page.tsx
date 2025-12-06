@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { playBeep, showToast } from "@/lib/utils"
 
 export default function BillingPage() {
     const router = useRouter()
@@ -54,6 +56,8 @@ export default function BillingPage() {
     const handleBillGenerated = () => {
         setSelectedOrder(null)
         fetchData()
+        playBeep(1100, 160)
+        showToast("Bill generated successfully", 'success')
     }
 
     const toggleBillSelection = (billId: string) => {
@@ -107,9 +111,11 @@ export default function BillingPage() {
             fetchData()
 
             if (failCount > 0) {
-                alert(`Deleted ${successCount} bills. Failed to delete ${failCount} bills (possibly incorrect password).`)
+                playBeep(500, 160)
+                showToast(`Deleted ${successCount} bills. Failed to delete ${failCount} bills.`, 'error')
             } else {
-                alert(`Successfully deleted ${successCount} bills.`)
+                playBeep(900, 160)
+                showToast(`Successfully deleted ${successCount} bills.`, 'success')
             }
         }
 
@@ -161,9 +167,24 @@ export default function BillingPage() {
                         ) : (
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {orders.map((order) => (
-                                    <Card
+                                    <div
                                         key={order.id}
-                                        className={`cursor-pointer transition-all hover:shadow-md ${selectedOrder?.id === order.id ? 'border-primary ring-1 ring-primary' : ''}`}
+                                        className="tilt-3d"
+                                        onMouseMove={(e) => {
+                                            const t = e.currentTarget as HTMLElement
+                                            const r = t.getBoundingClientRect()
+                                            const x = e.clientX - r.left
+                                            const y = e.clientY - r.top
+                                            const cx = r.width / 2
+                                            const cy = r.height / 2
+                                            const ry = ((x - cx) / cx) * 5
+                                            const rx = -((y - cy) / cy) * 5
+                                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                        }}
+                                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                    >
+                                    <Card
+                                        className={`cursor-pointer transition-all hover:shadow-md elevation-1 ${selectedOrder?.id === order.id ? 'border-primary ring-1 ring-primary' : ''}`}
                                         onClick={() => setSelectedOrder(order)}
                                     >
                                         <CardHeader className="pb-2">
@@ -196,6 +217,7 @@ export default function BillingPage() {
                                             </div>
                                         </CardContent>
                                     </Card>
+                                    </div>
                                 ))}
                             </div>
                         )}
@@ -227,7 +249,23 @@ export default function BillingPage() {
                         ) : (
                             <div className="space-y-2">
                                 {bills.map((bill) => (
-                                    <Card key={bill.id} className="flex items-center p-4 hover:bg-accent/50 transition-colors">
+                                    <div
+                                        key={bill.id}
+                                        className="tilt-3d"
+                                        onMouseMove={(e) => {
+                                            const t = e.currentTarget as HTMLElement
+                                            const r = t.getBoundingClientRect()
+                                            const x = e.clientX - r.left
+                                            const y = e.clientY - r.top
+                                            const cx = r.width / 2
+                                            const cy = r.height / 2
+                                            const ry = ((x - cx) / cx) * 3
+                                            const rx = -((y - cy) / cy) * 3
+                                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                        }}
+                                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                    >
+                                    <Card className="flex items-center p-4 hover:bg-accent/50 transition-colors elevation-1">
                                         <div className="mr-4">
                                             <Button
                                                 variant="ghost"
@@ -277,6 +315,7 @@ export default function BillingPage() {
                                             </div>
                                         </div>
                                     </Card>
+                                    </div>
                                 ))}
                             </div>
                         )}
@@ -286,7 +325,21 @@ export default function BillingPage() {
 
             {/* Bill Generator Dialog */}
             <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
+                <DialogContent
+                    className="max-w-2xl max-h-[90vh] overflow-hidden p-0 elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader className="sr-only">
                         <DialogTitle>Generate Bill</DialogTitle>
                     </DialogHeader>
@@ -308,7 +361,21 @@ export default function BillingPage() {
 
             {/* Reprint Bill Dialog */}
             <Dialog open={!!reprintBill} onOpenChange={(open) => !open && setReprintBill(null)}>
-                <DialogContent className="max-w-3xl h-[80vh] overflow-y-auto">
+                <DialogContent
+                    className="max-w-3xl h-[80vh] overflow-y-auto elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader>
                         <DialogTitle>Reprint Bill</DialogTitle>
                     </DialogHeader>
@@ -319,7 +386,21 @@ export default function BillingPage() {
             </Dialog>
 
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent>
+                <DialogContent
+                    className="elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader>
                         <DialogTitle>Confirm Deletion</DialogTitle>
                         <DialogDescription>

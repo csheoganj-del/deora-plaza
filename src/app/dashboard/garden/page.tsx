@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
@@ -1204,7 +1205,23 @@ export default function GardenPage() {
                             ) : (
                                 <div className="grid gap-4">
                                     {upcomingEvents.map((event) => (
-                                        <Card key={event.id} className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-all">
+                                        <div
+                                            key={event.id}
+                                            className="tilt-3d"
+                                            onMouseMove={(e) => {
+                                                const t = e.currentTarget as HTMLElement
+                                                const r = t.getBoundingClientRect()
+                                                const x = e.clientX - r.left
+                                                const y = e.clientY - r.top
+                                                const cx = r.width / 2
+                                                const cy = r.height / 2
+                                                const ry = ((x - cx) / cx) * 5
+                                                const rx = -((y - cy) / cy) * 5
+                                                t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                            }}
+                                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                        >
+                                        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-all elevation-1">
                                             <CardHeader className="pb-2">
                                                 <div className="flex justify-between items-start">
                                                     <div className="flex gap-2">
@@ -1277,6 +1294,7 @@ export default function GardenPage() {
                                                 </div>
                                             </CardContent>
                                         </Card>
+                                        </div>
                                     ))}
                                 </div>
                             )}

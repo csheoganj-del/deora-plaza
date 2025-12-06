@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState, useEffect } from "react"
 import { getInventoryItems, addInventoryItem } from "@/actions/inventory"
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { playBeep, showToast } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Plus } from "lucide-react"
 
@@ -33,8 +35,11 @@ export default function InventoryPage() {
             setIsAddOpen(false)
             setNewItem({ name: "", quantity: 0, unit: "kg", minThreshold: 5 })
             fetchItems()
+            playBeep(1000, 160)
+            showToast("Inventory item added", 'success')
         } else {
-            alert("Failed to add item")
+            showToast("Failed to add item", 'error')
+            playBeep(500, 160)
         }
         setLoading(false)
     }
@@ -53,7 +58,21 @@ export default function InventoryPage() {
                             <Plus className="mr-2 h-4 w-4" /> Add Item
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent
+                        className="elevation-1 tilt-3d"
+                        onMouseMove={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            const r = t.getBoundingClientRect()
+                            const x = e.clientX - r.left
+                            const y = e.clientY - r.top
+                            const cx = r.width / 2
+                            const cy = r.height / 2
+                            const ry = ((x - cx) / cx) * 5
+                            const rx = -((y - cy) / cy) * 5
+                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                        }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                    >
                         <DialogHeader>
                             <DialogTitle>Add New Inventory Item</DialogTitle>
                         </DialogHeader>

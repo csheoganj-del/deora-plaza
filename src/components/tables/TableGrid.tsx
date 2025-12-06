@@ -86,10 +86,22 @@ export default function TableGrid({ initialTables, businessUnit }: { initialTabl
                         <div
                             key={table.id}
                             onClick={() => handleTableClick(table)}
-                            className="group relative flex flex-col text-left transition-all duration-300 hover:-translate-y-1 w-full cursor-pointer"
+                            className="group relative flex flex-col text-left transition-all duration-300 hover:-translate-y-1 w-full cursor-pointer tilt-3d"
+                            onMouseMove={(e) => {
+                                const t = e.currentTarget as HTMLElement
+                                const r = t.getBoundingClientRect()
+                                const x = e.clientX - r.left
+                                const y = e.clientY - r.top
+                                const cx = r.width / 2
+                                const cy = r.height / 2
+                                const ry = ((x - cx) / cx) * 5
+                                const rx = -((y - cy) / cy) * 5
+                                t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                            }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
                         >
                             <Card className={cn(
-                                "relative w-full overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md border",
+                                "relative w-full overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md border elevation-1",
                                 styles.card
                             )}>
                                 <CardHeader className="pb-2">

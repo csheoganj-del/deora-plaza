@@ -1,5 +1,7 @@
+"use client"
 import KitchenBoard from "@/components/kitchen/KitchenBoard"
 import { ChefHat } from "lucide-react"
+export const dynamic = "force-dynamic"
 
 export default function KitchenPage() {
     return (
@@ -20,7 +22,21 @@ export default function KitchenPage() {
                     {/* Stats or filters could go here */}
                 </div>
             </div>
-            <div className="flex-1 overflow-hidden rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm p-6">
+            <div
+                className="flex-1 overflow-hidden rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm p-6 elevation-1 tilt-3d"
+                onMouseMove={(e) => {
+                    const t = e.currentTarget as HTMLElement
+                    const r = t.getBoundingClientRect()
+                    const x = e.clientX - r.left
+                    const y = e.clientY - r.top
+                    const cx = r.width / 2
+                    const cy = r.height / 2
+                    const ry = ((x - cx) / cx) * 5
+                    const rx = -((y - cy) / cy) * 5
+                    t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+            >
                 <KitchenBoard />
             </div>
         </div>

@@ -2,7 +2,7 @@
 // Force recompile - Serialization Fix 7 - Timeline Serialization
 
 import { queryDocuments, createDocument, updateDocument, timestampToDate, dateToTimestamp, deleteDocument, serializeTimestamps } from "@/lib/firebase/firestore"
-import { adminDb } from "@/lib/firebase/admin"
+import { adminDb, adminMessaging } from "@/lib/firebase/admin"
 
 import { updateTableStatus } from "./tables"
 
@@ -228,7 +228,59 @@ export async function getOrders(businessUnit?: string, status?: string) {
 
 export async function updateOrderStatus(orderId: string, status: string) {
     try {
-        await updateDocument('orders', orderId, { status })
+        const now = new Date()
+        const updateData: any = {
+            status,
+            [`${status}At`]: dateToTimestamp(now),
+            updatedAt: dateToTimestamp(now)
+        }
+
+        await updateDocument('orders', orderId, updateData)
+
+        if (status === 'ready') {
+            try {
+                const orderDoc = await adminDb.collection('orders').doc(orderId).get()
+                if (orderDoc.exists) {
+                    const order = orderDoc.data()
+                    const locationName = order?.businessUnit === 'hotel'
+                        ? `Room ${order?.roomNumber}`
+                        : `${order?.businessUnit} Table ${order?.table?.tableNumber || 'N/A'}`
+
+                    await createDocument('notifications', {
+                        type: 'order_ready',
+                        orderId: orderId,
+                        businessUnit: order?.businessUnit,
+                        message: `Order ${order?.orderNumber} ready for ${locationName}`,
+                        title: 'Order Ready for Delivery',
+                        recipient: 'waiter',
+                        metadata: {
+                            orderNumber: order?.orderNumber,
+                            location: locationName,
+                            businessUnit: order?.businessUnit
+                        },
+                        isRead: false,
+                        createdAt: dateToTimestamp(now),
+                        expiresAt: dateToTimestamp(new Date(now.getTime() + 2 * 60 * 60 * 1000))
+                    })
+
+                    try {
+                        await adminMessaging.send({
+                            topic: 'waiter',
+                            notification: {
+                                title: 'Order Ready',
+                                body: `Order ${order?.orderNumber} ready for ${locationName}`
+                            },
+                            data: {
+                                orderId,
+                                businessUnit: String(order?.businessUnit || ''),
+                                orderNumber: String(order?.orderNumber || '')
+                            }
+                        })
+                    } catch {}
+                }
+            } catch {}
+        }
+
         return { success: true }
     } catch (error) {
         console.error('Error updating order status:', error)

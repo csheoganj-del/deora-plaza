@@ -6,6 +6,7 @@ import { Loader2, AlertCircle } from "lucide-react"
 import { getMenuItems } from "@/actions/menu"
 import { createOrder } from "@/actions/orders"
 import { useRouter } from "next/navigation"
+import { playBeep, showToast } from "@/lib/utils"
 
 type MenuItem = {
     id: string
@@ -126,16 +127,21 @@ export function TakeawayOrderDialog({ isOpen, onClose, businessUnit }: TakeawayO
             })
 
             if (orderResult.success) {
-                alert(`Takeaway order #${orderResult.orderNumber} placed successfully!`)
+                playBeep(1000, 160)
+                showToast(`Takeaway order placed successfully!`, 'success')
                 clearCart()
                 onClose()
                 router.refresh()
             } else {
                 setError(String(orderResult.error) || "Failed to create order. Please try again.")
+                playBeep(500, 160)
+                showToast("Failed to create order. Please try again.", 'error')
             }
         } catch (error) {
             console.error("An error occurred during order submission:", error)
             setError("An unexpected error occurred during submission.")
+            playBeep(500, 160)
+            showToast("An unexpected error occurred during submission.", 'error')
         } finally {
             setIsSubmitting(false)
         }

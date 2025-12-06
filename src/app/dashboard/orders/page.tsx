@@ -1,5 +1,6 @@
 import OrderFlowDashboard from "@/components/orders/OrderFlowDashboard"
 import { ShoppingBag } from "lucide-react"
+export const dynamic = "force-dynamic"
 
 export default function OrdersPage() {
     return (
@@ -20,4 +21,3 @@ export default function OrdersPage() {
         </div>
     )
 }
-

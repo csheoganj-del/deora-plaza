@@ -55,6 +55,7 @@ export type HotelBooking = {
     discountPercent?: number
     basePrice?: number // Price before tax/discount
     advancePayment?: number
+    roomServiceCharges?: any[]
 }
 
 export type Payment = {
@@ -379,4 +380,3 @@ export async function getActiveBookingForRoom(roomId: string, roomNumber?: strin
         return null
     }
 }
-

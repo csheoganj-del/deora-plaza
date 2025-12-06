@@ -60,12 +60,30 @@ export default function RoomGrid({ rooms, onSelect, onEdit, onDelete, onRoomServ
                         : 0
 
                 return (
-                    <div key={room.id} className="relative group">
+                    <div
+                        key={room.id}
+                        className="relative group tilt-3d"
+                        onMouseMove={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            const r = t.getBoundingClientRect()
+                            const x = e.clientX - r.left
+                            const y = e.clientY - r.top
+                            const cx = r.width / 2
+                            const cy = r.height / 2
+                            const ry = ((x - cx) / cx) * 5
+                            const rx = -((y - cy) / cy) * 5
+                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                        }}
+                        onMouseLeave={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            t.style.transform = ""
+                        }}
+                    >
                         <button
                             onClick={() => onSelect(room)}
                             className="w-full text-left transition-transform duration-200 hover:-translate-y-1 focus:outline-none"
                         >
-                            <Card className="h-full border border-slate-100 shadow-sm hover:shadow-md bg-white">
+                            <Card className="h-full border border-slate-100 shadow-sm hover:shadow-md bg-white elevation-1">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between">
                                         <div>

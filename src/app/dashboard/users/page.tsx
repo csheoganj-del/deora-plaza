@@ -239,7 +239,21 @@ export default function UserManagementPage() {
 
             {/* Create User Dialog */}
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent
+                    className="sm:max-w-md elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader>
                         <DialogTitle>Create New User</DialogTitle>
                         <DialogDescription>
@@ -357,7 +371,21 @@ export default function UserManagementPage() {
 
             {/* Edit User Dialog */}
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent
+                    className="sm:max-w-md elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader>
                         <DialogTitle>Edit User</DialogTitle>
                     </DialogHeader>
@@ -417,7 +445,21 @@ export default function UserManagementPage() {
 
             {/* Reset Password Dialog */}
             <Dialog open={isResetPasswordDialogOpen} onOpenChange={setIsResetPasswordDialogOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent
+                    className="sm:max-w-md elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader>
                         <DialogTitle>Reset Password</DialogTitle>
                         <DialogDescription>
@@ -461,7 +503,21 @@ export default function UserManagementPage() {
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent
+                    className="sm:max-w-md elevation-1 tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
                     <DialogHeader>
                         <DialogTitle>Delete User</DialogTitle>
                         <DialogDescription>

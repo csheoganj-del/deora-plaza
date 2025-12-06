@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
@@ -12,10 +13,24 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const [showPassword, setShowPassword] = useState(false)
+    const [cardTransform, setCardTransform] = useState<string>("")
     const [formData, setFormData] = useState({
         username: "",
         password: ""
     })
+
+    const [tiltStyle, setTiltStyle] = useState<{ transform: string }>({ transform: "perspective(800px) rotateX(0deg) rotateY(0deg)" })
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        const centerX = rect.width / 2
+        const centerY = rect.height / 2
+        const rotateY = ((x - centerX) / centerX) * 6
+        const rotateX = -((y - centerY) / centerY) * 6
+        setTiltStyle({ transform: `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)` })
+    }
+    const resetTilt = () => setTiltStyle({ transform: "perspective(800px) rotateX(0deg) rotateY(0deg)" })
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -67,17 +82,31 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <div className="min-h-screen flex items-center justify-center futuristic-bg p-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-xl shadow-amber-500/20">
+                    <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center elevation-2 glow-ring animate-float-3d">
                         <span className="font-bold text-white text-3xl font-serif">D</span>
                     </div>
                     <h1 className="text-3xl font-bold text-slate-900 font-serif tracking-tight">Deora Plaza</h1>
                     <p className="text-slate-500 mt-2">Management System</p>
                 </div>
 
-                <Card className="bg-white border-slate-200 shadow-xl shadow-slate-200/50">
+                <Card
+                    className="glass-3d tilt-3d rounded-2xl"
+                    onMouseMove={(e) => {
+                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                        const x = e.clientX - rect.left
+                        const y = e.clientY - rect.top
+                        const centerX = rect.width / 2
+                        const centerY = rect.height / 2
+                        const rotateY = ((x - centerX) / centerX) * 6
+                        const rotateX = -((y - centerY) / centerY) * 6
+                        setCardTransform(`perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
+                    }}
+                    onMouseLeave={() => setCardTransform("")}
+                    style={{ transform: cardTransform }}
+                >
                     <CardHeader className="space-y-1 text-center pb-6 border-b border-slate-100">
                         <CardTitle className="text-xl font-semibold text-slate-900">
                             Welcome Back
@@ -140,7 +169,7 @@ export default function LoginPage() {
 
                             <Button
                                 type="submit"
-                                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium h-11"
+                                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium h-11 interactive-scale-md"
                                 disabled={loading}
                             >
                                 {loading ? (

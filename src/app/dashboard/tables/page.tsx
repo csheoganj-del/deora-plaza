@@ -3,6 +3,7 @@ import TableGrid from "@/components/tables/TableGrid";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Coffee, Utensils } from "lucide-react";
 import { TakeawayOrderButton } from "@/components/orders/TakeawayOrderButton";
+export const dynamic = "force-dynamic"
 
 export default async function TablesPage() {
     const allTables = await getTables();

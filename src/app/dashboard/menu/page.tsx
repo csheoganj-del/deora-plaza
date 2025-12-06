@@ -1,5 +1,6 @@
 import { getMenuItems } from "@/actions/menu"
 import MenuManagement from "@/components/menu/MenuManagement"
+export const dynamic = "force-dynamic"
 
 export default async function MenuPage() {
     const items = await getMenuItems()

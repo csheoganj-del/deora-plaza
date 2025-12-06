@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState } from "react"
 import CustomerList from "@/components/crm/CustomerList"
@@ -37,7 +38,21 @@ export default function CustomersPage() {
                                 <Plus className="h-4 w-4" />
                             </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent
+                            className="elevation-1 tilt-3d"
+                            onMouseMove={(e) => {
+                                const t = e.currentTarget as HTMLElement
+                                const r = t.getBoundingClientRect()
+                                const x = e.clientX - r.left
+                                const y = e.clientY - r.top
+                                const cx = r.width / 2
+                                const cy = r.height / 2
+                                const ry = ((x - cx) / cx) * 5
+                                const rx = -((y - cy) / cy) * 5
+                                t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                            }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                        >
                             <DialogHeader>
                                 <DialogTitle>Add New Customer</DialogTitle>
                             </DialogHeader>

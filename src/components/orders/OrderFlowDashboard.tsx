@@ -185,9 +185,24 @@ export default function OrderFlowDashboard() {
                             ) : (
                                 <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
                                     {(dept === 'all' ? orders : byDepartment[dept]).map(order => (
-                                        <Card
+                                        <div
                                             key={order.id}
-                                            className="cursor-pointer hover:shadow-md transition-shadow border-l-4 relative group"
+                                            className="tilt-3d"
+                                            onMouseMove={(e) => {
+                                                const t = e.currentTarget as HTMLElement
+                                                const r = t.getBoundingClientRect()
+                                                const x = e.clientX - r.left
+                                                const y = e.clientY - r.top
+                                                const cx = r.width / 2
+                                                const cy = r.height / 2
+                                                const ry = ((x - cx) / cx) * 5
+                                                const rx = -((y - cy) / cy) * 5
+                                                t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                            }}
+                                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                        >
+                                        <Card
+                                            className="cursor-pointer hover:shadow-md transition-shadow border-l-4 relative group elevation-1"
                                             style={{
                                                 borderLeftColor:
                                                     order.status === 'pending' ? '#fbbf24' :
@@ -255,6 +270,7 @@ export default function OrderFlowDashboard() {
                                                 </div>
                                             </CardContent>
                                         </Card>
+                                        </div>
                                     ))}
                                 </div>
                             )}

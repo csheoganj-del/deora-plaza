@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
@@ -129,7 +130,7 @@ export default function BarPage() {
     }
 
     return (
-        <div className="flex h-screen bg-slate-50 overflow-hidden">
+        <div className="flex h-screen futuristic-bg overflow-hidden">
             {/* Left Side - Menu */}
             <div className="flex-1 flex flex-col p-6 overflow-hidden">
                 <div className="flex justify-between items-center mb-6">
@@ -161,21 +162,38 @@ export default function BarPage() {
                     <TabsContent value="drinks" className="flex-1 overflow-y-auto pr-2">
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
                             {filteredDrinks.map((item) => (
-                                <Card key={item.id} className="cursor-pointer hover:shadow-md transition-all border-slate-200 bg-white group" onClick={() => handleAddItem(item, "drink")}>
-                                    <CardContent className="p-4 flex flex-col justify-between h-full">
-                                        <div>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <Badge variant="outline" className="border-amber-200 text-amber-700 bg-amber-50">{item.category}</Badge>
-                                                <span className="font-bold text-slate-900">₹{item.price}</span>
+                                <div
+                                    key={item.id}
+                                    className="tilt-3d"
+                                    onMouseMove={(e) => {
+                                        const t = e.currentTarget as HTMLElement
+                                        const r = t.getBoundingClientRect()
+                                        const x = e.clientX - r.left
+                                        const y = e.clientY - r.top
+                                        const cx = r.width / 2
+                                        const cy = r.height / 2
+                                        const ry = ((x - cx) / cx) * 5
+                                        const rx = -((y - cy) / cy) * 5
+                                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                    }}
+                                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                >
+                                    <Card className="cursor-pointer hover:shadow-md transition-all border-slate-200 bg-white group elevation-1" onClick={() => handleAddItem(item, "drink")}>
+                                        <CardContent className="p-4 flex flex-col justify-between h-full">
+                                            <div>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <Badge variant="outline" className="border-amber-200 text-amber-700 bg-amber-50">{item.category}</Badge>
+                                                    <span className="font-bold text-slate-900">₹{item.price}</span>
+                                                </div>
+                                                <h3 className="font-bold text-slate-800 mb-1 group-hover:text-amber-600 transition-colors">{item.name}</h3>
+                                                <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
                                             </div>
-                                            <h3 className="font-bold text-slate-800 mb-1 group-hover:text-amber-600 transition-colors">{item.name}</h3>
-                                            <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
-                                        </div>
-                                        <Button size="sm" variant="secondary" className="w-full mt-4 bg-slate-100 hover:bg-amber-50 hover:text-amber-600">
-                                            <Plus className="h-4 w-4 mr-1" /> Add
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                                            <Button size="sm" variant="secondary" className="w-full mt-4 bg-slate-100 hover:bg-amber-50 hover:text-amber-600">
+                                                <Plus className="h-4 w-4 mr-1" /> Add
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             ))}
                         </div>
                     </TabsContent>
@@ -183,21 +201,38 @@ export default function BarPage() {
                     <TabsContent value="food" className="flex-1 overflow-y-auto pr-2">
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
                             {filteredFood.map((item) => (
-                                <Card key={item.id} className="cursor-pointer hover:shadow-md transition-all border-slate-200 bg-white group" onClick={() => handleAddItem(item, "food")}>
-                                    <CardContent className="p-4 flex flex-col justify-between h-full">
-                                        <div>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{item.category}</Badge>
-                                                <span className="font-bold text-slate-900">₹{item.price}</span>
+                                <div
+                                    key={item.id}
+                                    className="tilt-3d"
+                                    onMouseMove={(e) => {
+                                        const t = e.currentTarget as HTMLElement
+                                        const r = t.getBoundingClientRect()
+                                        const x = e.clientX - r.left
+                                        const y = e.clientY - r.top
+                                        const cx = r.width / 2
+                                        const cy = r.height / 2
+                                        const ry = ((x - cx) / cx) * 5
+                                        const rx = -((y - cy) / cy) * 5
+                                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                    }}
+                                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                >
+                                    <Card className="cursor-pointer hover:shadow-md transition-all border-slate-200 bg-white group elevation-1" onClick={() => handleAddItem(item, "food")}>
+                                        <CardContent className="p-4 flex flex-col justify-between h-full">
+                                            <div>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <Badge variant="outline" className="border-emerald-200 text-emerald-700 bg-emerald-50">{item.category}</Badge>
+                                                    <span className="font-bold text-slate-900">₹{item.price}</span>
+                                                </div>
+                                                <h3 className="font-bold text-slate-800 mb-1 group-hover:text-emerald-600 transition-colors">{item.name}</h3>
+                                                <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
                                             </div>
-                                            <h3 className="font-bold text-slate-800 mb-1 group-hover:text-emerald-600 transition-colors">{item.name}</h3>
-                                            <p className="text-xs text-slate-500 line-clamp-2">{item.description}</p>
-                                        </div>
-                                        <Button size="sm" variant="secondary" className="w-full mt-4 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-600">
-                                            <Plus className="h-4 w-4 mr-1" /> Add
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                                            <Button size="sm" variant="secondary" className="w-full mt-4 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-600">
+                                                <Plus className="h-4 w-4 mr-1" /> Add
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             ))}
                         </div>
                     </TabsContent>
@@ -205,10 +240,10 @@ export default function BarPage() {
             </div>
 
             {/* Right Side - Cart & Queue */}
-            <div className="w-96 bg-white border-l border-slate-200 flex flex-col h-full shadow-xl z-20">
+            <div className="w-96 glass-3d border-l border-slate-200 flex flex-col h-full shadow-xl z-20">
                 <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                     <h2 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-                        <ShoppingCart className="h-5 w-5 text-amber-500" />
+                        <ShoppingCart className="h-5 w-5 text-amber-500 glow-ring" />
                         Current Order
                     </h2>
                 </div>

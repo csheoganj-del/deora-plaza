@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
@@ -243,7 +244,7 @@ export default function HotelPage() {
             setBookingFormError(null)
             fetchData()
         } else {
-            setBookingFormError(result?.error || "Failed to create booking")
+            setBookingFormError(typeof result?.error === "string" ? result.error : "Failed to create booking")
         }
     }
 
@@ -292,7 +293,8 @@ export default function HotelPage() {
             setRoomFormError(null)
             fetchData()
         } else {
-            setRoomFormError(result?.error || (editingRoom ? "Failed to update room" : "Failed to create room"))
+            const fallback = editingRoom ? "Failed to update room" : "Failed to create room"
+            setRoomFormError(typeof result?.error === "string" ? result.error : fallback)
         }
     }
 
@@ -938,7 +940,7 @@ export default function HotelPage() {
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
-                        <FormError message={roomFormError} />
+                        <FormError message={roomFormError ?? undefined} />
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2">
                                 <Label className="text-slate-600">Room Number</Label>
@@ -1037,7 +1039,7 @@ export default function HotelPage() {
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-5 py-4">
-                        <FormError message={bookingFormError} />
+                        <FormError message={bookingFormError ?? undefined} />
                         <CustomerAutocomplete
                             onCustomerSelect={handleCustomerSelect}
                             initialName={bookingData.customerName}

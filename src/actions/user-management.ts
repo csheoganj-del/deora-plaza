@@ -241,3 +241,44 @@ export async function toggleUserStatus(userId: string) {
         return { success: false, error }
     }
 }
+
+export async function upsertDeviceToken(userId: string, platform: 'android' | 'ios' | 'web', token: string) {
+    try {
+        const user = await getDocument(USERS_COLLECTION, userId) as any | null
+        if (!user) {
+            return { success: false, error: "User not found" }
+        }
+
+        const now = new Date()
+        const key = `devices.${platform}`
+        const update: any = {}
+        update[key] = { platform, token, lastSeenAt: now, enabled: true }
+
+        await updateDocument(USERS_COLLECTION, userId, {
+            ...update,
+            updatedAt: now
+        })
+
+        return { success: true }
+    } catch (error) {
+        console.error("Error upserting device token:", error)
+        return { success: false, error }
+    }
+}
+
+export async function markDeviceSeen(userId: string, platform: 'android' | 'ios' | 'web') {
+    try {
+        const now = new Date()
+        const key = `devices.${platform}.lastSeenAt`
+        await updateDocument(USERS_COLLECTION, userId, {
+            [key]: now,
+            updatedAt: now
+        })
+        return { success: true }
+    } catch (error) {
+        console.error("Error marking device seen:", error)
+        return { success: false, error }
+    }
+}
+
+// duplicate definitions removed

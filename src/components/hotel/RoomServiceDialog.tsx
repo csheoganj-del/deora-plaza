@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
+import { playBeep, showToast } from "@/lib/utils";
 
 // Import Real Server Actions
 import { getMenuItems } from "@/actions/menu";
@@ -200,18 +201,26 @@ export default function RoomServiceDialog({
                 if (linkResult.success) {
                     // Success, close and reset
                     console.log("RoomServiceDialog: Order linked successfully!")
+                    playBeep(1000, 160)
+                    showToast(`Room service order for Room ${room.number} placed successfully`, 'success')
                     clearCart();
                     onClose?.();
                 } else {
                     setError("Order placed but failed to link to booking. Please notify management.");
+                    showToast("Failed to link order to booking", 'error')
+                    playBeep(500, 160)
                 }
             } else {
                 console.error("RoomServiceDialog: Order creation failed:", orderResult.error)
                 setError(String(orderResult.error) || "Failed to create order. Please try again.");
+                showToast("Failed to create order. Please try again.", 'error')
+                playBeep(500, 160)
             }
         } catch (error) {
             console.error("An error occurred during order submission:", error);
             setError("An unexpected error occurred during submission.");
+            showToast("An unexpected error occurred during submission.", 'error')
+            playBeep(500, 160)
         } finally {
             setIsSubmitting(false);
         }
@@ -226,7 +235,21 @@ export default function RoomServiceDialog({
             role="dialog"
             aria-modal="true"
         >
-            <div className="bg-white w-full max-w-6xl rounded-xl shadow-xl ring-1 ring-black/5">
+            <div
+                className="bg-white w-full max-w-6xl rounded-xl shadow-xl ring-1 ring-black/5 elevation-1 tilt-3d"
+                onMouseMove={(e) => {
+                    const t = e.currentTarget as HTMLElement
+                    const r = t.getBoundingClientRect()
+                    const x = e.clientX - r.left
+                    const y = e.clientY - r.top
+                    const cx = r.width / 2
+                    const cy = r.height / 2
+                    const ry = ((x - cx) / cx) * 5
+                    const rx = -((y - cy) / cy) * 5
+                    t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-2 border-b">
                     <div className="flex items-center gap-3">

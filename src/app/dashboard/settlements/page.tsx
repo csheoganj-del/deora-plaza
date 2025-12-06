@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic"
 
 import { useState, useEffect } from "react"
 import { getAllSettlements, generateMonthlySettlement, markSettlementPaid, getCurrentMonthSummary } from "@/actions/settlements"
@@ -70,7 +71,21 @@ export default function SettlementsPage() {
                             <Plus className="mr-2 h-4 w-4" /> Generate Settlement
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent
+                        className="elevation-1 tilt-3d"
+                        onMouseMove={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            const r = t.getBoundingClientRect()
+                            const x = e.clientX - r.left
+                            const y = e.clientY - r.top
+                            const cx = r.width / 2
+                            const cy = r.height / 2
+                            const ry = ((x - cx) / cx) * 5
+                            const rx = -((y - cy) / cy) * 5
+                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                        }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                    >
                         <DialogHeader>
                             <DialogTitle>Generate Monthly Settlement</DialogTitle>
                         </DialogHeader>
@@ -112,7 +127,22 @@ export default function SettlementsPage() {
             {/* Current Month Summary */}
             {currentMonth && (
                 <div className="grid gap-4 md:grid-cols-3">
-                    <Card>
+                    <div
+                        className="tilt-3d"
+                        onMouseMove={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            const r = t.getBoundingClientRect()
+                            const x = e.clientX - r.left
+                            const y = e.clientY - r.top
+                            const cx = r.width / 2
+                            const cy = r.height / 2
+                            const ry = ((x - cx) / cx) * 5
+                            const rx = -((y - cy) / cy) * 5
+                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                        }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                    >
+                    <Card className="elevation-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Revenue (This Month)</CardTitle>
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -122,8 +152,24 @@ export default function SettlementsPage() {
                             <p className="text-xs text-muted-foreground">{formatMonth(currentMonth.month)}</p>
                         </CardContent>
                     </Card>
+                    </div>
 
-                    <Card>
+                    <div
+                        className="tilt-3d"
+                        onMouseMove={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            const r = t.getBoundingClientRect()
+                            const x = e.clientX - r.left
+                            const y = e.clientY - r.top
+                            const cx = r.width / 2
+                            const cy = r.height / 2
+                            const ry = ((x - cx) / cx) * 5
+                            const rx = -((y - cy) / cy) * 5
+                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                        }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                    >
+                    <Card className="elevation-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Owner Share (40%)</CardTitle>
                             <DollarSign className="h-4 w-4 text-green-600" />
@@ -133,8 +179,24 @@ export default function SettlementsPage() {
                             <p className="text-xs text-muted-foreground">Pending payment</p>
                         </CardContent>
                     </Card>
+                    </div>
 
-                    <Card>
+                    <div
+                        className="tilt-3d"
+                        onMouseMove={(e) => {
+                            const t = e.currentTarget as HTMLElement
+                            const r = t.getBoundingClientRect()
+                            const x = e.clientX - r.left
+                            const y = e.clientY - r.top
+                            const cx = r.width / 2
+                            const cy = r.height / 2
+                            const ry = ((x - cx) / cx) * 5
+                            const rx = -((y - cy) / cy) * 5
+                            t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                        }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                    >
+                    <Card className="elevation-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Manager Share (60%)</CardTitle>
                             <DollarSign className="h-4 w-4 text-blue-600" />
@@ -144,6 +206,7 @@ export default function SettlementsPage() {
                             <p className="text-xs text-muted-foreground">Pending payment</p>
                         </CardContent>
                     </Card>
+                    </div>
                 </div>
             )}
 
@@ -169,7 +232,7 @@ export default function SettlementsPage() {
                             {settlements.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
-                                        No settlements generated yet. Click "Generate Settlement" to create one.
+                                        No settlements generated yet. Click &quot;Generate Settlement&quot; to create one.
                                     </TableCell>
                                 </TableRow>
                             ) : (

@@ -111,14 +111,14 @@ export default function Sidebar() {
     ]
 
     return (
-        <div className="flex h-full w-64 flex-col bg-slate-900 border-r border-slate-800 text-slate-300">
+        <div className="flex h-full w-64 flex-col glass-3d border-r border-slate-200 text-slate-800 elevation-2">
             <div className="flex flex-col flex-1 p-6 overflow-hidden">
                 <div className="flex items-center gap-3 mb-6 shrink-0">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-900/20">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-900/20 glow-ring animate-float-3d">
                         <span className="font-bold text-white text-lg font-serif">D</span>
                     </div>
                     <div>
-                        <span className="text-lg font-bold text-white tracking-tight block">Deora Plaza</span>
+                        <span className="text-lg font-bold text-slate-900 tracking-tight block">Deora Plaza</span>
                         <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">Management</span>
                     </div>
                 </div>
@@ -140,17 +140,17 @@ export default function Sidebar() {
                                     key={link.href}
                                     href={link.href}
                                     className={cn(
-                                        "group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                                        "group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 interactive-scale-sm",
                                         isActive
                                             ? "bg-amber-500 text-white shadow-md shadow-amber-900/20"
-                                            : "hover:bg-slate-800 hover:text-white"
+                                            : "hover:bg-white/60 hover:text-slate-900"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
                                         <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-slate-400 group-hover:text-white")} />
                                         <span>{link.name}</span>
                                     </div>
-                                    {isActive && <ChevronRight className="h-3 w-3 text-white/70" />}
+                                    {isActive && <ChevronRight className="h-3 w-3 text-white/90" />}
                                 </Link>
                             )
                         })}
@@ -158,19 +158,19 @@ export default function Sidebar() {
                 </ScrollArea>
             </div>
 
-            <div className="mt-auto p-6 border-t border-slate-800">
+            <div className="mt-auto p-6 border-t border-slate-200">
                 <div className="flex items-center gap-3 mb-4 px-2">
-                    <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700">
-                        <Users className="h-4 w-4 text-slate-400" />
+                    <div className="h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm flex items-center justify-center border border-slate-200 glow-ring">
+                        <Users className="h-4 w-4 text-slate-600" />
                     </div>
                     <div className="flex-1 overflow-hidden">
-                        <p className="text-sm font-medium text-white truncate">{session?.user?.name || 'User'}</p>
+                        <p className="text-sm font-medium text-slate-900 truncate">{session?.user?.name || 'User'}</p>
                         <p className="text-xs text-slate-500 truncate capitalize">{session?.user?.role?.replace('_', ' ') || 'Staff'}</p>
                     </div>
                 </div>
                 <Button
                     variant="ghost"
-                    className="w-full justify-start text-slate-400 hover:text-white hover:bg-slate-800"
+                    className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-white/60 interactive-scale-sm"
                     onClick={async () => {
                         try {
                             await signOut({ redirect: false })

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Clock, ChefHat, Utensils } from "lucide-react"
 import { getKitchenOrders, updateOrderStatus } from "@/actions/kitchen"
-import { cn } from "@/lib/utils"
+import { cn, playBeep, showToast } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
 
 type OrderItem = {
@@ -49,6 +49,16 @@ export default function KitchenBoard() {
     const handleStatusUpdate = async (orderId: string, newStatus: string) => {
         await updateOrderStatus(orderId, newStatus)
         fetchOrders()
+        if (newStatus === "preparing") {
+            playBeep(700, 150)
+            showToast("Order marked as Preparing", 'info')
+        } else if (newStatus === "ready") {
+            playBeep(1200, 180)
+            showToast("Order marked as Ready", 'success')
+        } else {
+            playBeep(880, 120)
+            showToast(`Order updated: ${newStatus}`, 'info')
+        }
     }
 
     if (loading) {
@@ -70,7 +80,23 @@ export default function KitchenBoard() {
     return (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 h-full overflow-y-auto pr-2">
             {orders.map((order) => (
-                <Card key={order.id} className={cn(
+                <div
+                    key={order.id}
+                    className="tilt-3d"
+                    onMouseMove={(e) => {
+                        const t = e.currentTarget as HTMLElement
+                        const r = t.getBoundingClientRect()
+                        const x = e.clientX - r.left
+                        const y = e.clientY - r.top
+                        const cx = r.width / 2
+                        const cy = r.height / 2
+                        const ry = ((x - cx) / cx) * 5
+                        const rx = -((y - cy) / cy) * 5
+                        t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                    }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                >
+                <Card className={cn(
                     "flex flex-col border-l-4 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/10",
                     order.status === "ready" ? "border-l-green-500 border-white/10" : "border-l-amber-500 border-white/10"
                 )}>
@@ -150,6 +176,7 @@ export default function KitchenBoard() {
                         )}
                     </CardFooter>
                 </Card>
+                </div>
             ))}
         </div>
     )

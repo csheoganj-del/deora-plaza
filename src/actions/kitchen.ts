@@ -1,7 +1,7 @@
 "use server"
 
 import { queryDocuments, updateDocument, timestampToDate, dateToTimestamp, createDocument, serializeTimestamps } from "@/lib/firebase/firestore"
-import { adminDb } from "@/lib/firebase/admin"
+import { adminDb, adminMessaging } from "@/lib/firebase/admin"
 
 export async function getKitchenOrders(businessUnit?: string) {
     try {
@@ -123,6 +123,21 @@ async function createOrderNotification(orderId: string) {
             createdAt: dateToTimestamp(new Date()),
             expiresAt: dateToTimestamp(new Date(Date.now() + 2 * 60 * 60 * 1000))
         })
+
+        try {
+            await adminMessaging.send({
+                topic: 'waiter',
+                notification: {
+                    title: 'Order Ready',
+                    body: `Order ${order?.orderNumber} ready for ${locationName}`
+                },
+                data: {
+                    orderId: orderId,
+                    businessUnit: String(order?.businessUnit || ''),
+                    orderNumber: String(order?.orderNumber || '')
+                }
+            })
+        } catch (_err) {}
     } catch (error) {
         console.error('Error creating notification:', error)
     }

@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo } from "react"
 import { Loader2, AlertCircle } from "lucide-react"
 import { getMenuItems } from "@/actions/menu"
 import { createOrder } from "@/actions/orders"
+import { playBeep, showToast } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 type MenuItem = {
@@ -145,16 +146,21 @@ export function DineInOrderDialog({ isOpen, onClose, businessUnit, tableId, tabl
             })
 
             if (orderResult.success) {
-                alert(`Order for Table ${tableNumber} placed successfully!`)
+                playBeep(1000, 160)
+                showToast(`Order for Table ${tableNumber} placed successfully!`, 'success')
                 clearCart()
                 onClose()
                 router.refresh()
             } else {
                 setError(String(orderResult.error) || "Failed to create order. Please try again.")
+                playBeep(500, 160)
+                showToast("Failed to create order. Please try again.", 'error')
             }
         } catch (error) {
             console.error("An error occurred during order submission:", error)
             setError("An unexpected error occurred during submission.")
+            playBeep(500, 160)
+            showToast("An unexpected error occurred during submission.", 'error')
         } finally {
             setIsSubmitting(false)
         }
@@ -166,7 +172,21 @@ export function DineInOrderDialog({ isOpen, onClose, businessUnit, tableId, tabl
             role="dialog"
             aria-modal="true"
         >
-            <div className="bg-white w-full max-w-6xl rounded-xl shadow-xl ring-1 ring-black/5">
+            <div
+                className="bg-white w-full max-w-6xl rounded-xl shadow-xl ring-1 ring-black/5 elevation-1 tilt-3d"
+                onMouseMove={(e) => {
+                    const t = e.currentTarget as HTMLElement
+                    const r = t.getBoundingClientRect()
+                    const x = e.clientX - r.left
+                    const y = e.clientY - r.top
+                    const cx = r.width / 2
+                    const cy = r.height / 2
+                    const ry = ((x - cx) / cx) * 5
+                    const rx = -((y - cy) / cy) * 5
+                    t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-2 border-b">
                     <div className="flex items-center gap-3">

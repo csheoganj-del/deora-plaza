@@ -1,4 +1,6 @@
 import { getServerSession } from "next-auth"
+export const dynamic = "force-dynamic"
+// Futuristic 3D landing without external libs
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -12,49 +14,43 @@ export default async function Home() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-amber-500/30">
-            {/* Navigation is handled by the Header component */}
-
-            {/* Hero Section */}
-            <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-slate-900">
-                {/* Background Image/Gradient */}
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-900/90 z-10"></div>
-                    {/* Abstract Luxury Background */}
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 grayscale"></div>
+        <div className="min-h-screen futuristic-bg text-[hsl(var(--charcoal-text))]">
+            <section className="relative h-[92vh] flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0">
+                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-[hsl(var(--soft-gold))/12] blur-3xl" />
                 </div>
-
-                <div className="relative z-20 container mx-auto px-4 text-center space-y-8 max-w-4xl">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-sm text-amber-200 animate-fade-in">
-                        <Star className="h-3.5 w-3.5 fill-amber-200" />
+                <div className="relative z-20 container mx-auto px-4 text-center space-y-8 max-w-5xl">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card-soft text-sm text-[hsl(var(--rajasthani-teal))]">
+                        <Star className="h-3.5 w-3.5 text-[hsl(var(--rajasthani-teal))]" />
                         <span className="tracking-wider uppercase text-xs font-medium">Premium Hospitality Management</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
-                        Elevate Your <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">Guest Experience</span>
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-light">
-                        Deora Plaza brings together luxury accommodation, fine dining, and exceptional events under one roof. Experience the art of hospitality redefined.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-                        <Link href="/login">
-                            <Button size="lg" className="h-14 px-8 bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold rounded-full transition-all hover:scale-105 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
-                                Access Dashboard
-                                <ArrowRight className="ml-2 h-5 w-5" />
+                    <div className="mx-auto max-w-4xl tilt-3d glass-3d rounded-3xl px-10 py-12 elevation-2">
+                        <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight depth-layer">
+                            Elevate Your <br />
+                            <span className="text-gradient-royal">Guest Experience</span>
+                        </h1>
+                        <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed mt-6 depth-layer-sm">
+                            Deora Plaza unifies luxury stays, fine dining, and breathtaking events into a seamless experience.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-10 depth-layer-sm">
+                            <Link href="/login">
+                                <Button size="lg" className="h-14 px-8">
+                                    Enter Dashboard
+                                    <ArrowRight className="ml-2 h-5 w-5" />
+                                </Button>
+                            </Link>
+                            <Button variant="secondary" size="lg" className="h-14 px-8">
+                                Explore Services
                             </Button>
-                        </Link>
-                        <Button variant="outline" size="lg" className="h-14 px-8 border-white/20 text-white hover:bg-white/10 rounded-full backdrop-blur-sm">
-                            Explore Services
-                        </Button>
+                        </div>
                     </div>
+
                 </div>
             </section>
 
             {/* Stats Section */}
-            <section className="py-10 bg-white border-b border-slate-100 relative z-20 -mt-20 mx-4 md:mx-20 rounded-2xl shadow-xl">
+            <section className="py-12 bg-white border-b border-slate-100 relative z-20 -mt-24 mx-4 md:mx-20 rounded-2xl shadow-xl tilt-3d">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-slate-100">
                     {[
                         { label: "Hospitality", value: "Premium", icon: Star },
@@ -62,7 +58,7 @@ export default async function Home() {
                         { label: "Security", value: "Top-Tier", icon: Shield },
                         { label: "Ambiance", value: "Luxury", icon: Hotel },
                     ].map((stat, i) => (
-                        <div key={i} className="flex flex-col items-center text-center px-4">
+                        <div key={i} className="flex flex-col items-center text-center px-4 interactive-scale-sm">
                             <stat.icon className="h-6 w-6 text-amber-500 mb-2" />
                             <span className="text-3xl font-bold text-slate-900">{stat.value}</span>
                             <span className="text-sm text-slate-500 font-medium uppercase tracking-wide mt-1">{stat.label}</span>
@@ -72,7 +68,7 @@ export default async function Home() {
             </section>
 
             {/* Services Grid */}
-            <section className="py-24 bg-slate-50">
+            <section className="py-24 bg-[hsl(var(--sandstone-cream))]">
                 <div className="container mx-auto px-4">
                     <div className="text-center max-w-3xl mx-auto mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">World-Class Facilities</h2>
@@ -109,7 +105,7 @@ export default async function Home() {
                             <div key={i} className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer h-[400px]">
                                 {/* Background Image */}
                                 <div className="absolute inset-0">
-                                    <div className="absolute inset-0 bg-slate-900/40 group-hover:bg-slate-900/30 transition-colors z-10"></div>
+                                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors z-10"></div>
                                     <img
                                         src={service.image}
                                         alt={service.title}
@@ -143,7 +139,7 @@ export default async function Home() {
                         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
 
                         <div className="relative z-10 px-8 py-20 md:p-20 text-center">
-                            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to Experience Deora Plaza?</h2>
+                            <h2 className="text-3xl md:text-5xl font-bold text-gradient-royal mb-6">Ready to Experience Deora Plaza?</h2>
                             <p className="text-slate-300 text-lg max-w-2xl mx-auto mb-10">
                                 Join thousands of satisfied guests who have made us their preferred destination for luxury and comfort.
                             </p>

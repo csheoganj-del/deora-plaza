@@ -181,7 +181,7 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
     ]
 
     return (
-        <div className="min-h-screen bg-slate-50 p-8 space-y-8">
+        <div className="min-h-screen p-8 space-comfy">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -201,7 +201,7 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
             {/* Stats Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <Link href="/dashboard/billing">
-                    <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer">
+                    <Card className="bg-white border-slate-200 elevation-1 hover:elevation-2 transition-all cursor-pointer interactive-scale-sm">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-slate-500">Total Revenue</CardTitle>
                             <IndianRupee className="h-4 w-4 text-amber-500" />
@@ -216,7 +216,7 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
                     </Card>
                 </Link>
                 <Link href="/dashboard/hotel">
-                    <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer">
+                    <Card className="bg-white border-slate-200 elevation-1 hover:elevation-2 transition-all cursor-pointer interactive-scale-sm">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-slate-500">Total Bookings</CardTitle>
                             <Calendar className="h-4 w-4 text-blue-500" />
@@ -230,8 +230,8 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
                     </Card>
                 </Link>
                 <Link href="/dashboard/customers">
-                    <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <Card className="bg-white border-slate-200 elevation-1 hover:elevation-2 transition-all cursor-pointer interactive-scale-sm">
+                        <CardHeader className="flex flex-row items_center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-slate-500">Total Customers</CardTitle>
                             <Users className="h-4 w-4 text-purple-500" />
                         </CardHeader>
@@ -242,7 +242,7 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
                     </Card>
                 </Link>
                 <Link href="/dashboard/orders/new">
-                    <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer">
+                    <Card className="bg-white border-slate-200 elevation-1 hover:elevation-2 transition-all cursor-pointer interactive-scale-sm">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-slate-500">Active Orders</CardTitle>
                             <ShoppingBag className="h-4 w-4 text-rose-500" />
@@ -262,19 +262,36 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
                     <h2 className="text-lg font-semibold text-slate-900">Quick Access</h2>
                     <div className="grid grid-cols-2 gap-4">
                         {quickLinks.map((link) => (
-                            <Link key={link.title} href={link.href}>
-                                <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer h-full group">
-                                    <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-4">
-                                        <div className={`p-4 rounded-full ${link.bg} group-hover:scale-110 transition-transform`}>
-                                            <link.icon className={`h-8 w-8 ${link.color}`} />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-slate-900">{link.title}</h3>
-                                            <p className="text-xs text-slate-500 mt-1">Manage & View</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
+                            <div
+                                key={link.title}
+                                className="tilt-3d"
+                                onMouseMove={(e) => {
+                                    const t = e.currentTarget as HTMLElement
+                                    const r = t.getBoundingClientRect()
+                                    const x = e.clientX - r.left
+                                    const y = e.clientY - r.top
+                                    const cx = r.width / 2
+                                    const cy = r.height / 2
+                                    const ry = ((x - cx) / cx) * 5
+                                    const rx = -((y - cy) / cy) * 5
+                                    t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                }}
+                                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                            >
+                                <Link href={link.href}>
+                                    <Card className="bg-white border-slate-200 elevation-1 hover:elevation-2 hover:border-slate-300 transition-all cursor-pointer h-full group interactive-scale-sm">
+                                        <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-4">
+                                            <div className={`p-4 rounded-full ${link.bg} group-hover:scale-110 transition-transform`}>
+                                                <link.icon className={`h-8 w-8 ${link.color}`} />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-900">{link.title}</h3>
+                                                <p className="text-xs text-slate-500 mt-1">Manage & View</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </div>
                         ))}
                     </div>
 
@@ -321,7 +338,7 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
                 {/* Recent Bookings */}
                 <div className="md:col-span-3 space-y-6">
                     <h2 className="text-lg font-semibold text-slate-900">Recent Activity</h2>
-                    <Card className="bg-white border-slate-200 shadow-sm h-full">
+                    <Card className="bg-white border-slate-200 elevation-1 h-full">
                         <CardContent className="p-0">
                             <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
                                 {allBookings.length === 0 ? (
@@ -331,7 +348,22 @@ export default function DashboardContent({ initialStats, initialBookings, userNa
                                     </div>
                                 ) : (
                                     allBookings.slice(0, 10).map((booking: any) => (
-                                        <div key={booking.id} className="p-4 hover:bg-slate-50 transition-colors">
+                                        <div
+                                            key={booking.id}
+                                            className="p-4 hover:bg-slate-50 transition-colors tilt-3d"
+                                            onMouseMove={(e) => {
+                                                const t = e.currentTarget as HTMLElement
+                                                const r = t.getBoundingClientRect()
+                                                const x = e.clientX - r.left
+                                                const y = e.clientY - r.top
+                                                const cx = r.width / 2
+                                                const cy = r.height / 2
+                                                const ry = ((x - cx) / cx) * 3
+                                                const rx = -((y - cy) / cy) * 3
+                                                t.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`
+                                            }}
+                                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "" }}
+                                        >
                                             <div className="flex items-center justify-between mb-1">
                                                 <Badge variant="outline" className={`capitalize ${booking.type === 'hotel' ? 'text-blue-600 border-blue-200 bg-blue-50' :
                                                     booking.type === 'garden' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' :
