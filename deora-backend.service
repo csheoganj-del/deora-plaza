@@ -1,0 +1,36 @@
+[Unit]
+Description=DEORA Plaza Redundant Backend System
+Documentation=https://github.com/your-org/deora-plaza
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=deora
+Group=deora
+WorkingDirectory=/opt/deora-plaza
+ExecStart=/usr/bin/npm run backend:start
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=deora-backend
+
+# Environment
+Environment=NODE_ENV=production
+Environment=PORT=3000
+
+# Security
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/opt/deora-plaza/logs
+ReadWritePaths=/opt/deora-plaza/config
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8041 @@
+{
+  "menu": [
+    {
+      "id": "23",
+      "name": "Veg Sandwich & French Fry",
+      "category": "SANDWICH",
+      "price": 79
+    },
+    {
+      "id": "41",
+      "name": "Schezwan Noodles",
+      "category": "CHINESE",
+      "price": 179
+    },
+    {
+      "id": "36",
+      "name": "Chilli Potato",
+      "category": "CHINESE",
+      "price": 199
+    },
+    {
+      "id": "27",
+      "name": "Paneer Sandwich",
+      "category": "SANDWICH",
+      "price": 169
+    },
+    {
+      "id": "29",
+      "name": "Manchau Soup",
+      "category": "SOUP",
+      "price": 109
+    },
+    {
+      "id": "30",
+      "name": "Tomato Soup",
+      "category": "SOUP",
+      "price": 129
+    },
+    {
+      "id": "43",
+      "name": "Schezwan Rice",
+      "category": "RICE",
+      "price": 169
+    },
+    {
+      "id": "33",
+      "name": "Cream Mushroom Soup",
+      "category": "SOUP",
+      "price": 149
+    },
+    {
+      "id": "2",
+      "name": "Cold Coffee With Ice Cream",
+      "category": "COLD COFFEE",
+      "price": 179
+    },
+    {
+      "id": "34",
+      "name": "Paneer Chilli",
+      "category": "CHINESE",
+      "price": 239
+    },
+    {
+      "id": "42",
+      "name": "Fried Rice",
+      "category": "RICE",
+      "price": 179
+    },
+    {
+      "id": "1762002219932",
+      "name": "Margret Pizza- Small",
+      "category": "PIZZA",
+      "price": 179
+    },
+    {
+      "id": "37",
+      "name": "Chilli Mushroom",
+      "category": "CHINESE",
+      "price": 239
+    },
+    {
+      "id": "38",
+      "name": "Manchurian (Gravy/Dry)",
+      "category": "CHINESE",
+      "price": 199
+    },
+    {
+      "id": "51",
+      "name": "Aacharya Soya Chap",
+      "category": "TANDOOR",
+      "price": 209
+    },
+    {
+      "id": "40",
+      "name": "Hakka Noodles",
+      "category": "CHINESE",
+      "price": 139
+    },
+    {
+      "id": "1762002391283",
+      "name": "Farm House Pizza- Small",
+      "category": "PIZZA",
+      "price": 209
+    },
+    {
+      "id": "48",
+      "name": "Hara Bhara Kabab",
+      "category": "TANDOOR",
+      "price": 199
+    },
+    {
+      "id": "35",
+      "name": "Honey Chilli",
+      "category": "CHINESE",
+      "price": 289
+    },
+    {
+      "id": "1762002187750",
+      "name": "Margret Pizza- Big",
+      "category": "PIZZA",
+      "price": 270
+    },
+    {
+      "id": "55",
+      "name": "Paneer Tikka Pizza (Big/Small)",
+      "category": "PIZZA",
+      "price": 249
+    },
+    {
+      "id": "3",
+      "name": "Cookies Tea / Masala Tea",
+      "category": "COLD COFFEE",
+      "price": 49
+    },
+    {
+      "id": "46",
+      "name": "Achari Paneer Tikka",
+      "category": "TANDOOR",
+      "price": 239
+    },
+    {
+      "id": "44",
+      "name": "Bloom Special Rice",
+      "category": "RICE",
+      "price": 189
+    },
+    {
+      "id": "47",
+      "name": "Malai Paneer Tikka",
+      "category": "TANDOOR",
+      "price": 299
+    },
+    {
+      "id": "6",
+      "name": "Vanilla Shake",
+      "category": "SHAKE",
+      "price": 149
+    },
+    {
+      "id": "9",
+      "name": "Oreo Shake",
+      "category": "SHAKE",
+      "price": 169
+    },
+    {
+      "id": "1761996158971",
+      "name": "watter bottle 750ml",
+      "category": "DESERT",
+      "price": 30
+    },
+    {
+      "id": "10",
+      "name": "Butter Scotch Shake",
+      "category": "SHAKE",
+      "price": 169
+    },
+    {
+      "id": "11",
+      "name": "Sunny Setup",
+      "category": "MOCKTAIL",
+      "price": 169
+    },
+    {
+      "id": "7",
+      "name": "Chocolate Shake",
+      "category": "SHAKE",
+      "price": 159
+    },
+    {
+      "id": "49",
+      "name": "Corn Kabab",
+      "category": "TANDOOR",
+      "price": 219
+    },
+    {
+      "id": "50",
+      "name": "Tandoori Soya Chap",
+      "category": "TANDOOR",
+      "price": 199
+    },
+    {
+      "id": "52",
+      "name": "Malai Soya Chap",
+      "category": "TANDOOR",
+      "price": 259
+    },
+    {
+      "id": "12",
+      "name": "Blue Lugan",
+      "category": "MOCKTAIL",
+      "price": 149
+    },
+    {
+      "id": "13",
+      "name": "Panch Mel",
+      "category": "MOCKTAIL",
+      "price": 179
+    },
+    {
+      "id": "1762002093117",
+      "name": "Veg Pizza- Small",
+      "category": "PIZZA",
+      "price": 179
+    },
+    {
+      "id": "1762002288765",
+      "name": "Paneer Tikka Pizza- Big",
+      "category": "PIZZA",
+      "price": 249
+    },
+    {
+      "id": "14",
+      "name": "Fresh Lemon Soda",
+      "category": "MOCKTAIL",
+      "price": 99
+    },
+    {
+      "id": "15",
+      "name": "Virgin Mojito",
+      "category": "MOCKTAIL",
+      "price": 139
+    },
+    {
+      "id": "17",
+      "name": "Butter Scotch Ice Cream",
+      "category": "DESERT",
+      "price": 59
+    },
+    {
+      "id": "18",
+      "name": "Chocolate Ice Cream",
+      "category": "DESERT",
+      "price": 69
+    },
+    {
+      "id": "1762002361366",
+      "name": "Farm House Pizza- Big",
+      "category": "PIZZA",
+      "price": 279
+    },
+    {
+      "id": "19",
+      "name": "Rosperel Ice Cream",
+      "category": "DESERT",
+      "price": 89
+    },
+    {
+      "id": "53",
+      "name": "Veg Pizza (Big/Small)",
+      "category": "PIZZA",
+      "price": 229
+    },
+    {
+      "id": "26",
+      "name": "Bread Butter Cheese Sandwich",
+      "category": "SANDWICH",
+      "price": 59
+    },
+    {
+      "id": "22",
+      "name": "Veg Grill Sandwich",
+      "category": "SANDWICH",
+      "price": 129
+    },
+    {
+      "id": "31",
+      "name": "Sweet Corn Soup",
+      "category": "SOUP",
+      "price": 99
+    },
+    {
+      "id": "24",
+      "name": "Bombay Sandwich",
+      "category": "SANDWICH",
+      "price": 99
+    },
+    {
+      "id": "39",
+      "name": "Noodles",
+      "category": "CHINESE",
+      "price": 169
+    },
+    {
+      "id": "56",
+      "name": "Farm House Pizza (Big/Small)",
+      "category": "PIZZA",
+      "price": 279
+    },
+    {
+      "id": "1762002132417",
+      "name": "Veg Pizza- Big",
+      "category": "PIZZA",
+      "price": 229
+    },
+    {
+      "id": "8",
+      "name": "Kit Kat Shake",
+      "category": "SHAKE",
+      "price": 179
+    },
+    {
+      "id": "57",
+      "name": "Pasto Pasta",
+      "category": "PASTA",
+      "price": 249
+    },
+    {
+      "id": "1762002324333",
+      "name": "Paneer Tikka Pizza- Small",
+      "category": "PIZZA",
+      "price": 199
+    },
+    {
+      "id": "16",
+      "name": "Vanilla Ice Cream",
+      "category": "DESERT",
+      "price": 49
+    },
+    {
+      "id": "54",
+      "name": "Margaret Pizza (Big/Small)",
+      "category": "PIZZA",
+      "price": 270
+    },
+    {
+      "id": "45",
+      "name": "Paneer Tikka",
+      "category": "TANDOOR",
+      "price": 269
+    },
+    {
+      "id": "1",
+      "name": "Cold Coffee",
+      "category": "COLD COFFEE",
+      "price": 149
+    },
+    {
+      "id": "20",
+      "name": "Veg Burger",
+      "category": "BURGER",
+      "price": 59
+    },
+    {
+      "id": "4",
+      "name": "Black Tea",
+      "category": "COLD COFFEE",
+      "price": 39
+    },
+    {
+      "id": "28",
+      "name": "Hot & Sour Soup",
+      "category": "SOUP",
+      "price": 119
+    },
+    {
+      "id": "32",
+      "name": "Lemon Coriander Soup",
+      "category": "SOUP",
+      "price": 130
+    },
+    {
+      "id": "5",
+      "name": "Hot Coffee",
+      "category": "COLD COFFEE",
+      "price": 59
+    },
+    {
+      "id": "25",
+      "name": "Chipotle Sandwich",
+      "category": "SANDWICH",
+      "price": 89
+    },
+    {
+      "id": "58",
+      "name": "White Sauce Pasta",
+      "category": "PASTA",
+      "price": 199
+    },
+    {
+      "id": "59",
+      "name": "Red Sauce Pasta",
+      "category": "PASTA",
+      "price": 189
+    },
+    {
+      "id": "21",
+      "name": "Veg Cheese Burger",
+      "category": "BURGER",
+      "price": 89
+    },
+    {
+      "id": "61",
+      "name": "Hang Over Smoothie",
+      "category": "SMOOTHIE",
+      "price": 189
+    },
+    {
+      "id": "60",
+      "name": "Sun Ban Smoothie",
+      "category": "SMOOTHIE",
+      "price": 179
+    },
+    {
+      "id": "1762002492672",
+      "name": "Cheese Masala Khichiya",
+      "category": "TANDOOR",
+      "price": 99
+    },
+    {
+      "id": "1762002742956",
+      "name": "French Fries Peri Peri",
+      "category": "BURGER",
+      "price": 189
+    },
+    {
+      "id": "1762002777836",
+      "name": "Cheese French Fries",
+      "category": "BURGER",
+      "price": 209
+    },
+    {
+      "id": "1764163871773",
+      "name": "Peanut Masala",
+      "category": "DESERT",
+      "price": 199
+    },
+    {
+      "id": "1765018806233",
+      "name": "water bottle 250 ml",
+      "category": "DESERT",
+      "price": 10
+    },
+    {
+      "id": "1765384572085",
+      "name": "Crispy Corn",
+      "category": "CHINESE",
+      "price": 250
+    }
+  ],
+  "bills": [
+    {
+      "id": "384962da-5f47-43f8-b287-7b650774eea5",
+      "date": "2025-12-10T16:46:14.361Z",
+      "items": [
+        {
+          "id": "1765384572085",
+          "name": "Crispy Corn",
+          "price": 250,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 978,
+      "discount": 0,
+      "gst": 0,
+      "total": 978,
+      "rounded": 978,
+      "paymentMethod": "cash",
+      "billNumber": 82
+    },
+    {
+      "id": "7795346d-8241-4c4b-825c-10e957388809",
+      "date": "2025-12-10T13:49:01.462Z",
+      "items": [
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "41",
+          "name": "Schezwan Noodles",
+          "price": 179,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 625,
+      "discount": 0,
+      "gst": 0,
+      "total": 625,
+      "rounded": 625,
+      "paymentMethod": "cash",
+      "billNumber": 81
+    },
+    {
+      "id": "ef17e577-3abe-4ec5-bc29-9d143a26c795",
+      "date": "2025-12-10T13:46:12.462Z",
+      "items": [
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "41",
+          "name": "Schezwan Noodles",
+          "price": 179,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 794,
+      "discount": 0,
+      "gst": 0,
+      "total": 794,
+      "rounded": 794,
+      "paymentMethod": "cash",
+      "billNumber": 80
+    },
+    {
+      "id": "b43ccd77-46ef-4bac-a22a-f33a182d1ab1",
+      "date": "2025-12-10T13:31:52.197Z",
+      "items": [
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 537,
+      "discount": 0,
+      "gst": 0,
+      "total": 537,
+      "rounded": 537,
+      "paymentMethod": "cash",
+      "billNumber": 80
+    },
+    {
+      "id": "d3466d46-7448-4522-8019-a310d54fa0a0",
+      "date": "2025-12-10T10:10:29.496Z",
+      "items": [
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 6
+        }
+      ],
+      "subtotal": 294,
+      "discount": 0,
+      "gst": 0,
+      "total": 294,
+      "rounded": 294,
+      "paymentMethod": "cash",
+      "billNumber": 79
+    },
+    {
+      "id": "7dc7f91b-428c-4c5d-9db3-c721e139f6a4",
+      "date": "2025-12-10T08:24:09.431Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 4
+        }
+      ],
+      "subtotal": 456,
+      "discount": 0,
+      "gst": 0,
+      "total": 456,
+      "rounded": 456,
+      "paymentMethod": "cash",
+      "billNumber": 78
+    },
+    {
+      "id": "1f2c6778-12e7-4d91-877c-b2c78186c85f",
+      "date": "2025-12-10T08:23:58.118Z",
+      "items": [
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 706,
+      "discount": 0,
+      "gst": 0,
+      "total": 706,
+      "rounded": 706,
+      "paymentMethod": "cash",
+      "billNumber": 78
+    },
+    {
+      "id": "23d64121-e262-4fb1-8eb7-0a03abcee42f",
+      "date": "2025-12-09T15:07:09.156Z",
+      "items": [
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 199,
+      "discount": 0,
+      "gst": 0,
+      "total": 199,
+      "rounded": 199,
+      "paymentMethod": "cash",
+      "billNumber": 77
+    },
+    {
+      "id": "b11ad84b-93d4-4c34-b6ae-a238c03b36ec",
+      "date": "2025-12-09T12:35:34.151Z",
+      "items": [
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 408,
+      "discount": 0,
+      "gst": 0,
+      "total": 408,
+      "rounded": 408,
+      "paymentMethod": "upi",
+      "billNumber": 76
+    },
+    {
+      "id": "492eb531-dde5-4b24-9ab7-575ae73ae496",
+      "date": "2025-12-09T12:14:35.591Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 5
+        },
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 573,
+      "discount": 0,
+      "gst": 0,
+      "total": 573,
+      "rounded": 573,
+      "paymentMethod": "upi",
+      "billNumber": 76
+    },
+    {
+      "id": "2443560c-d956-4d89-8be5-19634afdb454",
+      "date": "2025-12-09T10:41:03.027Z",
+      "items": [
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 98,
+      "discount": 0,
+      "gst": 0,
+      "total": 98,
+      "rounded": 98,
+      "paymentMethod": "upi",
+      "billNumber": 75
+    },
+    {
+      "id": "901e697b-183d-4930-a39b-103dc2a8b155",
+      "date": "2025-12-07T09:53:50.690Z",
+      "items": [
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 2
+        },
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 547,
+      "discount": 0,
+      "gst": 0,
+      "total": 547,
+      "rounded": 547,
+      "paymentMethod": "upi",
+      "billNumber": 74
+    },
+    {
+      "id": "a34a0dd6-3674-40ab-95f6-88e68daa1494",
+      "date": "2025-12-06T15:50:33.453Z",
+      "items": [
+        {
+          "id": "50",
+          "name": "Tandoori Soya Chap",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 328,
+      "discount": 0,
+      "gst": 0,
+      "total": 328,
+      "rounded": 328,
+      "paymentMethod": "cash",
+      "billNumber": 73
+    },
+    {
+      "id": "8374e328-a73e-4b7d-b398-b65c94e242fd",
+      "date": "2025-12-06T15:31:17.662Z",
+      "items": [
+        {
+          "id": "57",
+          "name": "Pasto Pasta",
+          "price": 249,
+          "category": "PASTA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 249,
+      "discount": 0,
+      "gst": 0,
+      "total": 249,
+      "rounded": 249,
+      "paymentMethod": "cash",
+      "billNumber": 72
+    },
+    {
+      "id": "3026fe34-424b-41cd-b0e6-c4b05b3e3d58",
+      "date": "2025-12-06T13:14:17.609Z",
+      "items": [
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 587,
+      "discount": 0,
+      "gst": 0,
+      "total": 587,
+      "rounded": 587,
+      "paymentMethod": "upi",
+      "billNumber": 71
+    },
+    {
+      "id": "b33a05e9-01a6-4af9-8b0c-d0835ddd1822",
+      "date": "2025-12-06T11:16:10.213Z",
+      "items": [
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 398,
+      "discount": 0,
+      "gst": 0,
+      "total": 398,
+      "rounded": 398,
+      "paymentMethod": "cash",
+      "billNumber": 70
+    },
+    {
+      "id": "78770a26-9637-495b-887f-8b697f9199d8",
+      "date": "2025-12-06T11:10:41.150Z",
+      "items": [
+        {
+          "id": "1765018806233",
+          "name": "water bottle 250 ml",
+          "price": 10,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 138,
+      "discount": 0,
+      "gst": 0,
+      "total": 138,
+      "rounded": 138,
+      "paymentMethod": "cash",
+      "billNumber": 70
+    },
+    {
+      "id": "c6841804-56b5-4253-a0da-74f9c29d5afc",
+      "date": "2025-12-06T10:27:28.732Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 248,
+      "discount": 0,
+      "gst": 0,
+      "total": 248,
+      "rounded": 248,
+      "paymentMethod": "cash",
+      "billNumber": 69
+    },
+    {
+      "id": "5439b5cc-11ec-4428-b0ec-ff004c086474",
+      "date": "2025-12-06T09:53:33.506Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 3
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 962,
+      "discount": 0,
+      "gst": 0,
+      "total": 962,
+      "rounded": 962,
+      "paymentMethod": "upi",
+      "billNumber": 68
+    },
+    {
+      "id": "b34d8fe6-af3f-43f6-93f0-cdeb27834b0b",
+      "date": "2025-12-06T09:29:04.186Z",
+      "items": [
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002187750",
+          "name": "Margret Pizza- Big",
+          "price": 270,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 469,
+      "discount": 0,
+      "gst": 0,
+      "total": 469,
+      "rounded": 469,
+      "paymentMethod": "upi",
+      "billNumber": 68
+    },
+    {
+      "id": "2c5c267e-0d6d-4f4c-b7c1-33419384b01c",
+      "date": "2025-12-06T08:00:01.064Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "26",
+          "name": "Bread Butter Cheese Sandwich",
+          "price": 59,
+          "category": "SANDWICH",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 247,
+      "discount": 0,
+      "gst": 0,
+      "total": 247,
+      "rounded": 247,
+      "paymentMethod": "cash",
+      "billNumber": 67
+    },
+    {
+      "id": "8c69a718-c8df-4421-91bb-10e66e4628db",
+      "date": "2025-12-05T15:12:05.983Z",
+      "items": [
+        {
+          "id": "52",
+          "name": "Malai Soya Chap",
+          "price": 259,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "10",
+          "name": "Butter Scotch Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 726,
+      "discount": 0,
+      "gst": 0,
+      "total": 726,
+      "rounded": 726,
+      "paymentMethod": "cash",
+      "billNumber": 66
+    },
+    {
+      "id": "df22c2e4-aa64-429b-b12d-1ff378053f67",
+      "date": "2025-12-05T13:29:01.181Z",
+      "items": [
+        {
+          "id": "35",
+          "name": "Honey Chilli",
+          "price": 289,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "9",
+          "name": "Oreo Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1243,
+      "discount": 0,
+      "gst": 0,
+      "total": 1243,
+      "rounded": 1243,
+      "paymentMethod": "cash",
+      "billNumber": 65
+    },
+    {
+      "id": "b24ab4e1-3925-4238-a35b-b174f40c801d",
+      "date": "2025-12-05T13:10:07.321Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 4
+        }
+      ],
+      "subtotal": 505,
+      "discount": 0,
+      "gst": 0,
+      "total": 505,
+      "rounded": 505,
+      "paymentMethod": "cash",
+      "billNumber": 66
+    },
+    {
+      "id": "f890ec60-fbae-4136-8f13-981b419c61b6",
+      "date": "2025-12-05T12:13:32.079Z",
+      "items": [
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 786,
+      "discount": 0,
+      "gst": 0,
+      "total": 786,
+      "rounded": 786,
+      "paymentMethod": "cash",
+      "billNumber": 65
+    },
+    {
+      "id": "7f4e3424-1a9b-46c6-83dc-1e9d5c1eecb7",
+      "date": "2025-12-05T10:34:59.612Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 7
+        }
+      ],
+      "subtotal": 612,
+      "discount": 0,
+      "gst": 0,
+      "total": 612,
+      "rounded": 612,
+      "paymentMethod": "cash",
+      "billNumber": 64
+    },
+    {
+      "id": "2c9cd24a-3ebc-41f2-99a3-a96d2159acc2",
+      "date": "2025-12-05T08:18:23.951Z",
+      "items": [
+        {
+          "id": "15",
+          "name": "Virgin Mojito",
+          "price": 139,
+          "category": "MOCKTAIL",
+          "quantity": 3
+        },
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 714,
+      "discount": 0,
+      "gst": 0,
+      "total": 714,
+      "rounded": 714,
+      "paymentMethod": "cash",
+      "billNumber": 63
+    },
+    {
+      "id": "a4478345-269b-4ddd-a034-ebe8fc99c37d",
+      "date": "2025-12-05T08:12:14.998Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 4
+        },
+        {
+          "id": "35",
+          "name": "Honey Chilli",
+          "price": 289,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1562,
+      "discount": 0,
+      "gst": 0,
+      "total": 1562,
+      "rounded": 1562,
+      "paymentMethod": "cash",
+      "billNumber": 63
+    },
+    {
+      "id": "3eda29a4-bf75-4b0b-85c7-ea370d22a679",
+      "date": "2025-12-04T13:10:20.907Z",
+      "items": [
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 328,
+      "discount": 0,
+      "gst": 0,
+      "total": 328,
+      "rounded": 328,
+      "paymentMethod": "cash",
+      "billNumber": 62
+    },
+    {
+      "id": "191d391a-ab4a-4cd4-bedb-4ccc36578434",
+      "date": "2025-12-04T12:47:50.947Z",
+      "items": [
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002288765",
+          "name": "Paneer Tikka Pizza- Big",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 3
+        },
+        {
+          "id": "14",
+          "name": "Fresh Lemon Soda",
+          "price": 99,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1352,
+      "discount": 0,
+      "gst": 0,
+      "total": 1352,
+      "rounded": 1352,
+      "paymentMethod": "cash",
+      "billNumber": 62
+    },
+    {
+      "id": "de26fc4d-dda1-45a3-8200-25898ad9c236",
+      "date": "2025-12-04T10:01:41.783Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002361366",
+          "name": "Farm House Pizza- Big",
+          "price": 279,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "25",
+          "name": "Chipotle Sandwich",
+          "price": 89,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 457,
+      "discount": 0,
+      "gst": 0,
+      "total": 457,
+      "rounded": 457,
+      "paymentMethod": "cash",
+      "billNumber": 61
+    },
+    {
+      "id": "5e73c1b3-9536-4046-8fe8-9e5521ca296f",
+      "date": "2025-12-04T07:24:20.627Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 4
+        }
+      ],
+      "subtotal": 374,
+      "discount": 0,
+      "gst": 0,
+      "total": 374,
+      "rounded": 374,
+      "paymentMethod": "cash",
+      "billNumber": 60
+    },
+    {
+      "id": "a344a29e-786b-4555-a8b6-d544461023b2",
+      "date": "2025-12-04T06:58:13.691Z",
+      "items": [
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 177,
+      "discount": 0,
+      "gst": 0,
+      "total": 177,
+      "rounded": 177,
+      "paymentMethod": "cash",
+      "billNumber": 59
+    },
+    {
+      "id": "6fbccf49-5222-44f5-a3bf-b1dd44da040d",
+      "date": "2025-12-03T15:49:11.410Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "50",
+          "name": "Tandoori Soya Chap",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 258,
+      "discount": 0,
+      "gst": 0,
+      "total": 258,
+      "rounded": 258,
+      "paymentMethod": "cash",
+      "billNumber": 58
+    },
+    {
+      "id": "8527d471-0d8a-44ca-b8c7-c65eff1384f7",
+      "date": "2025-12-03T11:14:49.628Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 5
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 2
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "6",
+          "name": "Vanilla Shake",
+          "price": 149,
+          "category": "SHAKE",
+          "quantity": 2
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 2356,
+      "discount": 0,
+      "gst": 0,
+      "total": 2356,
+      "rounded": 2356,
+      "paymentMethod": "cash",
+      "billNumber": 57
+    },
+    {
+      "id": "378b8a2c-974e-4f36-a1ca-2e2a23d9bd3d",
+      "date": "2025-12-03T08:52:58.171Z",
+      "items": [
+        {
+          "id": "4",
+          "name": "Black Tea",
+          "price": 39,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 78,
+      "discount": 0,
+      "gst": 14.04,
+      "total": 92.04,
+      "rounded": 93,
+      "paymentMethod": "cash",
+      "billNumber": 56
+    },
+    {
+      "id": "355a19cc-de8b-4271-9de7-4cb90f22f499",
+      "date": "2025-12-03T07:48:29.129Z",
+      "items": [
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 298,
+      "discount": 0,
+      "gst": 0,
+      "total": 298,
+      "rounded": 298,
+      "paymentMethod": "cash",
+      "billNumber": 55
+    },
+    {
+      "id": "0a342957-72dd-415d-8fc9-6fd547915331",
+      "date": "2025-12-02T16:33:09.342Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "6",
+          "name": "Vanilla Shake",
+          "price": 149,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 417,
+      "discount": 0,
+      "gst": 0,
+      "total": 417,
+      "rounded": 417,
+      "paymentMethod": "cash",
+      "billNumber": 54
+    },
+    {
+      "id": "5448264a-7e1b-454b-92ff-5642b17ffb7d",
+      "date": "2025-12-02T14:08:45.716Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 109,
+      "discount": 0,
+      "gst": 0,
+      "total": 109,
+      "rounded": 109,
+      "paymentMethod": "cash",
+      "billNumber": 53
+    },
+    {
+      "id": "3e8fea0f-e75a-43c0-a8e4-8d1a8122403a",
+      "date": "2025-12-02T13:17:25.077Z",
+      "items": [
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 208,
+      "discount": 0,
+      "gst": 0,
+      "total": 208,
+      "rounded": 208,
+      "paymentMethod": "cash",
+      "billNumber": 52
+    },
+    {
+      "id": "560b0932-0c1a-4c4e-9a43-e743fe010d58",
+      "date": "2025-12-02T12:46:43.787Z",
+      "items": [
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 398,
+      "discount": 0,
+      "gst": 0,
+      "total": 398,
+      "rounded": 398,
+      "paymentMethod": "cash",
+      "billNumber": 51
+    },
+    {
+      "id": "0d40e64f-02bb-45ed-b7f0-94dbfebfed58",
+      "date": "2025-12-02T10:49:53.113Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 954,
+      "discount": 0,
+      "gst": 0,
+      "total": 954,
+      "rounded": 954,
+      "paymentMethod": "cash",
+      "billNumber": 50
+    },
+    {
+      "id": "03dd7c5f-e0f9-4b0e-903b-8477bbf706eb",
+      "date": "2025-12-02T10:42:20.417Z",
+      "items": [
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 2
+        },
+        {
+          "id": "6",
+          "name": "Vanilla Shake",
+          "price": 149,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 954,
+      "discount": 0,
+      "gst": 0,
+      "total": 954,
+      "rounded": 954,
+      "paymentMethod": "cash",
+      "billNumber": 50
+    },
+    {
+      "id": "5c6e8df7-eb60-4f77-ad49-3bc3573c1dcc",
+      "date": "2025-12-02T10:21:05.480Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 586,
+      "discount": 0,
+      "gst": 0,
+      "total": 586,
+      "rounded": 586,
+      "paymentMethod": "cash",
+      "billNumber": 49
+    },
+    {
+      "id": "87be0fc9-7c2c-4c94-8be6-3bef63228aef",
+      "date": "2025-12-02T06:56:43.141Z",
+      "items": [
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 189,
+      "discount": 0,
+      "gst": 0,
+      "total": 189,
+      "rounded": 189,
+      "paymentMethod": "cash",
+      "billNumber": 48
+    },
+    {
+      "id": "2f8657ba-5731-4206-b0e2-385ebd24b35a",
+      "date": "2025-12-01T12:31:04.212Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 12
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 3
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 3
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 4
+        },
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 2439,
+      "discount": 0,
+      "gst": 0,
+      "total": 2439,
+      "rounded": 2439,
+      "paymentMethod": "cash",
+      "billNumber": 47
+    },
+    {
+      "id": "46a676e3-f70e-47fc-8945-5a4e31b740d3",
+      "date": "2025-12-01T08:32:35.784Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 2
+        },
+        {
+          "id": "13",
+          "name": "Panch Mel",
+          "price": 179,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 437,
+      "discount": 0,
+      "gst": 0,
+      "total": 437,
+      "rounded": 437,
+      "paymentMethod": "cash",
+      "billNumber": 46
+    },
+    {
+      "id": "6e2c7c29-4bd0-4a21-8337-9923950b396e",
+      "date": "2025-11-30T15:29:32.940Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1762002361366",
+          "name": "Farm House Pizza- Big",
+          "price": 279,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1043,
+      "discount": 0,
+      "gst": 0,
+      "total": 1043,
+      "rounded": 1043,
+      "paymentMethod": "cash",
+      "billNumber": 45
+    },
+    {
+      "id": "0d724695-a0ae-4281-95d0-9ff76e7a9a75",
+      "date": "2025-11-30T12:54:52.241Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 377,
+      "discount": 0,
+      "gst": 0,
+      "total": 377,
+      "rounded": 377,
+      "paymentMethod": "cash",
+      "billNumber": 44
+    },
+    {
+      "id": "88195792-e420-4929-b6c7-f543cfc2969a",
+      "date": "2025-11-30T12:23:11.920Z",
+      "items": [
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 199,
+      "discount": 0,
+      "gst": 0,
+      "total": 199,
+      "rounded": 199,
+      "paymentMethod": "cash",
+      "billNumber": 43
+    },
+    {
+      "id": "054d527d-4833-45d3-8135-bb89276c9005",
+      "date": "2025-11-30T11:55:11.523Z",
+      "items": [
+        {
+          "id": "36",
+          "name": "Chilli Potato",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 587,
+      "discount": 0,
+      "gst": 0,
+      "total": 587,
+      "rounded": 587,
+      "paymentMethod": "cash",
+      "billNumber": 42
+    },
+    {
+      "id": "e2595012-5052-4af3-9359-522b77ba1c22",
+      "date": "2025-11-30T10:21:13.586Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 3
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 306,
+      "discount": 0,
+      "gst": 0,
+      "total": 306,
+      "rounded": 306,
+      "paymentMethod": "cash",
+      "billNumber": 41
+    },
+    {
+      "id": "72ad8954-2d8e-40b4-abc9-f534003f998e",
+      "date": "2025-11-29T14:22:40.062Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 318,
+      "discount": 0,
+      "gst": 0,
+      "total": 318,
+      "rounded": 318,
+      "paymentMethod": "cash",
+      "billNumber": 40
+    },
+    {
+      "id": "1e8c1842-88e8-40fb-a1d9-8dfadc0dc186",
+      "date": "2025-11-29T14:01:51.909Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 557,
+      "discount": 0,
+      "gst": 0,
+      "total": 557,
+      "rounded": 557,
+      "paymentMethod": "cash",
+      "billNumber": 39
+    },
+    {
+      "id": "34a23b8c-0b30-44ed-92ae-39b2de4829ba",
+      "date": "2025-11-29T13:09:07.933Z",
+      "items": [
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 147,
+      "discount": 0,
+      "gst": 0,
+      "total": 147,
+      "rounded": 147,
+      "paymentMethod": "upi",
+      "billNumber": 38
+    },
+    {
+      "id": "ef073bcb-7b8d-4f4d-8949-229d206441e8",
+      "date": "2025-11-29T11:47:35.978Z",
+      "items": [
+        {
+          "id": "25",
+          "name": "Chipotle Sandwich",
+          "price": 89,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 287,
+      "discount": 0,
+      "gst": 0,
+      "total": 287,
+      "rounded": 287,
+      "paymentMethod": "cash",
+      "billNumber": 38
+    },
+    {
+      "id": "91035195-c163-483c-9c4b-75ff2d3ccc2e",
+      "date": "2025-11-29T11:05:25.962Z",
+      "items": [
+        {
+          "id": "6",
+          "name": "Vanilla Shake",
+          "price": 149,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 149,
+      "discount": 0,
+      "gst": 0,
+      "total": 149,
+      "rounded": 149,
+      "paymentMethod": "cash",
+      "billNumber": 37
+    },
+    {
+      "id": "0940a587-ddf4-4f59-a7a0-8f25d45ef0c7",
+      "date": "2025-11-29T11:05:21.689Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 3
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 207,
+      "discount": 0,
+      "gst": 0,
+      "total": 207,
+      "rounded": 207,
+      "paymentMethod": "cash",
+      "billNumber": 37
+    },
+    {
+      "id": "effba90c-abda-4dc0-8813-7cb6d4e7e3ff",
+      "date": "2025-11-29T06:20:55.070Z",
+      "items": [
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 108,
+      "discount": 0,
+      "gst": 0,
+      "total": 108,
+      "rounded": 108,
+      "paymentMethod": "cash",
+      "billNumber": 36
+    },
+    {
+      "id": "c1aabbfe-f632-4d97-95af-8e70f8d0ce16",
+      "date": "2025-11-28T13:50:18.468Z",
+      "items": [
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 308,
+      "discount": 0,
+      "gst": 0,
+      "total": 308,
+      "rounded": 308,
+      "paymentMethod": "cash",
+      "billNumber": 35
+    },
+    {
+      "id": "bcb6ac88-a5a9-451e-93c7-2ba4aa11111e",
+      "date": "2025-11-28T12:19:59.873Z",
+      "items": [
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "cash",
+      "billNumber": 34
+    },
+    {
+      "id": "cfc55528-aad1-4297-997f-3074df0a11ff",
+      "date": "2025-11-27T16:35:47.575Z",
+      "items": [
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 179,
+      "discount": 0,
+      "gst": 0,
+      "total": 179,
+      "rounded": 179,
+      "paymentMethod": "cash",
+      "billNumber": 33
+    },
+    {
+      "id": "3e44527f-9ad9-43aa-8475-799e68d26ca9",
+      "date": "2025-11-27T10:41:58.031Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 188,
+      "discount": 0,
+      "gst": 0,
+      "total": 188,
+      "rounded": 188,
+      "paymentMethod": "cash",
+      "billNumber": 32
+    },
+    {
+      "id": "a51c7e94-24de-4ed4-8c67-0ceca4904850",
+      "date": "2025-11-27T09:48:30.525Z",
+      "items": [
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 2
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 437,
+      "discount": 0,
+      "gst": 0,
+      "total": 437,
+      "rounded": 437,
+      "paymentMethod": "cash",
+      "billNumber": 31
+    },
+    {
+      "id": "7049966b-cf4e-4acf-949b-7728c0c07b86",
+      "date": "2025-11-27T08:30:23.117Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 338,
+      "discount": 0,
+      "gst": 0,
+      "total": 338,
+      "rounded": 338,
+      "paymentMethod": "cash",
+      "billNumber": 30
+    },
+    {
+      "id": "83dabb44-7e5b-4edd-bd9a-0f85bbf19b17",
+      "date": "2025-11-27T07:00:12.908Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "cash",
+      "billNumber": 29
+    },
+    {
+      "id": "3cfa5789-5975-447d-9b1d-858a55198824",
+      "date": "2025-11-27T06:05:51.795Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 168,
+      "discount": 0,
+      "gst": 0,
+      "total": 168,
+      "rounded": 168,
+      "paymentMethod": "cash",
+      "billNumber": 28
+    },
+    {
+      "id": "ab9dd178-81e8-426b-ad6a-81ea5096d7ce",
+      "date": "2025-11-26T16:15:06.111Z",
+      "items": [
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 269,
+      "discount": 0,
+      "gst": 0,
+      "total": 269,
+      "rounded": 269,
+      "paymentMethod": "cash",
+      "billNumber": 27
+    },
+    {
+      "id": "cbe4abdc-c43d-4721-aab2-dbf1ca60b9f4",
+      "date": "2025-11-26T14:46:30.054Z",
+      "items": [
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 3
+        },
+        {
+          "id": "36",
+          "name": "Chilli Potato",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "48",
+          "name": "Hara Bhara Kabab",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 2
+        },
+        {
+          "id": "1764163871773",
+          "name": "Peanut Masala",
+          "price": 199,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1911,
+      "discount": 0,
+      "gst": 343.98,
+      "total": 2254.98,
+      "rounded": 2255,
+      "paymentMethod": "cash",
+      "billNumber": 26
+    },
+    {
+      "id": "e503a2bf-4ab6-4cbe-b2cd-b81095e7d352",
+      "date": "2025-11-26T14:34:54.582Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 476,
+      "discount": 0,
+      "gst": 0,
+      "total": 476,
+      "rounded": 476,
+      "paymentMethod": "cash",
+      "billNumber": 25
+    },
+    {
+      "id": "a9a1cecc-08a4-4d35-a43a-1a7f7418ca45",
+      "date": "2025-11-26T11:53:41.788Z",
+      "items": [
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 676,
+      "discount": 0,
+      "gst": 0,
+      "total": 676,
+      "rounded": 676,
+      "paymentMethod": "cash",
+      "billNumber": 28
+    },
+    {
+      "id": "46addfae-6863-4de7-ad01-72c6580bd90d",
+      "date": "2025-11-26T11:16:33.267Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 358,
+      "discount": 0,
+      "gst": 0,
+      "total": 358,
+      "rounded": 358,
+      "paymentMethod": "cash",
+      "billNumber": 27
+    },
+    {
+      "id": "8972da8f-bd99-49aa-bf9f-75f533d4babb",
+      "date": "2025-11-26T11:02:04.947Z",
+      "items": [
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 179,
+      "discount": 0,
+      "gst": 0,
+      "total": 179,
+      "rounded": 179,
+      "paymentMethod": "cash",
+      "billNumber": 26
+    },
+    {
+      "id": "d3822172-df58-4d17-a010-5103f74654e0",
+      "date": "2025-11-26T10:02:45.610Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 3
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 477,
+      "discount": 0,
+      "gst": 0,
+      "total": 477,
+      "rounded": 477,
+      "paymentMethod": "cash",
+      "billNumber": 25
+    },
+    {
+      "id": "b17e8323-ea5d-4da5-9eab-55d6090ea473",
+      "date": "2025-11-25T13:51:12.041Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 328,
+      "discount": 0,
+      "gst": 0,
+      "total": 328,
+      "rounded": 328,
+      "paymentMethod": "cash",
+      "billNumber": 24
+    },
+    {
+      "id": "847c7644-9cc0-4ecf-9636-e4ede0f66cb5",
+      "date": "2025-11-25T13:28:02.827Z",
+      "items": [
+        {
+          "id": "55",
+          "name": "Paneer Tikka Pizza (Big/Small)",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 249,
+      "discount": 0,
+      "gst": 0,
+      "total": 249,
+      "rounded": 249,
+      "paymentMethod": "cash",
+      "billNumber": 23
+    },
+    {
+      "id": "6547a1bc-77fe-488a-b00c-243e2d50bf5d",
+      "date": "2025-11-25T12:29:55.194Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 815,
+      "discount": 0,
+      "gst": 0,
+      "total": 815,
+      "rounded": 815,
+      "paymentMethod": "cash",
+      "billNumber": 22
+    },
+    {
+      "id": "dcfbd3d9-a70e-410c-952d-139a2d134142",
+      "date": "2025-11-25T07:26:27.422Z",
+      "items": [
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 128,
+      "discount": 0,
+      "gst": 0,
+      "total": 128,
+      "rounded": 128,
+      "paymentMethod": "cash",
+      "billNumber": 21
+    },
+    {
+      "id": "dfbda121-05b1-4d01-9497-eb543629b05d",
+      "date": "2025-11-24T13:44:42.301Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 437,
+      "discount": 0,
+      "gst": 0,
+      "total": 437,
+      "rounded": 437,
+      "paymentMethod": "cash",
+      "billNumber": 20
+    },
+    {
+      "id": "854ad3b8-2f3d-4279-a7f8-63673f8367c4",
+      "date": "2025-11-24T13:42:56.980Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 437,
+      "discount": 0,
+      "gst": 78.66,
+      "total": 515.66,
+      "rounded": 516,
+      "paymentMethod": "upi",
+      "billNumber": 19
+    },
+    {
+      "id": "d088a002-6fa1-4497-9a72-b4f222613c07",
+      "date": "2025-11-24T13:28:54.953Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 8
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 2
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1099,
+      "discount": 0,
+      "gst": 0,
+      "total": 1099,
+      "rounded": 1099,
+      "paymentMethod": "upi",
+      "billNumber": 19
+    },
+    {
+      "id": "fc2511a6-65c4-4842-8d67-2223c0063af9",
+      "date": "2025-11-24T13:21:37.098Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 347,
+      "discount": 0,
+      "gst": 0,
+      "total": 347,
+      "rounded": 347,
+      "paymentMethod": "upi",
+      "billNumber": 19
+    },
+    {
+      "id": "83cfcfb7-7ddc-48d1-b5a3-b4da2f2ec3fb",
+      "date": "2025-11-23T16:13:14.303Z",
+      "items": [
+        {
+          "id": "30",
+          "name": "Tomato Soup",
+          "price": 129,
+          "category": "SOUP",
+          "quantity": 2
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 2
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "42",
+          "name": "Fried Rice",
+          "price": 179,
+          "category": "RICE",
+          "quantity": 2
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 4
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "26",
+          "name": "Bread Butter Cheese Sandwich",
+          "price": 59,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 2087,
+      "discount": 0,
+      "gst": 0,
+      "total": 2087,
+      "rounded": 2087,
+      "paymentMethod": "cash",
+      "billNumber": 17
+    },
+    {
+      "id": "39eb2805-d2f6-4a3c-ab2c-ef6e50d71ce0",
+      "date": "2025-11-23T16:04:31.327Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "31",
+          "name": "Sweet Corn Soup",
+          "price": 99,
+          "category": "SOUP",
+          "quantity": 2
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 2
+        },
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        },
+        {
+          "id": "15",
+          "name": "Virgin Mojito",
+          "price": 139,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1132,
+      "discount": 0,
+      "gst": 0,
+      "total": 1132,
+      "rounded": 1132,
+      "paymentMethod": "cash",
+      "billNumber": 17
+    },
+    {
+      "id": "fcfe1eac-c1f5-44ce-83a7-dd4ab5fa7634",
+      "date": "2025-11-23T13:00:13.013Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 259,
+      "discount": 0,
+      "gst": 0,
+      "total": 259,
+      "rounded": 259,
+      "paymentMethod": "cash",
+      "billNumber": 16
+    },
+    {
+      "id": "efcb065d-8f7b-4eee-b126-7ca6e18d52c0",
+      "date": "2025-11-23T12:38:40.611Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 179,
+      "discount": 0,
+      "gst": 0,
+      "total": 179,
+      "rounded": 179,
+      "paymentMethod": "cash",
+      "billNumber": 16
+    },
+    {
+      "id": "8086ea6f-1611-4d9f-9936-97237b391caa",
+      "date": "2025-11-23T12:29:29.508Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 388,
+      "discount": 0,
+      "gst": 0,
+      "total": 388,
+      "rounded": 388,
+      "paymentMethod": "upi",
+      "billNumber": 16
+    },
+    {
+      "id": "a9703edd-2933-4606-9621-00542d34f472",
+      "date": "2025-11-23T10:43:50.731Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 298,
+      "discount": 0,
+      "gst": 0,
+      "total": 298,
+      "rounded": 298,
+      "paymentMethod": "cash",
+      "billNumber": 15
+    },
+    {
+      "id": "fc7def15-c161-4f07-9414-9dec6d942cb3",
+      "date": "2025-11-22T14:39:29.683Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 816,
+      "discount": 0,
+      "gst": 0,
+      "total": 816,
+      "rounded": 816,
+      "paymentMethod": "cash",
+      "billNumber": 13
+    },
+    {
+      "id": "598cf205-50f4-47ec-a7e2-ff1800cc8f24",
+      "date": "2025-11-22T12:25:47.761Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        },
+        {
+          "id": "14",
+          "name": "Fresh Lemon Soda",
+          "price": 99,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 407,
+      "discount": 0,
+      "gst": 0,
+      "total": 407,
+      "rounded": 407,
+      "paymentMethod": "cash",
+      "billNumber": 12
+    },
+    {
+      "id": "b6ef9f96-d2ce-4dad-aede-733ef9abf001",
+      "date": "2025-11-21T15:18:50.581Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 248,
+      "discount": 0,
+      "gst": 0,
+      "total": 248,
+      "rounded": 248,
+      "paymentMethod": "upi",
+      "billNumber": 11
+    },
+    {
+      "id": "0ce3b3fc-c6c2-4935-a63f-8082c5fa6ceb",
+      "date": "2025-11-21T15:17:26.796Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "14",
+          "name": "Fresh Lemon Soda",
+          "price": 99,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 597,
+      "discount": 0,
+      "gst": 0,
+      "total": 597,
+      "rounded": 597,
+      "paymentMethod": "cash",
+      "billNumber": 11
+    },
+    {
+      "id": "e918becd-bc10-483d-a398-441fcdcda0d8",
+      "date": "2025-11-21T11:06:29.849Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 377,
+      "discount": 0,
+      "gst": 0,
+      "total": 377,
+      "rounded": 377,
+      "paymentMethod": "cash",
+      "billNumber": 10
+    },
+    {
+      "id": "df4f8a61-1acc-49a7-ad1a-635570c0b12e",
+      "date": "2025-11-21T09:17:36.358Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 209,
+      "discount": 0,
+      "gst": 0,
+      "total": 209,
+      "rounded": 209,
+      "paymentMethod": "cash",
+      "billNumber": 9
+    },
+    {
+      "id": "d676c23e-27a2-4038-ae15-eb3c441e542b",
+      "date": "2025-11-21T07:19:10.610Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 3
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 645,
+      "discount": 0,
+      "gst": 0,
+      "total": 645,
+      "rounded": 645,
+      "paymentMethod": "cash",
+      "billNumber": 8
+    },
+    {
+      "id": "7b2226e0-6d6e-42fb-ad57-7ca9e588e708",
+      "date": "2025-11-20T14:39:17.760Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 179,
+      "discount": 0,
+      "gst": 0,
+      "total": 179,
+      "rounded": 179,
+      "paymentMethod": "cash",
+      "billNumber": 7
+    },
+    {
+      "id": "e896b47f-cf96-4405-a5de-70c39cb9e069",
+      "date": "2025-11-20T13:04:26.903Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 476,
+      "discount": 0,
+      "gst": 0,
+      "total": 476,
+      "rounded": 476,
+      "paymentMethod": "cash",
+      "billNumber": 6
+    },
+    {
+      "id": "64916e98-ea14-4ff2-8680-cecd2c41878e",
+      "date": "2025-11-20T11:53:47.763Z",
+      "items": [
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 586,
+      "discount": 0,
+      "gst": 0,
+      "total": 586,
+      "rounded": 586,
+      "paymentMethod": "cash",
+      "billNumber": 5
+    },
+    {
+      "id": "345bd468-0b32-4cee-8277-986334392695",
+      "date": "2025-11-20T11:07:55.524Z",
+      "items": [
+        {
+          "id": "1762002288765",
+          "name": "Paneer Tikka Pizza- Big",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 557,
+      "discount": 0,
+      "gst": 0,
+      "total": 557,
+      "rounded": 557,
+      "paymentMethod": "cash",
+      "billNumber": 4
+    },
+    {
+      "id": "781202b3-54f1-4658-a07e-63ba4e159882",
+      "date": "2025-11-19T15:35:04.177Z",
+      "items": [
+        {
+          "id": "48",
+          "name": "Hara Bhara Kabab",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 328,
+      "discount": 0,
+      "gst": 0,
+      "total": 328,
+      "rounded": 328,
+      "paymentMethod": "cash",
+      "billNumber": 3
+    },
+    {
+      "id": "fca00517-35b9-457b-a125-7d9f4428c0dd",
+      "date": "2025-11-19T15:23:16.905Z",
+      "items": [
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 228,
+      "discount": 0,
+      "gst": 0,
+      "total": 228,
+      "rounded": 228,
+      "paymentMethod": "cash",
+      "billNumber": 2
+    },
+    {
+      "id": "ccd2db11-7702-4b3f-862e-fed8096cacae",
+      "date": "2025-11-18T15:46:30.589Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 4
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 2
+        },
+        {
+          "id": "36",
+          "name": "Chilli Potato",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "9",
+          "name": "Oreo Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 3
+        },
+        {
+          "id": "6",
+          "name": "Vanilla Shake",
+          "price": 149,
+          "category": "SHAKE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 2158,
+      "discount": 0,
+      "gst": 0,
+      "total": 2158,
+      "rounded": 2158,
+      "paymentMethod": "cash",
+      "billNumber": 1
+    },
+    {
+      "id": "4b90af53-5b87-4da1-ab5a-b3f5985d753a",
+      "date": "2025-11-18T15:25:13.212Z",
+      "items": [
+        {
+          "id": "48",
+          "name": "Hara Bhara Kabab",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 597,
+      "discount": 0,
+      "gst": 0,
+      "total": 597,
+      "rounded": 597,
+      "paymentMethod": "cash",
+      "billNumber": 1
+    },
+    {
+      "id": "00d1d669-a4eb-4363-b442-bf8ded739f9b",
+      "date": "2025-11-17T14:16:36.788Z",
+      "items": [
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "48",
+          "name": "Hara Bhara Kabab",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 667,
+      "discount": 0,
+      "gst": 0,
+      "total": 667,
+      "rounded": 667,
+      "paymentMethod": "cash",
+      "billNumber": 2
+    },
+    {
+      "id": "ace8e608-0350-4e12-9c5e-e8f34e1c3dc1",
+      "date": "2025-11-16T16:00:19.819Z",
+      "items": [
+        {
+          "id": "46",
+          "name": "Achari Paneer Tikka",
+          "price": 239,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 269,
+      "discount": 0,
+      "gst": 0,
+      "total": 269,
+      "rounded": 269,
+      "paymentMethod": "cash",
+      "billNumber": 22
+    },
+    {
+      "id": "c2fa680a-6f15-4045-a322-a55a085e71e9",
+      "date": "2025-11-16T14:06:39.983Z",
+      "items": [
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 139,
+      "discount": 0,
+      "gst": 0,
+      "total": 139,
+      "rounded": 139,
+      "paymentMethod": "cash",
+      "billNumber": 21
+    },
+    {
+      "id": "053d51c8-31f3-4ba9-88ca-c1ea9f19ebdd",
+      "date": "2025-11-16T13:38:35.855Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 199,
+      "discount": 0,
+      "gst": 0,
+      "total": 199,
+      "rounded": 199,
+      "paymentMethod": "cash",
+      "billNumber": 20
+    },
+    {
+      "id": "4794db2a-814b-4526-8dee-b6111762b653",
+      "date": "2025-11-16T13:34:31.392Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "36",
+          "name": "Chilli Potato",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "9",
+          "name": "Oreo Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1124,
+      "discount": 0,
+      "gst": 0,
+      "total": 1124,
+      "rounded": 1124,
+      "paymentMethod": "cash",
+      "billNumber": 19
+    },
+    {
+      "id": "131d0b04-fd59-460b-a170-8fc398020485",
+      "date": "2025-11-16T12:27:07.778Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 79,
+      "discount": 0,
+      "gst": 0,
+      "total": 79,
+      "rounded": 79,
+      "paymentMethod": "cash",
+      "billNumber": 18
+    },
+    {
+      "id": "93632ecf-c93a-443f-8bc6-df21a3922603",
+      "date": "2025-11-16T10:10:09.183Z",
+      "items": [
+        {
+          "id": "36",
+          "name": "Chilli Potato",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "25",
+          "name": "Chipotle Sandwich",
+          "price": 89,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 288,
+      "discount": 0,
+      "gst": 0,
+      "total": 288,
+      "rounded": 288,
+      "paymentMethod": "cash",
+      "billNumber": 17
+    },
+    {
+      "id": "03d90290-751e-4546-b840-46994d20fe9c",
+      "date": "2025-11-16T09:23:12.312Z",
+      "items": [
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 487,
+      "discount": 0,
+      "gst": 0,
+      "total": 487,
+      "rounded": 487,
+      "paymentMethod": "cash",
+      "billNumber": 16
+    },
+    {
+      "id": "27b6fbf6-1543-4e2c-a1c8-99ea5de02682",
+      "date": "2025-11-16T09:06:36.961Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 268,
+      "discount": 0,
+      "gst": 0,
+      "total": 268,
+      "rounded": 268,
+      "paymentMethod": "upi",
+      "billNumber": 15
+    },
+    {
+      "id": "71db3e03-94c3-43a6-8d85-6413858661c6",
+      "date": "2025-11-16T08:42:18.497Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 388,
+      "discount": 0,
+      "gst": 0,
+      "total": 388,
+      "rounded": 388,
+      "paymentMethod": "cash",
+      "billNumber": 14
+    },
+    {
+      "id": "a8101fe4-22c3-4316-9461-c0da0c84dfca",
+      "date": "2025-11-15T16:13:08.394Z",
+      "items": [
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 178,
+      "discount": 0,
+      "gst": 0,
+      "total": 178,
+      "rounded": 178,
+      "paymentMethod": "cash",
+      "billNumber": 12
+    },
+    {
+      "id": "3c0e5bfb-7571-4a1f-96ec-53c6502f954a",
+      "date": "2025-11-15T15:43:39.552Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 3
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 2
+        },
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        },
+        {
+          "id": "36",
+          "name": "Chilli Potato",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 2305,
+      "discount": 0,
+      "gst": 0,
+      "total": 2305,
+      "rounded": 2305,
+      "paymentMethod": "cash",
+      "billNumber": 11
+    },
+    {
+      "id": "30ae893e-9c7e-417c-8895-438a9555a25a",
+      "date": "2025-11-15T12:42:19.442Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 149,
+      "discount": 0,
+      "gst": 0,
+      "total": 149,
+      "rounded": 149,
+      "paymentMethod": "cash",
+      "billNumber": 10
+    },
+    {
+      "id": "038a7c13-e23e-4473-9d71-4f1671bcb793",
+      "date": "2025-11-14T15:38:52.439Z",
+      "items": [
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 209,
+      "discount": 0,
+      "gst": 0,
+      "total": 209,
+      "rounded": 209,
+      "paymentMethod": "cash",
+      "billNumber": 9
+    },
+    {
+      "id": "808d63e4-4445-4f05-b73f-4f12213915a1",
+      "date": "2025-11-14T12:17:42.816Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "cash",
+      "billNumber": 8
+    },
+    {
+      "id": "81e740f2-cda2-44ff-8c82-763ad0016bcd",
+      "date": "2025-11-14T05:17:58.446Z",
+      "items": [
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 6
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 513,
+      "discount": 0,
+      "gst": 0,
+      "total": 513,
+      "rounded": 513,
+      "paymentMethod": "cash",
+      "billNumber": 7
+    },
+    {
+      "id": "150b5855-8e48-4104-8d12-af8d76eb398c",
+      "date": "2025-11-13T16:19:21.439Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "52",
+          "name": "Malai Soya Chap",
+          "price": 259,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "10",
+          "name": "Butter Scotch Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 846,
+      "discount": 0,
+      "gst": 0,
+      "total": 846,
+      "rounded": 846,
+      "paymentMethod": "cash",
+      "billNumber": 6
+    },
+    {
+      "id": "6f2af98d-64f2-4b77-8a7b-c5cc50813294",
+      "date": "2025-11-13T07:55:06.391Z",
+      "items": [
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 218,
+      "discount": 0,
+      "gst": 0,
+      "total": 218,
+      "rounded": 218,
+      "paymentMethod": "cash",
+      "billNumber": 5
+    },
+    {
+      "id": "d784c968-5df0-4801-873c-ce390b1235f9",
+      "date": "2025-11-12T16:45:19.669Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "50",
+          "name": "Tandoori Soya Chap",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "19",
+          "name": "Rosperel Ice Cream",
+          "price": 89,
+          "category": "DESERT",
+          "quantity": 4
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1669,
+      "discount": 0,
+      "gst": 0,
+      "total": 1669,
+      "rounded": 1669,
+      "paymentMethod": "cash",
+      "billNumber": 4
+    },
+    {
+      "id": "d2dc0ec5-ee56-4655-8983-147f32a471cf",
+      "date": "2025-11-12T13:08:07.610Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 366,
+      "discount": 0,
+      "gst": 0,
+      "total": 366,
+      "rounded": 366,
+      "paymentMethod": "cash",
+      "billNumber": 3
+    },
+    {
+      "id": "7f2f9471-369c-4afa-bfd2-0ca3a57e5ba1",
+      "date": "2025-11-12T09:02:13.229Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 348,
+      "discount": 0,
+      "gst": 0,
+      "total": 348,
+      "rounded": 348,
+      "paymentMethod": "cash",
+      "billNumber": 91
+    },
+    {
+      "id": "77a6f12a-fcf4-4bd1-a031-1d6b7895c017",
+      "date": "2025-11-12T08:26:28.813Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 197,
+      "discount": 0,
+      "gst": 0,
+      "total": 197,
+      "rounded": 197,
+      "paymentMethod": "cash",
+      "billNumber": 91
+    },
+    {
+      "id": "75c8836e-2ee5-4138-b2fa-a9c7828edfa2",
+      "date": "2025-11-12T07:44:20.084Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 408,
+      "discount": 0,
+      "gst": 0,
+      "total": 408,
+      "rounded": 408,
+      "paymentMethod": "cash",
+      "billNumber": 90
+    },
+    {
+      "id": "f94d4479-2b69-4e3a-bfff-9b1a5754b519",
+      "date": "2025-11-12T07:34:02.404Z",
+      "items": [
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 308,
+      "discount": 0,
+      "gst": 0,
+      "total": 308,
+      "rounded": 308,
+      "paymentMethod": "cash",
+      "billNumber": 89
+    },
+    {
+      "id": "979541c7-075e-4b59-93b2-ca4a99ece2f3",
+      "date": "2025-11-11T13:41:18.453Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 179,
+      "discount": 0,
+      "gst": 0,
+      "total": 179,
+      "rounded": 179,
+      "paymentMethod": "cash",
+      "billNumber": 88
+    },
+    {
+      "id": "e81d10a8-ec7f-4b06-a2a9-7c37071c4e7e",
+      "date": "2025-11-11T12:15:29.742Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "9",
+          "name": "Oreo Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1114,
+      "discount": 0,
+      "gst": 0,
+      "total": 1114,
+      "rounded": 1114,
+      "paymentMethod": "cash",
+      "billNumber": 87
+    },
+    {
+      "id": "07f13c62-464f-4d24-95e0-425f99ccbf0e",
+      "date": "2025-11-11T11:12:49.911Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 497,
+      "discount": 0,
+      "gst": 0,
+      "total": 497,
+      "rounded": 497,
+      "paymentMethod": "cash",
+      "billNumber": 86
+    },
+    {
+      "id": "92b1fa59-b6ed-42ef-8623-972bae5d3387",
+      "date": "2025-11-11T07:30:39.310Z",
+      "items": [
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 488,
+      "discount": 0,
+      "gst": 0,
+      "total": 488,
+      "rounded": 488,
+      "paymentMethod": "cash",
+      "billNumber": 85
+    },
+    {
+      "id": "8d693c08-d83d-4227-a261-ce85b8208ee7",
+      "date": "2025-11-10T16:13:04.247Z",
+      "items": [
+        {
+          "id": "27",
+          "name": "Paneer Sandwich",
+          "price": 169,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 169,
+      "discount": 0,
+      "gst": 0,
+      "total": 169,
+      "rounded": 169,
+      "paymentMethod": "cash",
+      "billNumber": 84
+    },
+    {
+      "id": "40e58de8-570e-4dd3-acd9-6597888435b5",
+      "date": "2025-11-10T15:48:20.527Z",
+      "items": [
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "35",
+          "name": "Honey Chilli",
+          "price": 289,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "43",
+          "name": "Schezwan Rice",
+          "price": 169,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 916,
+      "discount": 0,
+      "gst": 0,
+      "total": 916,
+      "rounded": 916,
+      "paymentMethod": "cash",
+      "billNumber": 83
+    },
+    {
+      "id": "7684e7ed-55de-479d-b3d3-1364c56cad73",
+      "date": "2025-11-10T14:09:04.326Z",
+      "items": [
+        {
+          "id": "1762002288765",
+          "name": "Paneer Tikka Pizza- Big",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 448,
+      "discount": 0,
+      "gst": 0,
+      "total": 448,
+      "rounded": 448,
+      "paymentMethod": "cash",
+      "billNumber": 82
+    },
+    {
+      "id": "c48d164a-55ab-4144-92f5-e60962cd0bef",
+      "date": "2025-11-10T14:06:02.094Z",
+      "items": [
+        {
+          "id": "1762002288765",
+          "name": "Paneer Tikka Pizza- Big",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 647,
+      "discount": 0,
+      "gst": 0,
+      "total": 647,
+      "rounded": 647,
+      "paymentMethod": "cash",
+      "billNumber": 81
+    },
+    {
+      "id": "14ef15ad-8030-4f03-9449-f2caaf6a1ddf",
+      "date": "2025-11-10T11:03:08.568Z",
+      "items": [
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 128,
+      "discount": 0,
+      "gst": 0,
+      "total": 128,
+      "rounded": 128,
+      "paymentMethod": "cash",
+      "billNumber": 80
+    },
+    {
+      "id": "8f77a9fc-c4d4-473a-bdb4-21a00d18a8b5",
+      "date": "2025-11-10T10:12:19.784Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 536,
+      "discount": 0,
+      "gst": 0,
+      "total": 536,
+      "rounded": 536,
+      "paymentMethod": "cash",
+      "billNumber": 79
+    },
+    {
+      "id": "ba46a7f5-f86a-43aa-9cf2-3fe39d5d9e4f",
+      "date": "2025-11-10T09:13:27.463Z",
+      "items": [
+        {
+          "id": "15",
+          "name": "Virgin Mojito",
+          "price": 139,
+          "category": "MOCKTAIL",
+          "quantity": 3
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 576,
+      "discount": 0,
+      "gst": 0,
+      "total": 576,
+      "rounded": 576,
+      "paymentMethod": "cash",
+      "billNumber": 78
+    },
+    {
+      "id": "97c0f34e-39b3-4f43-8dc8-39dfb3eaa714",
+      "date": "2025-11-10T07:51:18.597Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 576,
+      "discount": 0,
+      "gst": 0,
+      "total": 576,
+      "rounded": 576,
+      "paymentMethod": "cash",
+      "billNumber": 77
+    },
+    {
+      "id": "a9dbc11b-8c5e-4d47-9d8e-dd5b91df17d0",
+      "date": "2025-11-10T07:36:07.172Z",
+      "items": [
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 238,
+      "discount": 0,
+      "gst": 0,
+      "total": 238,
+      "rounded": 238,
+      "paymentMethod": "upi",
+      "billNumber": 77
+    },
+    {
+      "id": "ae0c6c5d-5a4c-4205-a368-c6604e022049",
+      "date": "2025-11-09T16:36:01.270Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 338,
+      "discount": 0,
+      "gst": 0,
+      "total": 338,
+      "rounded": 338,
+      "paymentMethod": "cash",
+      "billNumber": 76
+    },
+    {
+      "id": "33f637cd-3d8b-48a5-8a43-530745fe7ad6",
+      "date": "2025-11-09T16:33:02.598Z",
+      "items": [
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 597,
+      "discount": 0,
+      "gst": 0,
+      "total": 597,
+      "rounded": 597,
+      "paymentMethod": "cash",
+      "billNumber": 75
+    },
+    {
+      "id": "db6b5314-9708-4f5e-8517-54b1a668a305",
+      "date": "2025-11-09T14:14:34.534Z",
+      "items": [
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 209,
+      "discount": 0,
+      "gst": 0,
+      "total": 209,
+      "rounded": 209,
+      "paymentMethod": "cash",
+      "billNumber": 74
+    },
+    {
+      "id": "eb159acf-d474-4af4-8d1e-b6bb5dbf7f94",
+      "date": "2025-11-09T12:34:23.262Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 3
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 4
+        },
+        {
+          "id": "35",
+          "name": "Honey Chilli",
+          "price": 289,
+          "category": "CHINESE",
+          "quantity": 5
+        },
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 3
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 12
+        },
+        {
+          "id": "48",
+          "name": "Hara Bhara Kabab",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 3
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 3
+        },
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "43",
+          "name": "Schezwan Rice",
+          "price": 169,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 9
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 6444,
+      "discount": 0,
+      "gst": 0,
+      "total": 6444,
+      "rounded": 6444,
+      "paymentMethod": "cash",
+      "billNumber": 73
+    },
+    {
+      "id": "9a9db84f-6642-4d57-84a0-13dd272b22dd",
+      "date": "2025-11-09T09:50:33.165Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002288765",
+          "name": "Paneer Tikka Pizza- Big",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 526,
+      "discount": 0,
+      "gst": 94.68,
+      "total": 620.68,
+      "rounded": 621,
+      "paymentMethod": "cash",
+      "billNumber": 72
+    },
+    {
+      "id": "150b8e43-830b-4802-8b51-adaf4953c768",
+      "date": "2025-11-09T08:57:42.694Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 277,
+      "discount": 0,
+      "gst": 0,
+      "total": 277,
+      "rounded": 277,
+      "paymentMethod": "cash",
+      "billNumber": 71
+    },
+    {
+      "id": "674c6b98-1551-46fa-8bc8-26c4ea133eee",
+      "date": "2025-11-09T08:48:51.397Z",
+      "items": [
+        {
+          "id": "9",
+          "name": "Oreo Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 5
+        },
+        {
+          "id": "54",
+          "name": "Margaret Pizza (Big/Small)",
+          "price": 270,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1115,
+      "discount": 0,
+      "gst": 0,
+      "total": 1115,
+      "rounded": 1115,
+      "paymentMethod": "cash",
+      "billNumber": 70
+    },
+    {
+      "id": "350e22ff-2b41-490f-b72f-366331594989",
+      "date": "2025-11-09T08:39:07.532Z",
+      "items": [
+        {
+          "id": "3",
+          "name": "Cookies Tea / Masala Tea",
+          "price": 49,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 157,
+      "discount": 0,
+      "gst": 0,
+      "total": 157,
+      "rounded": 157,
+      "paymentMethod": "cash",
+      "billNumber": 69
+    },
+    {
+      "id": "76db410a-a3b3-454d-8388-a1125afa5bf1",
+      "date": "2025-11-09T08:00:45.572Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "27",
+          "name": "Paneer Sandwich",
+          "price": 169,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 756,
+      "discount": 0,
+      "gst": 0,
+      "total": 756,
+      "rounded": 756,
+      "paymentMethod": "upi",
+      "billNumber": 68
+    },
+    {
+      "id": "713a0576-fd25-421e-9ea0-677dd9993e3b",
+      "date": "2025-11-09T07:53:52.365Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 159,
+      "discount": 0,
+      "gst": 0,
+      "total": 159,
+      "rounded": 159,
+      "paymentMethod": "cash",
+      "billNumber": 68
+    },
+    {
+      "id": "3ac04f7e-129c-4c46-ad25-178772da34a8",
+      "date": "2025-11-09T06:42:19.813Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 219,
+      "discount": 0,
+      "gst": 0,
+      "total": 219,
+      "rounded": 219,
+      "paymentMethod": "upi",
+      "billNumber": 67
+    },
+    {
+      "id": "43dca651-3a13-4aaa-b50f-8dc17de763a6",
+      "date": "2025-11-08T16:54:34.006Z",
+      "items": [
+        {
+          "id": "50",
+          "name": "Tandoori Soya Chap",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 398,
+      "discount": 0,
+      "gst": 0,
+      "total": 398,
+      "rounded": 398,
+      "paymentMethod": "cash",
+      "billNumber": 66
+    },
+    {
+      "id": "86f0ffff-f612-46dd-a90a-4050fda43b85",
+      "date": "2025-11-08T16:00:51.399Z",
+      "items": [
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 2
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 656,
+      "discount": 0,
+      "gst": 0,
+      "total": 656,
+      "rounded": 656,
+      "paymentMethod": "cash",
+      "billNumber": 65
+    },
+    {
+      "id": "47def625-3de4-4856-a61e-c5fb71aaa27c",
+      "date": "2025-11-08T15:44:47.887Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 218,
+      "discount": 0,
+      "gst": 0,
+      "total": 218,
+      "rounded": 218,
+      "paymentMethod": "cash",
+      "billNumber": 64
+    },
+    {
+      "id": "c1405fd2-24e7-44b9-9057-c7d830d8f4f3",
+      "date": "2025-11-08T15:13:13.686Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 159,
+      "discount": 0,
+      "gst": 0,
+      "total": 159,
+      "rounded": 159,
+      "paymentMethod": "cash",
+      "billNumber": 63
+    },
+    {
+      "id": "75df7467-7aa6-4bc1-b852-d5b92bc5e2f4",
+      "date": "2025-11-08T14:07:05.797Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "upi",
+      "billNumber": 62
+    },
+    {
+      "id": "c39cad8d-dfe5-422f-a4b1-a12a4da486a0",
+      "date": "2025-11-08T13:34:34.878Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 368,
+      "discount": 0,
+      "gst": 0,
+      "total": 368,
+      "rounded": 368,
+      "paymentMethod": "cash",
+      "billNumber": 61
+    },
+    {
+      "id": "5cdd4631-8033-4959-b21f-f3cfcdaa3ce6",
+      "date": "2025-11-08T09:19:48.637Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 606,
+      "discount": 0,
+      "gst": 0,
+      "total": 606,
+      "rounded": 606,
+      "paymentMethod": "cash",
+      "billNumber": 60
+    },
+    {
+      "id": "8025c5eb-68e8-43ab-b058-b69386a632f4",
+      "date": "2025-11-08T09:18:43.461Z",
+      "items": [
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "12",
+          "name": "Blue Lugan",
+          "price": 149,
+          "category": "MOCKTAIL",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 497,
+      "discount": 0,
+      "gst": 0,
+      "total": 497,
+      "rounded": 497,
+      "paymentMethod": "cash",
+      "billNumber": 60
+    },
+    {
+      "id": "80158d13-b148-4296-bf13-28688317aeff",
+      "date": "2025-11-07T17:04:39.503Z",
+      "items": [
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 199,
+      "discount": 0,
+      "gst": 0,
+      "total": 199,
+      "rounded": 199,
+      "paymentMethod": "upi",
+      "billNumber": 59
+    },
+    {
+      "id": "7ace56bf-25e5-46ea-aa45-3ac0939e11c9",
+      "date": "2025-11-07T14:42:17.758Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 328,
+      "discount": 0,
+      "gst": 0,
+      "total": 328,
+      "rounded": 328,
+      "paymentMethod": "upi",
+      "billNumber": 58
+    },
+    {
+      "id": "985ae2f8-61bd-4cac-ad20-ed48b41d3e3f",
+      "date": "2025-11-07T14:21:42.078Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 308,
+      "discount": 0,
+      "gst": 0,
+      "total": 308,
+      "rounded": 308,
+      "paymentMethod": "upi",
+      "billNumber": 57
+    },
+    {
+      "id": "2f08bd93-b11d-4f97-8142-e797e92e0843",
+      "date": "2025-11-07T14:12:19.711Z",
+      "items": [
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 667,
+      "discount": 0,
+      "gst": 0,
+      "total": 667,
+      "rounded": 667,
+      "paymentMethod": "cash",
+      "billNumber": 57
+    },
+    {
+      "id": "076bc19d-f1e4-4705-aef8-98f7c205dba1",
+      "date": "2025-11-07T14:03:54.304Z",
+      "items": [
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 438,
+      "discount": 0,
+      "gst": 0,
+      "total": 438,
+      "rounded": 438,
+      "paymentMethod": "cash",
+      "billNumber": 57
+    },
+    {
+      "id": "3e85f6f1-a395-40a3-bb8a-96a1d4d4c3a1",
+      "date": "2025-11-07T13:43:28.999Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "cash",
+      "billNumber": 56
+    },
+    {
+      "id": "688309ec-cd6c-4b4b-8719-b0c823657656",
+      "date": "2025-11-07T13:21:13.175Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 199,
+      "discount": 0,
+      "gst": 0,
+      "total": 199,
+      "rounded": 199,
+      "paymentMethod": "cash",
+      "billNumber": 55
+    },
+    {
+      "id": "c4a421b5-df5a-42ec-983a-4523761dd324",
+      "date": "2025-11-07T12:25:47.879Z",
+      "items": [
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 229,
+      "discount": 0,
+      "gst": 0,
+      "total": 229,
+      "rounded": 229,
+      "paymentMethod": "upi",
+      "billNumber": 54
+    },
+    {
+      "id": "6fa4e68a-9545-4b16-9132-55e5b849fb27",
+      "date": "2025-11-07T11:43:02.894Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 874,
+      "discount": 0,
+      "gst": 0,
+      "total": 874,
+      "rounded": 874,
+      "paymentMethod": "upi",
+      "billNumber": 53
+    },
+    {
+      "id": "22e19e93-5d17-45db-8157-85ae4a6ad22c",
+      "date": "2025-11-07T09:49:40.094Z",
+      "items": [
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 159,
+      "discount": 0,
+      "gst": 0,
+      "total": 159,
+      "rounded": 159,
+      "paymentMethod": "upi",
+      "billNumber": 52
+    },
+    {
+      "id": "722b25f9-6fca-482f-9ee0-816273d4b968",
+      "date": "2025-11-07T09:30:41.813Z",
+      "items": [
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 705,
+      "discount": 0,
+      "gst": 0,
+      "total": 705,
+      "rounded": 705,
+      "paymentMethod": "cash",
+      "billNumber": 51
+    },
+    {
+      "id": "20aa1dea-e6f1-4ba4-a7e9-59acadf3035b",
+      "date": "2025-11-06T16:46:40.519Z",
+      "items": [
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "50",
+          "name": "Tandoori Soya Chap",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 408,
+      "discount": 0,
+      "gst": 0,
+      "total": 408,
+      "rounded": 408,
+      "paymentMethod": "cash",
+      "billNumber": 50
+    },
+    {
+      "id": "10bfda5e-18b2-4abb-a035-01b6213b224c",
+      "date": "2025-11-06T15:31:52.907Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 557,
+      "discount": 0,
+      "gst": 0,
+      "total": 557,
+      "rounded": 557,
+      "paymentMethod": "upi",
+      "billNumber": 49
+    },
+    {
+      "id": "3eef39fb-54e9-48ba-a924-97a4b95e75c7",
+      "date": "2025-11-06T15:13:30.552Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1762002361366",
+          "name": "Farm House Pizza- Big",
+          "price": 279,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 737,
+      "discount": 0,
+      "gst": 0,
+      "total": 737,
+      "rounded": 737,
+      "paymentMethod": "cash",
+      "billNumber": 49
+    },
+    {
+      "id": "3d61f16a-3268-4b39-9092-987bec11d570",
+      "date": "2025-11-06T14:29:33.479Z",
+      "items": [
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 98,
+      "discount": 0,
+      "gst": 0,
+      "total": 98,
+      "rounded": 98,
+      "paymentMethod": "cash",
+      "billNumber": 48
+    },
+    {
+      "id": "39a5d56b-4b30-4814-ab5b-3b7bf8ab388f",
+      "date": "2025-11-06T11:11:08.990Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 59,
+      "discount": 0,
+      "gst": 0,
+      "total": 59,
+      "rounded": 59,
+      "paymentMethod": "cash",
+      "billNumber": 47
+    },
+    {
+      "id": "5f7021ad-d0af-42d4-89ea-d42c10f532b3",
+      "date": "2025-11-06T11:08:25.422Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 6
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 4
+        },
+        {
+          "id": "1762002288765",
+          "name": "Paneer Tikka Pizza- Big",
+          "price": 249,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002132417",
+          "name": "Veg Pizza- Big",
+          "price": 229,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 4
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 8
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002742956",
+          "name": "French Fries Peri Peri",
+          "price": 189,
+          "category": "BURGER",
+          "quantity": 2
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "19",
+          "name": "Rosperel Ice Cream",
+          "price": 89,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 3804,
+      "discount": 0,
+      "gst": 0,
+      "total": 3804,
+      "rounded": 3804,
+      "paymentMethod": "cash",
+      "billNumber": 46
+    },
+    {
+      "id": "4fe645b3-b4d9-4452-8c99-b7ec80fb20c3",
+      "date": "2025-11-06T10:57:05.693Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1762002324333",
+          "name": "Paneer Tikka Pizza- Small",
+          "price": 199,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 328,
+      "discount": 0,
+      "gst": 0,
+      "total": 328,
+      "rounded": 328,
+      "paymentMethod": "upi",
+      "billNumber": 46
+    },
+    {
+      "id": "d30fc5cc-7142-4db6-bda2-72ee75a73392",
+      "date": "2025-11-05T15:48:57.864Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 218,
+      "discount": 0,
+      "gst": 0,
+      "total": 218,
+      "rounded": 218,
+      "paymentMethod": "cash",
+      "billNumber": 45
+    },
+    {
+      "id": "0c0b3aea-b417-4e9d-b0f2-a78927768ae0",
+      "date": "2025-11-05T15:37:05.793Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 3
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 4
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 2
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1681,
+      "discount": 0,
+      "gst": 0,
+      "total": 1681,
+      "rounded": 1681,
+      "paymentMethod": "cash",
+      "billNumber": 44
+    },
+    {
+      "id": "0fe80c67-2e7d-49e8-849d-88251a134d3a",
+      "date": "2025-11-05T13:40:56.887Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 478,
+      "discount": 0,
+      "gst": 0,
+      "total": 478,
+      "rounded": 478,
+      "paymentMethod": "cash",
+      "billNumber": 43
+    },
+    {
+      "id": "19b50770-d17e-4e25-b353-fa721af5f595",
+      "date": "2025-11-05T13:40:09.745Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "45",
+          "name": "Paneer Tikka",
+          "price": 269,
+          "category": "TANDOOR",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 478,
+      "discount": 0,
+      "gst": 0,
+      "total": 478,
+      "rounded": 478,
+      "paymentMethod": "cash",
+      "billNumber": 42
+    },
+    {
+      "id": "5a6543fd-e4cf-465a-b805-3e8342f3433e",
+      "date": "2025-11-05T11:51:05.831Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 258,
+      "discount": 0,
+      "gst": 0,
+      "total": 258,
+      "rounded": 258,
+      "paymentMethod": "upi",
+      "billNumber": 41
+    },
+    {
+      "id": "b9fca84c-bd40-40db-bf11-371c3bb03f03",
+      "date": "2025-11-05T09:36:55.070Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 706,
+      "discount": 0,
+      "gst": 0,
+      "total": 706,
+      "rounded": 706,
+      "paymentMethod": "upi",
+      "billNumber": 40
+    },
+    {
+      "id": "30b79a74-fd59-4104-ae1e-65a92659ad1a",
+      "date": "2025-11-05T09:19:42.601Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 348,
+      "discount": 0,
+      "gst": 0,
+      "total": 348,
+      "rounded": 348,
+      "paymentMethod": "cash",
+      "billNumber": 39
+    },
+    {
+      "id": "35ddf23c-4097-466b-b5ee-3dc2a197ce27",
+      "date": "2025-11-05T08:31:23.623Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 227,
+      "discount": 0,
+      "gst": 0,
+      "total": 227,
+      "rounded": 227,
+      "paymentMethod": "cash",
+      "billNumber": 39
+    },
+    {
+      "id": "a7daeb4d-df3d-4bbe-8f71-3f688db528b3",
+      "date": "2025-11-05T06:32:47.897Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 59,
+      "discount": 0,
+      "gst": 0,
+      "total": 59,
+      "rounded": 59,
+      "paymentMethod": "cash",
+      "billNumber": 38
+    },
+    {
+      "id": "92c1a03a-7d84-447c-be78-ade326966e6a",
+      "date": "2025-11-04T14:54:43.999Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 218,
+      "discount": 0,
+      "gst": 0,
+      "total": 218,
+      "rounded": 218,
+      "paymentMethod": "cash",
+      "billNumber": 37
+    },
+    {
+      "id": "abbcd7fc-464f-4bb7-8bc0-334375ebe97d",
+      "date": "2025-11-04T14:30:51.975Z",
+      "items": [
+        {
+          "id": "29",
+          "name": "Manchau Soup",
+          "price": 109,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 308,
+      "discount": 0,
+      "gst": 0,
+      "total": 308,
+      "rounded": 308,
+      "paymentMethod": "cash",
+      "billNumber": 36
+    },
+    {
+      "id": "3a3911aa-4373-4488-a6a7-445c2df4615a",
+      "date": "2025-11-04T13:07:49.997Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "15",
+          "name": "Virgin Mojito",
+          "price": 139,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 318,
+      "discount": 0,
+      "gst": 0,
+      "total": 318,
+      "rounded": 318,
+      "paymentMethod": "upi",
+      "billNumber": 35
+    },
+    {
+      "id": "96a6e9cf-e883-458d-b87f-148b35f4d989",
+      "date": "2025-11-04T12:47:47.640Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "9",
+          "name": "Oreo Shake",
+          "price": 169,
+          "category": "SHAKE",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 537,
+      "discount": 0,
+      "gst": 0,
+      "total": 537,
+      "rounded": 537,
+      "paymentMethod": "cash",
+      "billNumber": 34
+    },
+    {
+      "id": "239d345d-0ca4-4f32-b871-89bbdaf8f447",
+      "date": "2025-11-04T10:39:44.144Z",
+      "items": [
+        {
+          "id": "7",
+          "name": "Chocolate Shake",
+          "price": 159,
+          "category": "SHAKE",
+          "quantity": 3
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002391283",
+          "name": "Farm House Pizza- Small",
+          "price": 209,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 716,
+      "discount": 0,
+      "gst": 0,
+      "total": 716,
+      "rounded": 716,
+      "paymentMethod": "cash",
+      "billNumber": 33
+    },
+    {
+      "id": "2361e877-008b-4a60-94de-9c508ff720ef",
+      "date": "2025-11-04T09:13:43.201Z",
+      "items": [
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 149,
+      "discount": 0,
+      "gst": 0,
+      "total": 149,
+      "rounded": 149,
+      "paymentMethod": "cash",
+      "billNumber": 33
+    },
+    {
+      "id": "9f72617b-ec9c-4a12-af5b-ba847ee952cb",
+      "date": "2025-11-04T04:48:41.056Z",
+      "items": [
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 358,
+      "discount": 0,
+      "gst": 0,
+      "total": 358,
+      "rounded": 358,
+      "paymentMethod": "cash",
+      "billNumber": 1
+    },
+    {
+      "id": "3372072b-3a50-4406-8ea3-a187b0e40aef",
+      "date": "2025-11-03T16:44:16.834Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 338,
+      "discount": 0,
+      "gst": 0,
+      "total": 338,
+      "rounded": 338,
+      "paymentMethod": "cash",
+      "billNumber": 32
+    },
+    {
+      "id": "9c5aba6e-7ba3-48ce-bc11-b899467bbc32",
+      "date": "2025-11-03T14:47:14.322Z",
+      "items": [
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "17",
+          "name": "Butter Scotch Ice Cream",
+          "price": 59,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "18",
+          "name": "Chocolate Ice Cream",
+          "price": 69,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "19",
+          "name": "Rosperel Ice Cream",
+          "price": 89,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 296,
+      "discount": 0,
+      "gst": 0,
+      "total": 296,
+      "rounded": 296,
+      "paymentMethod": "cash",
+      "billNumber": 31
+    },
+    {
+      "id": "1e9bdce6-2b8f-45a0-a770-96ba4a683b44",
+      "date": "2025-11-03T13:23:41.265Z",
+      "items": [
+        {
+          "id": "44",
+          "name": "Bloom Special Rice",
+          "price": 189,
+          "category": "RICE",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 337,
+      "discount": 0,
+      "gst": 0,
+      "total": 337,
+      "rounded": 337,
+      "paymentMethod": "cash",
+      "billNumber": 30
+    },
+    {
+      "id": "c9fb1d9e-92e2-47e7-9ee5-d3ebacc76d6e",
+      "date": "2025-11-03T12:43:56.777Z",
+      "items": [
+        {
+          "id": "58",
+          "name": "White Sauce Pasta",
+          "price": 199,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "1762002219932",
+          "name": "Margret Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 408,
+      "discount": 0,
+      "gst": 0,
+      "total": 408,
+      "rounded": 408,
+      "paymentMethod": "upi",
+      "billNumber": 29
+    },
+    {
+      "id": "8c8d2465-25a6-4ccc-9b7d-11bd18525250",
+      "date": "2025-11-03T11:44:14.440Z",
+      "items": [
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        },
+        {
+          "id": "14",
+          "name": "Fresh Lemon Soda",
+          "price": 99,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        },
+        {
+          "id": "8",
+          "name": "Kit Kat Shake",
+          "price": 179,
+          "category": "SHAKE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 825,
+      "discount": 0,
+      "gst": 0,
+      "total": 825,
+      "rounded": 825,
+      "paymentMethod": "upi",
+      "billNumber": 28
+    },
+    {
+      "id": "d64b28c6-d069-4d9c-aee6-26e37bbecdc7",
+      "date": "2025-11-03T11:15:55.912Z",
+      "items": [
+        {
+          "id": "16",
+          "name": "Vanilla Ice Cream",
+          "price": 49,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 208,
+      "discount": 0,
+      "gst": 0,
+      "total": 208,
+      "rounded": 208,
+      "paymentMethod": "upi",
+      "billNumber": 27
+    },
+    {
+      "id": "f4288f2c-d830-4e60-b74e-18fc55916bce",
+      "date": "2025-11-03T10:32:53.538Z",
+      "items": [
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 258,
+      "discount": 0,
+      "gst": 0,
+      "total": 258,
+      "rounded": 258,
+      "paymentMethod": "cash",
+      "billNumber": 26
+    },
+    {
+      "id": "72d85112-23aa-45de-a1cf-902a99695c73",
+      "date": "2025-11-03T10:11:10.904Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 297,
+      "discount": 0,
+      "gst": 0,
+      "total": 297,
+      "rounded": 297,
+      "paymentMethod": "upi",
+      "billNumber": 25
+    },
+    {
+      "id": "44d5c409-950c-4591-8a63-0f5bdd2a3064",
+      "date": "2025-11-03T07:57:45.942Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "40",
+          "name": "Hakka Noodles",
+          "price": 139,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "31",
+          "name": "Sweet Corn Soup",
+          "price": 99,
+          "category": "SOUP",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 556,
+      "discount": 55.6,
+      "gst": 0,
+      "total": 500.4,
+      "rounded": 501,
+      "paymentMethod": "cash",
+      "billNumber": 24
+    },
+    {
+      "id": "c67c5313-13d7-4eb3-b3b1-290c7c9b63ac",
+      "date": "2025-11-03T07:55:04.383Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 79,
+      "discount": 0,
+      "gst": 0,
+      "total": 79,
+      "rounded": 79,
+      "paymentMethod": "cash",
+      "billNumber": 23
+    },
+    {
+      "id": "fce70f82-50fb-4d95-a270-8b7e94ee3613",
+      "date": "2025-11-02T15:49:11.569Z",
+      "items": [
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "cash",
+      "billNumber": 22
+    },
+    {
+      "id": "9f7462ca-fc0c-40c8-b22d-5f0279e1a0c7",
+      "date": "2025-11-02T15:28:33.801Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "61",
+          "name": "Hang Over Smoothie",
+          "price": 189,
+          "category": "SMOOTHIE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 507,
+      "discount": 0,
+      "gst": 0,
+      "total": 507,
+      "rounded": 507,
+      "paymentMethod": "cash",
+      "billNumber": 21
+    },
+    {
+      "id": "b429d68d-8b32-462f-8d14-7ee914d21f3b",
+      "date": "2025-11-02T14:32:15.609Z",
+      "items": [
+        {
+          "id": "47",
+          "name": "Malai Paneer Tikka",
+          "price": 299,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "22",
+          "name": "Veg Grill Sandwich",
+          "price": 129,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 687,
+      "discount": 0,
+      "gst": 0,
+      "total": 687,
+      "rounded": 687,
+      "paymentMethod": "cash",
+      "billNumber": 20
+    },
+    {
+      "id": "dfe87092-a1ad-43c7-9512-03b7f9090c8b",
+      "date": "2025-11-02T13:44:22.808Z",
+      "items": [
+        {
+          "id": "38",
+          "name": "Manchurian (Gravy/Dry)",
+          "price": 199,
+          "category": "CHINESE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 199,
+      "discount": 0,
+      "gst": 0,
+      "total": 199,
+      "rounded": 199,
+      "paymentMethod": "cash",
+      "billNumber": 19
+    },
+    {
+      "id": "1f3b5dc4-87b0-4b24-a3db-4f40ef7872a8",
+      "date": "2025-11-02T13:19:50.033Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 2
+        },
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        },
+        {
+          "id": "61",
+          "name": "Hang Over Smoothie",
+          "price": 189,
+          "category": "SMOOTHIE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 786,
+      "discount": 0,
+      "gst": 0,
+      "total": 786,
+      "rounded": 786,
+      "paymentMethod": "cash",
+      "billNumber": 18
+    },
+    {
+      "id": "075dfbd7-72c7-45dc-859c-60630bb8a568",
+      "date": "2025-11-02T12:40:14.065Z",
+      "items": [
+        {
+          "id": "14",
+          "name": "Fresh Lemon Soda",
+          "price": 99,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 99,
+      "discount": 0,
+      "gst": 0,
+      "total": 99,
+      "rounded": 99,
+      "paymentMethod": "cash",
+      "billNumber": 17
+    },
+    {
+      "id": "3ef13d0a-aebb-4cc5-801c-0118959c90af",
+      "date": "2025-11-02T12:37:56.059Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "34",
+          "name": "Paneer Chilli",
+          "price": 239,
+          "category": "CHINESE",
+          "quantity": 1
+        },
+        {
+          "id": "14",
+          "name": "Fresh Lemon Soda",
+          "price": 99,
+          "category": "MOCKTAIL",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 517,
+      "discount": 0,
+      "gst": 0,
+      "total": 517,
+      "rounded": 517,
+      "paymentMethod": "cash",
+      "billNumber": 16
+    },
+    {
+      "id": "06c16d2a-c122-4300-a23c-6464f069374b",
+      "date": "2025-11-02T08:42:35.791Z",
+      "items": [
+        {
+          "id": "24",
+          "name": "Bombay Sandwich",
+          "price": 99,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 99,
+      "discount": 0,
+      "gst": 0,
+      "total": 99,
+      "rounded": 99,
+      "paymentMethod": "cash",
+      "billNumber": 15
+    },
+    {
+      "id": "f2302d13-4530-4b6b-b611-affbfce8a220",
+      "date": "2025-11-02T08:06:00.176Z",
+      "items": [
+        {
+          "id": "21",
+          "name": "Veg Cheese Burger",
+          "price": 89,
+          "category": "BURGER",
+          "quantity": 3
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 297,
+      "discount": 0,
+      "gst": 0,
+      "total": 297,
+      "rounded": 297,
+      "paymentMethod": "cash",
+      "billNumber": 14
+    },
+    {
+      "id": "80f0f542-ee90-4041-a8c9-a4a5658c897e",
+      "date": "2025-11-02T07:29:01.657Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 118,
+      "discount": 0,
+      "gst": 0,
+      "total": 118,
+      "rounded": 118,
+      "paymentMethod": "cash",
+      "billNumber": 13
+    },
+    {
+      "id": "49987a8d-92ac-44bb-b035-cae667371656",
+      "date": "2025-11-02T07:15:35.573Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 30,
+      "discount": 0,
+      "gst": 0,
+      "total": 30,
+      "rounded": 30,
+      "paymentMethod": "cash",
+      "billNumber": 12
+    },
+    {
+      "id": "72c43546-e2b9-4490-87e9-5f9964ac5ae6",
+      "date": "2025-11-02T07:07:22.917Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 59,
+      "discount": 0,
+      "gst": 0,
+      "total": 59,
+      "rounded": 59,
+      "paymentMethod": "cash",
+      "billNumber": 11
+    },
+    {
+      "id": "36a8f68f-94b5-4932-9bdf-358cea406ca6",
+      "date": "2025-11-02T07:06:45.109Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 59,
+      "discount": 0,
+      "gst": 10.62,
+      "total": 69.62,
+      "rounded": 70,
+      "paymentMethod": "cash",
+      "billNumber": 10
+    },
+    {
+      "id": "489d74ed-f7c8-4b58-aed6-04c06dee0d48",
+      "date": "2025-11-02T07:05:10.341Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 177,
+      "discount": 0,
+      "gst": 0,
+      "total": 177,
+      "rounded": 177,
+      "paymentMethod": "cash",
+      "billNumber": 9
+    },
+    {
+      "id": "eb1036cd-216a-48cd-aaae-4cbf8075d0a5",
+      "date": "2025-11-02T07:02:24.782Z",
+      "items": [
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 1
+        },
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 209,
+      "discount": 0,
+      "gst": 0,
+      "total": 209,
+      "rounded": 209,
+      "paymentMethod": "cash",
+      "billNumber": 8
+    },
+    {
+      "id": "9fd2eb01-0f7d-4bdc-a2c9-99f4310fc50e",
+      "date": "2025-11-02T06:29:09.180Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 79,
+      "discount": 0,
+      "gst": 0,
+      "total": 79,
+      "rounded": 79,
+      "paymentMethod": "cash",
+      "billNumber": 7
+    },
+    {
+      "id": "caceee68-d3ae-45f7-980f-9f869a24116e",
+      "date": "2025-11-01T16:39:36.117Z",
+      "items": [
+        {
+          "id": "59",
+          "name": "Red Sauce Pasta",
+          "price": 189,
+          "category": "PASTA",
+          "quantity": 1
+        },
+        {
+          "id": "2",
+          "name": "Cold Coffee With Ice Cream",
+          "price": 179,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 368,
+      "discount": 0,
+      "gst": 0,
+      "total": 368,
+      "rounded": 368,
+      "paymentMethod": "cash",
+      "billNumber": 6
+    },
+    {
+      "id": "86dc0ec0-652f-4d6d-b603-cbcc85d04ab4",
+      "date": "2025-11-01T16:28:17.716Z",
+      "items": [
+        {
+          "id": "23",
+          "name": "Veg Sandwich & French Fry",
+          "price": 79,
+          "category": "SANDWICH",
+          "quantity": 1
+        },
+        {
+          "id": "1",
+          "name": "Cold Coffee",
+          "price": 149,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 228,
+      "discount": 0,
+      "gst": 0,
+      "total": 228,
+      "rounded": 228,
+      "paymentMethod": "cash",
+      "billNumber": 5
+    },
+    {
+      "id": "9b7ad57c-f3b8-4bf1-bc41-8099c1501bb3",
+      "date": "2025-11-01T14:58:50.751Z",
+      "items": [
+        {
+          "id": "1761996158971",
+          "name": "watter bottle 750ml",
+          "price": 30,
+          "category": "DESERT",
+          "quantity": 1
+        },
+        {
+          "id": "20",
+          "name": "Veg Burger",
+          "price": 59,
+          "category": "BURGER",
+          "quantity": 6
+        },
+        {
+          "id": "1762002093117",
+          "name": "Veg Pizza- Small",
+          "price": 179,
+          "category": "PIZZA",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 742,
+      "discount": 0,
+      "gst": 0,
+      "total": 742,
+      "rounded": 742,
+      "paymentMethod": "cash",
+      "billNumber": 4
+    },
+    {
+      "id": "9b1f9abe-ffe1-416f-bd69-62d4cb5fa2ab",
+      "date": "2025-11-01T12:53:55.676Z",
+      "items": [
+        {
+          "id": "5",
+          "name": "Hot Coffee",
+          "price": 59,
+          "category": "COLD COFFEE",
+          "quantity": 3
+        }
+      ],
+      "subtotal": 177,
+      "discount": 0,
+      "gst": 0,
+      "total": 177,
+      "rounded": 177,
+      "paymentMethod": "cash",
+      "billNumber": 3
+    },
+    {
+      "id": "33ec3635-0ac6-4a17-95b2-3957e78903f0",
+      "date": "2025-11-01T12:09:38.779Z",
+      "items": [
+        {
+          "id": "4",
+          "name": "Black Tea",
+          "price": 39,
+          "category": "COLD COFFEE",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 39,
+      "discount": 0,
+      "gst": 0,
+      "total": 39,
+      "rounded": 39,
+      "paymentMethod": "cash",
+      "billNumber": 2
+    },
+    {
+      "id": "b2590156-05db-4385-93a5-b2a2dacc913b",
+      "date": "2025-11-01T11:44:15.684Z",
+      "items": [
+        {
+          "id": "48",
+          "name": "Hara Bhara Kabab",
+          "price": 199,
+          "category": "TANDOOR",
+          "quantity": 1
+        },
+        {
+          "id": "25",
+          "name": "Chipotle Sandwich",
+          "price": 89,
+          "category": "SANDWICH",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 288,
+      "discount": 0,
+      "gst": 0,
+      "total": 288,
+      "rounded": 288,
+      "paymentMethod": "wallet",
+      "billNumber": 1
+    }
+  ],
+  "businessInfo": {
+    "name": "Bloom Cafe",
+    "address": "Ground Floor, Deora Plaza, Kesarpura Road, Sheoganj",
+    "phone": "9001160228"
+  },
+  "exportDate": "2025-12-10T17:34:12.062Z"
+}

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo "⚠️  This script will help you clean up and recreate all Supabase tables."
+echo "⚠️  You need to manually drop all tables in your Supabase dashboard first."
+echo ""
+echo "Steps:"
+echo "1. Go to your Supabase dashboard: https://app.supabase.com/project/wjqsqwitgxqypzbaayos"
+echo "2. Navigate to Table Editor"
+echo "3. Delete all tables:"
+echo "   - counters"
+echo "   - users"
+echo "   - orders"
+echo "   - bills"
+echo "   - menu_items"
+echo "   - customers"
+echo "   - tables"
+echo "   - inventory"
+echo "   - bookings"
+echo "   - businesssettings (lowercase version)"
+echo "   - discounts"
+echo "   - department_settlements"
+echo ""
+echo "4. After deleting all tables, go to Database > SQL Editor"
+echo "5. Run the contents of supabase-table-setup.sql"
+echo ""
+echo "6. Then run the verification script:"
+echo "   npx tsx final-verification.ts"
+echo ""
+echo "Press Enter when you've completed these steps..."
+read
+
+echo "Running final verification..."
+npx tsx final-verification.ts

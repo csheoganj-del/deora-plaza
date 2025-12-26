@@ -1,0 +1,11 @@
+{
+  "level": "info",
+  "outputs": [
+    "console",
+    "file"
+  ],
+  "logFile": "logs/system.log",
+  "maxFileSize": "10MB",
+  "includeTimestamp": true,
+  "includeServerInfo": true
+}
