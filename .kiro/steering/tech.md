@@ -7,7 +7,7 @@
 
 ## Frontend Stack
 - **React 19** with Server Components and Server Actions
-- **Tailwind CSS 4** with custom design system
+- **Tailwind CSS 3.4** with custom design system
 - **Radix UI** components for accessibility
 - **Framer Motion** for animations
 - **Lucide React** for icons

@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Minimal test styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* Test if Tailwind is working */
+.test-tailwind {
+  @apply bg-blue-500 text-white p-4 rounded-lg;
+}

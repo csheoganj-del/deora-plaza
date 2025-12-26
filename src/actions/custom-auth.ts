@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache"
 // import { logActivityWithLocation } from "@/actions/location"
 
 const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || "deora-plaza-secret-key-change-in-production"
+    process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "deora-plaza-secret-key-change-in-production"
 )
 
 export interface LoginResult {
@@ -97,7 +97,10 @@ async function loginWithCustomUserInternal(
             return { success: false, error: "This account uses phone authentication. Please use OTP login." }
         }
 
-        // Create JWT token
+        // Create JWT token with more robust timing
+        const now = Math.floor(Date.now() / 1000);
+        console.log("Creating JWT token with timestamp:", now);
+        
         const token = await new SignJWT({
             userId: user.id,
             username: user.username,
@@ -107,19 +110,41 @@ async function loginWithCustomUserInternal(
             businessUnit: user.businessUnit,
         })
             .setProtectedHeader({ alg: "HS256" })
-            .setExpirationTime("24h")
-            .setIssuedAt()
+            .setExpirationTime(now + (24 * 60 * 60)) // 24 hours from now
+            .setIssuedAt(now - 5) // 5 seconds in the past to account for clock skew
+            .setNotBefore(now - 5) // Allow 5 seconds clock skew
             .sign(JWT_SECRET)
 
-        // Set cookie
+        console.log("JWT token created successfully, length:", token.length);
+
+        // Set cookie with more explicit options
         const cookieStore = await cookies()
+        console.log("Setting auth cookie with options:", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24,
+            path: "/",
+            domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+        });
+        
         cookieStore.set("deora-auth-token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
             maxAge: 60 * 60 * 24, // 24 hours
             path: "/",
+            domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
         })
+
+        console.log("Auth cookie set successfully");
+
+        // Clear any conflicting Supabase auth state to avoid conflicts
+        try {
+            // This will be handled client-side after redirect
+        } catch (e) {
+            console.warn('Could not clear Supabase auth state:', e);
+        }
 
         // Log login activity with location (Fire and forget style safely)
 
@@ -167,13 +192,52 @@ export async function getCurrentCustomUser() {
         const token = cookieStore.get("deora-auth-token")?.value
 
         if (!token) {
+            console.log("No auth token found in cookies")
             return null
         }
 
-        const verified = await jwtVerify(token, JWT_SECRET)
+        const verified = await jwtVerify(token, JWT_SECRET, {
+            clockTolerance: 10 // Allow 10 seconds clock skew
+        })
+        
+        console.log("Token verified successfully for user:", verified.payload.userId)
         return verified.payload as any
     } catch (error) {
+        console.error("Token verification failed in getCurrentCustomUser:", error instanceof Error ? error.message : String(error))
         return null
+    }
+}
+
+// Debug function to check auth status
+export async function debugAuthStatus() {
+    try {
+        const cookieStore = await cookies()
+        const token = cookieStore.get("deora-auth-token")?.value
+        
+        console.log("Debug Auth Status:", {
+            hasToken: !!token,
+            tokenLength: token?.length,
+            tokenPreview: token?.substring(0, 20) + "...",
+            jwtSecret: process.env.JWT_SECRET ? "Set" : "Not set"
+        })
+        
+        if (token) {
+            try {
+                const verified = await jwtVerify(token, JWT_SECRET, {
+                    clockTolerance: 10
+                })
+                console.log("Token is valid, expires:", new Date(verified.payload.exp! * 1000))
+                return { valid: true, payload: verified.payload }
+            } catch (error) {
+                console.log("Token is invalid:", error instanceof Error ? error.message : String(error))
+                return { valid: false, error: error instanceof Error ? error.message : String(error) }
+            }
+        }
+        
+        return { valid: false, error: "No token" }
+    } catch (error) {
+        console.error("Debug auth status error:", error)
+        return { valid: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 

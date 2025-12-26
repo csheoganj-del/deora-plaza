@@ -1,479 +1,342 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { BusinessUnit, getBusinessUnitManager, DEFAULT_BUSINESS_UNITS } from "@/lib/business-units";
-import { BusinessUnitSwitcher } from "./BusinessUnitSwitcher";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useSupabaseSession } from "@/hooks/useSupabaseSession";
-import {
+import { useRouter } from "next/navigation";
+import { getCurrentCustomUser, logoutCustomUser } from "@/actions/custom-auth";
+import { 
+  LayoutDashboard, 
+  Users, 
+  IndianRupee, 
   Calendar,
-  Users,
-  IndianRupee,
-  Plus,
-  LayoutDashboard,
   UtensilsCrossed,
   Wine,
   Building2,
   Flower2,
+  TrendingUp,
+  Settings,
+  LogOut,
   Clock,
-  TrendingUp
+  Bell,
+  Plus
 } from "lucide-react";
-import { useSyncEngine } from "@/lib/realtime/sync-engine";
-import { useAudioNotifications } from "@/lib/audio/notification-system";
 
-// Enhanced Components with Liquid Glass
-import { DashboardGrid, StatsSection, ActionsSection, InsightsSection } from "./dashboard-grid";
-import { PremiumStatsCard, PremiumActionCard } from "@/components/ui/premium-liquid-glass";
-import { InsightCard } from "@/components/ui/insight-card";
-import { SystemStatus } from "@/components/ui/system-status";
-import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
-import { DashboardBackgroundCustomizer } from "@/components/ui/dashboard-background-customizer";
-
-// Define the Global Overview Unit
-const GLOBAL_OVERVIEW_UNIT: BusinessUnit = {
-  id: 'global_overview',
-  name: 'All Dashboard',
-  type: 'all' as any,
-  description: 'Global Overview of all business units',
-  isActive: true,
-  settings: {} as any,
-  operatingHours: {} as any,
-  contact: {} as any,
-  features: []
-};
-
+// Clean Apple-Level Dashboard (NO BLUR CHAOS) - Updated Version
 export function EnhancedDashboard() {
-  const searchParams = useSearchParams();
-  const { data: session } = useSupabaseSession();
-  const syncEngine = useSyncEngine();
-  const { playNotification } = useAudioNotifications();
-  const [isLoading, setIsLoading] = useState(true);
-  const [businessUnits, setBusinessUnits] = useState<BusinessUnit[]>([]);
-  const [selectedUnit, setSelectedUnit] = useState<BusinessUnit | null>(null);
-  const [stats, setStats] = useState({
-    totalBookings: 0,
-    activeBookings: 0,
-    totalRevenue: 0,
-    totalCustomers: 0,
-    activeOrders: 0,
-    percentageChange: 0,
-    pendingRevenue: 0
-  });
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [loading, setLoading] = useState(true);
 
-  // Load business units
+  // Update time every second
   useEffect(() => {
-    const loadBusinessUnits = async () => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Get current user and set clean dashboard background
+  useEffect(() => {
+    const loadUser = async () => {
       try {
-        let units = getBusinessUnitManager().getActiveBusinessUnits();
-        if (units.length === 0) {
-          units = DEFAULT_BUSINESS_UNITS.map(u => ({ ...u, id: u.name?.toLowerCase().replace(/\s+/g, '_') || 'id' })) as BusinessUnit[];
+        const currentUser = await getCurrentCustomUser();
+        setUser(currentUser);
+        
+        // Set clean dashboard background
+        if (typeof document !== 'undefined') {
+          document.body.classList.remove('lock-screen');
+          // No need to set background - CSS handles it now
         }
-
-        const allUnits = [GLOBAL_OVERVIEW_UNIT, ...units];
-        setBusinessUnits(allUnits);
-
-        const unitId = searchParams.get('unit');
-        const unit = unitId ? allUnits.find(u => u.id === unitId) : allUnits[0];
-        setSelectedUnit(unit || allUnits[0]);
       } catch (error) {
-        console.error("Failed to load business units:", error);
+        console.error("Failed to load user:", error);
+        router.push('/login');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
+    loadUser();
+  }, [router]);
 
-    loadBusinessUnits();
-  }, [searchParams]);
-
-  // Load stats function
-  const fetchStats = async () => {
-    if (!selectedUnit) return;
-
+  const handleLogout = async () => {
     try {
-      const manager = getBusinessUnitManager();
-      let aggregatedStats = {
-        totalBookings: 0,
-        activeBookings: 0,
-        totalRevenue: 0,
-        totalCustomers: 0,
-        activeOrders: 0,
-        pendingRevenue: 0
-      };
-
-      if (selectedUnit.id === 'global_overview') {
-        const stats = await manager.getBusinessUnitStats('global_overview');
-        if (stats) {
-          aggregatedStats.totalRevenue = stats.totalRevenue;
-          aggregatedStats.activeOrders = stats.ordersCount;
-          aggregatedStats.pendingRevenue = 0; // Default value since property doesn't exist
-          if (stats.percentageChange !== undefined) {
-            (aggregatedStats as any).percentageChange = stats.percentageChange;
-          }
-        }
-      } else {
-        const stats = await manager.getBusinessUnitStats(selectedUnit.id);
-        if (stats) {
-          aggregatedStats.totalRevenue = stats.totalRevenue;
-          aggregatedStats.activeOrders = stats.ordersCount;
-          aggregatedStats.pendingRevenue = 0; // Default value since property doesn't exist
-          if (stats.percentageChange !== undefined) {
-            (aggregatedStats as any).percentageChange = stats.percentageChange;
-          }
-        }
-      }
-
-      setStats(aggregatedStats as any);
+      await logoutCustomUser();
     } catch (error) {
-      console.error("Error fetching stats:", error);
+      console.error("Logout error:", error);
+      router.push('/login');
     }
   };
 
-  // Setup real-time subscriptions
-  useEffect(() => {
-    if (!selectedUnit) return;
-
-    const tables = ['orders', 'bookings', 'customers', 'bills'];
-    
-    tables.forEach(table => {
-      syncEngine.subscribe(table, selectedUnit.id !== 'global_overview' ? `business_unit.eq.${selectedUnit.id}` : undefined);
-    });
-
-    const handleRealtimeUpdate = (event: any) => {
-      if (event.type === 'insert') {
-        if (event.table === 'orders') {
-          playNotification({
-            type: 'order_new',
-            title: 'New Order',
-            message: `Order #${event.record.id} received`,
-            priority: 'high',
-            businessUnit: selectedUnit.id
-          });
-        } else if (event.table === 'bookings') {
-          playNotification({
-            type: 'booking_new',
-            title: 'New Booking',
-            message: `Booking for ${event.record.customer_name}`,
-            priority: 'medium',
-            businessUnit: selectedUnit.id
-          });
-        }
-      }
-      
-      setTimeout(() => {
-        fetchStats();
-      }, 500);
-    };
-
-    syncEngine.on('sync-event', handleRealtimeUpdate);
-
-    return () => {
-      syncEngine.removeListener('sync-event', handleRealtimeUpdate);
-    };
-  }, [selectedUnit, syncEngine, playNotification]);
-
-  // Load stats when selected unit changes
-  useEffect(() => {
-    fetchStats();
-  }, [selectedUnit]);
-
-  const handleUnitChange = (unitId: string) => {
-    const unit = businessUnits.find(u => u.id === unitId);
-    if (unit) setSelectedUnit(unit);
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="p-6 space-y-6">
-        <Skeleton className="h-12 w-64" />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-36 rounded-xl" />
-          ))}
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  if (!selectedUnit) return null;
-
-  const isGlobal = selectedUnit.id === 'global_overview';
-
-  // Generate insights based on data
-  const insights = [];
-  
-  if (stats.pendingRevenue > 0) {
-    insights.push({
-      type: 'warning' as const,
-      title: 'Pending Payments',
-      description: `₹${stats.pendingRevenue.toLocaleString()} in unpaid bookings require attention`,
-      actionLabel: 'Review Payments',
-      onAction: () => window.location.href = '/dashboard/billing?status=pending'
-    });
-  }
-
-  if (stats.activeOrders > 10) {
-    insights.push({
-      type: 'info' as const,
-      title: 'High Order Volume',
-      description: `${stats.activeOrders} active orders - consider additional kitchen support`,
-      actionLabel: 'View Kitchen',
-      onAction: () => window.location.href = '/dashboard/kitchen'
-    });
-  }
-
-  if (stats.totalRevenue > 0 && stats.percentageChange > 15) {
-    insights.push({
-      type: 'success' as const,
-      title: 'Revenue Growth',
-      description: `Strong performance with ${stats.percentageChange.toFixed(1)}% growth this month`,
-      actionLabel: 'View Report',
-      onAction: () => window.location.href = '/dashboard/statistics'
-    });
-  }
+  const timeString = currentTime.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
 
   return (
-    <div className="min-h-screen p-6 space-y-6" data-dashboard>
-      {/* Dashboard Background Customizer */}
-      <DashboardBackgroundCustomizer />
-      
-      {/* Header with Breadcrumb */}
-      <div className="flex flex-col space-y-4">
-        <BreadcrumbNav 
-          items={[
-            { label: selectedUnit.name === 'All Dashboard' ? 'Overview' : selectedUnit.name, active: true }
-          ]}
-        />
-        
-        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-high-contrast">
-              {selectedUnit.name === 'All Dashboard' ? 'Dashboard Overview' : `${selectedUnit.name} Dashboard`}
-            </h1>
-            <p className="text-neutral-text">
-              Welcome back{session?.user?.name ? `, ${session.user.name}` : ''}
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Left Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 bg-white/80 backdrop-blur-sm border-r border-slate-200/60 shadow-sm">
+        <div className="p-6">
+          {/* Logo */}
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+              <span className="text-white font-bold text-sm">D</span>
+            </div>
+            <span className="font-semibold text-slate-800">DEORA</span>
           </div>
-          <div className="flex items-center gap-4">
-            <SystemStatus />
-            <BusinessUnitSwitcher
-              businessUnits={businessUnits}
-              currentUnitId={selectedUnit.id}
-              onUnitChange={handleUnitChange}
-            />
-          </div>
+
+          {/* Navigation */}
+          <nav className="space-y-2">
+            <div className="bg-blue-500/10 text-blue-700 px-4 py-3 rounded-lg font-medium border border-blue-200/50">
+              All Dashboard
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <UtensilsCrossed className="w-4 h-4" />
+              <span>Tables</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <LayoutDashboard className="w-4 h-4" />
+              <span>Orders</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Building2 className="w-4 h-4" />
+              <span>Hotel</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Flower2 className="w-4 h-4" />
+              <span>Garden</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Wine className="w-4 h-4" />
+              <span>Kitchen</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <IndianRupee className="w-4 h-4" />
+              <span>Billing</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <TrendingUp className="w-4 h-4" />
+              <span>Statistics</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Settings className="w-4 h-4" />
+              <span>Locations</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <IndianRupee className="w-4 h-4" />
+              <span>GST Reports</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Settings className="w-4 h-4" />
+              <span>Dept. Settlements</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Users className="w-4 h-4" />
+              <span>Customers</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <Settings className="w-4 h-4" />
+              <span>Discounts</span>
+            </div>
+            <div className="text-slate-600 px-4 py-3 rounded-lg hover:bg-slate-100/70 cursor-pointer flex items-center space-x-3 transition-colors">
+              <UtensilsCrossed className="w-4 h-4" />
+              <span>Menu</span>
+            </div>
+          </nav>
         </div>
       </div>
 
-      <DashboardGrid>
-        {/* Stats Section */}
-        <StatsSection>
-          <PremiumStatsCard
-            delay={0}
-            onClick={() => window.location.href = '/dashboard/billing'}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-text">Total Revenue</p>
-                <p className="text-2xl font-bold text-high-contrast">{`₹${stats.totalRevenue.toLocaleString()}`}</p>
-                <p className="text-xs text-neutral-text">Cash in hand</p>
-              </div>
-              <IndianRupee className="h-8 w-8 text-success-data" />
+      {/* Main Content */}
+      <div className="ml-64 min-h-screen">
+        {/* Top Bar */}
+        <div className="bg-white/60 backdrop-blur-sm border-b border-slate-200/60 px-8 py-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <span className="text-slate-600">Dashboard</span>
+              <span className="text-slate-400">&gt;</span>
+              <span className="text-slate-800 font-medium">Overview</span>
             </div>
-            {stats.percentageChange !== undefined && (
-              <div className="mt-2 flex items-center text-xs">
-                <TrendingUp className="h-3 w-3 mr-1 text-success-data" />
-                <span className="text-success-data font-medium">{stats.percentageChange.toFixed(1)}%</span>
-                <span className="text-neutral-text ml-1">vs last month</span>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-slate-600">All Systems Operational</span>
+              <span className="text-sm text-slate-800 font-medium">{timeString}</span>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-sm">
+                <Plus className="w-4 h-4" />
+                <span>New Booking</span>
+              </button>
+              <button className="p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100/50 rounded-lg transition-colors">
+                <Bell className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100/50 rounded-lg transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-sm">
+                <span className="text-white text-sm font-medium">
+                  {user?.name?.charAt(0) || 'U'}
+                </span>
               </div>
-            )}
-          </PremiumStatsCard>
-
-          <PremiumStatsCard
-            delay={1}
-            onClick={() => window.location.href = '/dashboard/billing?status=pending'}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-text">Pending Revenue</p>
-                <p className="text-2xl font-bold text-high-contrast">{`₹${stats.pendingRevenue.toLocaleString()}`}</p>
-                <p className="text-xs text-neutral-text">Unpaid bookings</p>
-              </div>
-              <Clock className="h-8 w-8 text-warning-data" />
             </div>
-          </PremiumStatsCard>
+          </div>
+        </div>
 
-          <PremiumStatsCard
-            delay={2}
-            onClick={() => window.location.href = '/dashboard/bookings'}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-text">Total Bookings</p>
-                <p className="text-2xl font-bold text-high-contrast">{stats.totalBookings}</p>
-                <p className="text-xs text-neutral-text">Hotel & Garden</p>
+        {/* Dashboard Content */}
+        <div className="p-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-semibold text-slate-800 mb-2">Dashboard Overview</h1>
+            <p className="text-slate-600">Welcome back, {user?.name || 'Kalpesh Deora'}</p>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* Total Revenue */}
+            <div className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Total Revenue</p>
+                  <p className="text-2xl font-semibold text-slate-800">₹0</p>
+                </div>
+                <IndianRupee className="w-8 h-8 text-green-600" />
               </div>
-              <Calendar className="h-8 w-8 text-primary-action" />
+              <p className="text-xs text-slate-500">Cash in hand</p>
             </div>
-          </PremiumStatsCard>
 
-          <PremiumStatsCard
-            delay={3}
-            onClick={() => window.location.href = '/dashboard/orders'}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-text">Active Orders</p>
-                <p className="text-2xl font-bold text-high-contrast">{stats.activeOrders}</p>
-                <p className="text-xs text-neutral-text">In progress</p>
+            {/* Pending Revenue */}
+            <div className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Pending Revenue</p>
+                  <p className="text-2xl font-semibold text-slate-800">₹0</p>
+                </div>
+                <Clock className="w-8 h-8 text-orange-500" />
               </div>
-              <LayoutDashboard className="h-8 w-8 text-error-data" />
+              <p className="text-xs text-slate-500">Unpaid bookings</p>
             </div>
-          </PremiumStatsCard>
-        </StatsSection>
 
-        {/* Quick Actions Section */}
-        <ActionsSection>
-          {isGlobal ? (
-            <>
-              <PremiumActionCard
-                delay={0}
-                onClick={() => window.location.href = '/dashboard/hotel'}
+            {/* Total Bookings */}
+            <div className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Total Bookings</p>
+                  <p className="text-2xl font-semibold text-slate-800">0</p>
+                </div>
+                <Calendar className="w-8 h-8 text-blue-600" />
+              </div>
+              <p className="text-xs text-slate-500">Hotel & Garden</p>
+            </div>
+
+            {/* Active Orders */}
+            <div className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Active Orders</p>
+                  <p className="text-2xl font-semibold text-slate-800">0</p>
+                </div>
+                <LayoutDashboard className="w-8 h-8 text-purple-600" />
+              </div>
+              <p className="text-xs text-slate-500">In progress</p>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-slate-800 mb-6">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Hotel Management */}
+              <div 
+                className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+                onClick={() => router.push('/dashboard/hotel')}
               >
                 <div className="flex items-center space-x-4">
-                  <Building2 className="h-8 w-8 text-primary-action" />
+                  <Building2 className="w-8 h-8 text-blue-600" />
                   <div>
-                    <h3 className="font-semibold text-high-contrast">Hotel Management</h3>
-                    <p className="text-sm text-neutral-text">Manage rooms, bookings, and guest services</p>
+                    <h3 className="font-semibold text-slate-800">Hotel Management</h3>
+                    <p className="text-sm text-slate-600">Manage rooms, bookings, and guest services</p>
                   </div>
                 </div>
-              </PremiumActionCard>
+              </div>
 
-              <PremiumActionCard
-                delay={1}
-                onClick={() => window.location.href = '/dashboard/bar'}
+              {/* Bar & POS */}
+              <div 
+                className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+                onClick={() => router.push('/dashboard/bar')}
               >
                 <div className="flex items-center space-x-4">
-                  <Wine className="h-8 w-8 text-primary-action" />
+                  <Wine className="w-8 h-8 text-purple-600" />
                   <div>
-                    <h3 className="font-semibold text-high-contrast">Bar & POS</h3>
-                    <p className="text-sm text-neutral-text">Handle bar orders and point of sale</p>
+                    <h3 className="font-semibold text-slate-800">Bar & POS</h3>
+                    <p className="text-sm text-slate-600">Handle bar orders and point of sale</p>
                   </div>
                 </div>
-              </PremiumActionCard>
+              </div>
 
-              <PremiumActionCard
-                delay={2}
-                onClick={() => window.location.href = '/dashboard/garden'}
+              {/* Garden Events */}
+              <div 
+                className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+                onClick={() => router.push('/dashboard/garden')}
               >
                 <div className="flex items-center space-x-4">
-                  <Flower2 className="h-8 w-8 text-success-data" />
+                  <Flower2 className="w-8 h-8 text-green-600" />
                   <div>
-                    <h3 className="font-semibold text-high-contrast">Garden Events</h3>
-                    <p className="text-sm text-neutral-text">Manage event bookings and catering</p>
+                    <h3 className="font-semibold text-slate-800">Garden Events</h3>
+                    <p className="text-sm text-slate-600">Manage event bookings and catering</p>
                   </div>
                 </div>
-              </PremiumActionCard>
+              </div>
 
-              <PremiumActionCard
-                delay={3}
-                onClick={() => window.location.href = '/dashboard/tables'}
+              {/* Cafe Operations */}
+              <div 
+                className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+                onClick={() => router.push('/dashboard/tables')}
               >
                 <div className="flex items-center space-x-4">
-                  <UtensilsCrossed className="h-8 w-8 text-warning-data" />
+                  <UtensilsCrossed className="w-8 h-8 text-orange-500" />
                   <div>
-                    <h3 className="font-semibold text-high-contrast">Cafe Operations</h3>
-                    <p className="text-sm text-neutral-text">Handle table orders and quick service</p>
+                    <h3 className="font-semibold text-slate-800">Cafe Operations</h3>
+                    <p className="text-sm text-slate-600">Handle table orders and quick service</p>
                   </div>
                 </div>
-              </PremiumActionCard>
+              </div>
 
-              <PremiumActionCard
-                delay={4}
-                onClick={() => window.location.href = '/dashboard/customers'}
+              {/* Customer Management */}
+              <div 
+                className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+                onClick={() => router.push('/dashboard/customers')}
               >
                 <div className="flex items-center space-x-4">
-                  <Users className="h-8 w-8 text-primary-action" />
+                  <Users className="w-8 h-8 text-blue-600" />
                   <div>
-                    <h3 className="font-semibold text-high-contrast">Customer Management</h3>
-                    <p className="text-sm text-neutral-text">View and manage customer profiles</p>
+                    <h3 className="font-semibold text-slate-800">Customer Management</h3>
+                    <p className="text-sm text-slate-600">View and manage customer profiles</p>
                   </div>
                 </div>
-              </PremiumActionCard>
+              </div>
 
-              <PremiumActionCard
-                delay={5}
-                onClick={() => window.location.href = '/dashboard/statistics'}
+              {/* Financial Reports */}
+              <div 
+                className="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-[1.02]"
+                onClick={() => router.push('/dashboard/analytics')}
               >
                 <div className="flex items-center space-x-4">
-                  <TrendingUp className="h-8 w-8 text-success-data" />
+                  <TrendingUp className="w-8 h-8 text-green-600" />
                   <div>
-                    <h3 className="font-semibold text-high-contrast">Financial Reports</h3>
-                    <p className="text-sm text-neutral-text">View revenue and performance analytics</p>
+                    <h3 className="font-semibold text-slate-800">Financial Reports</h3>
+                    <p className="text-sm text-slate-600">View revenue and performance analytics</p>
                   </div>
                 </div>
-              </PremiumActionCard>
-            </>
-          ) : (
-            <>
-              <PremiumActionCard
-                delay={0}
-                onClick={() => window.location.href = `/dashboard/${selectedUnit.type}/bookings/new`}
-              >
-                <div className="flex items-center space-x-4">
-                  <Plus className="h-8 w-8 text-primary-action" />
-                  <div>
-                    <h3 className="font-semibold text-high-contrast">New Booking</h3>
-                    <p className="text-sm text-neutral-text">{`Create a new ${selectedUnit.type === 'hotel' ? 'room' : 'table'} booking`}</p>
-                  </div>
-                </div>
-              </PremiumActionCard>
-
-              <PremiumActionCard
-                delay={1}
-                onClick={() => window.location.href = `/dashboard/${selectedUnit.type}/orders`}
-              >
-                <div className="flex items-center space-x-4">
-                  <UtensilsCrossed className="h-8 w-8 text-primary-action" />
-                  <div>
-                    <h3 className="font-semibold text-high-contrast">Manage Orders</h3>
-                    <p className="text-sm text-neutral-text">{`View and manage ${selectedUnit.type === 'hotel' ? 'room service' : 'food and beverage'} orders`}</p>
-                  </div>
-                </div>
-              </PremiumActionCard>
-
-              <PremiumActionCard
-                delay={2}
-                onClick={() => window.location.href = `/dashboard/${selectedUnit.type}/reports`}
-              >
-                <div className="flex items-center space-x-4">
-                  <TrendingUp className="h-8 w-8 text-success-data" />
-                  <div>
-                    <h3 className="font-semibold text-high-contrast">View Reports</h3>
-                    <p className="text-sm text-neutral-text">{`${selectedUnit.type} performance and analytics`}</p>
-                  </div>
-                </div>
-              </PremiumActionCard>
-            </>
-          )}
-        </ActionsSection>
-
-        {/* Insights Section */}
-        {insights.length > 0 && (
-          <InsightsSection>
-            {insights.map((insight, index) => (
-              <InsightCard
-                key={index}
-                type={insight.type}
-                title={insight.title}
-                description={insight.description}
-                actionLabel={insight.actionLabel}
-                onAction={insight.onAction}
-              />
-            ))}
-          </InsightsSection>
-        )}
-      </DashboardGrid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

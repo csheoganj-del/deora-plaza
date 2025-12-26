@@ -8,10 +8,7 @@ import {
   createDocument,
   queryDocuments,
 } from "@/lib/supabase/database";
-import { getUserById } from "@/actions/user";
-import { auditDataDeletion } from "@/lib/audit";
 import { logActivityWithLocation } from "@/actions/location";
-
 import { updateTableStatus } from "./tables";
 
 export async function createOrder(data: {

@@ -9,7 +9,6 @@
  */
 
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import { createFirebaseAdapter, FirebaseAdapter } from '@/lib/firebase/adapter';
 import { EventEmitter } from 'events';
 
 export interface SyncEvent {
@@ -30,11 +29,11 @@ export interface ServerConfig {
   isActive: boolean;
   lastHealthCheck: number;
   latency: number;
-  type: 'supabase' | 'firebase';
+  type: 'supabase';
 }
 
 export class RealTimeSyncEngine extends EventEmitter {
-  private servers: Map<string, SupabaseClient | FirebaseAdapter> = new Map();
+  private servers: Map<string, SupabaseClient> = new Map();
   private serverConfigs: ServerConfig[] = [];
   private activeServer: string | null = null;
   private channels: Map<string, RealtimeChannel> = new Map();
@@ -69,24 +68,9 @@ export class RealTimeSyncEngine extends EventEmitter {
 
     this.serverConfigs = [primaryConfig];
 
-    // Add Firebase as backup if configured
-    const firebaseProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    
-    if (firebaseProjectId && firebaseApiKey) {
-      const firebaseConfig: ServerConfig = {
-        id: 'firebase-backup',
-        url: `https://${firebaseProjectId}.firebaseapp.com`,
-        priority: 2,
-        isActive: true,
-        lastHealthCheck: Date.now(),
-        latency: 0,
-        type: 'firebase'
-      };
-      this.serverConfigs.push(firebaseConfig);
-    }
+    // Only using Supabase - Firebase backup removed
 
-    // Create client connections
+    // Create client connections - Supabase only
     this.serverConfigs.forEach(config => {
       if (config.type === 'supabase') {
         const client = createClient(config.url, config.key!, {
@@ -97,11 +81,6 @@ export class RealTimeSyncEngine extends EventEmitter {
           }
         });
         this.servers.set(config.id, client);
-      } else if (config.type === 'firebase') {
-        const firebaseAdapter = createFirebaseAdapter();
-        if (firebaseAdapter) {
-          this.servers.set(config.id, firebaseAdapter);
-        }
       }
     });
 
@@ -357,7 +336,7 @@ export class RealTimeSyncEngine extends EventEmitter {
   /**
    * Get the active client
    */
-  private getActiveClient(): SupabaseClient | FirebaseAdapter | null {
+  private getActiveClient(): SupabaseClient | null {
     if (!this.activeServer) return null;
     return this.servers.get(this.activeServer) || null;
   }

@@ -93,7 +93,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // If we have a custom auth token, don't let Supabase state changes force logout
         if (event === 'SIGNED_OUT' || !session) {
+          // Check if we have a custom auth token
+          if (typeof document !== 'undefined') {
+            const cookies = document.cookie.split(';');
+            const hasCustomToken = cookies.some(cookie => cookie.trim().startsWith('deora-auth-token='));
+            
+            if (hasCustomToken) {
+              // Check if custom auth is still valid
+              try {
+                const response = await fetch('/api/auth/me');
+                if (response.ok) {
+                  const { user: customUser } = await response.json();
+                  if (customUser) {
+                    // Custom auth is still valid, don't logout
+                    setUser(customUser);
+                    setError(null);
+                    setLoading(false);
+                    return;
+                  }
+                }
+              } catch (err) {
+                console.error('Error checking custom auth during SIGNED_OUT event:', err);
+              }
+            }
+          }
+          
+          // No custom token or custom auth is invalid, proceed with logout
           setUser(null);
           setError(null);
         } else if (event === 'SIGNED_IN' || session) {

@@ -22,6 +22,7 @@ interface Session {
 export function useSupabaseSession() {
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<"loading" | "authenticated" | "unauthenticated">("loading");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -29,7 +30,7 @@ export function useSupabaseSession() {
     const fetchSession = async () => {
       // Create a timeout promise that forces resolution if network hangs
       const timeoutPromise = new Promise<{ timeout: true }>((resolve) => {
-        setTimeout(() => resolve({ timeout: true }), 4000);
+        setTimeout(() => resolve({ timeout: true }), 15000); // 15 seconds
       });
 
       try {
@@ -37,18 +38,24 @@ export function useSupabaseSession() {
         const result = await Promise.race([
           (async () => {
             // First, try to get user from custom auth (JWT token)
-            const customUser = await getCurrentCustomUser().catch(() => null);
+            console.log("useSupabaseSession: Checking custom auth...");
+            const customUser = await getCurrentCustomUser().catch((e) => {
+              console.error("useSupabaseSession: Error checking custom user:", e);
+              return null;
+            });
+            console.log("useSupabaseSession: Custom auth result:", customUser ? "Found" : "Not found");
             return { customUser };
           })(),
           timeoutPromise
         ]);
 
         if ('timeout' in result) {
-          console.warn("Session check timed out in race");
+          console.warn("Session check timed out in race (15s)");
           // Don't return here, let the fallback logic run or set unauthenticated
           if (isMounted) {
             setSession(null);
             setStatus("unauthenticated");
+            setError("Session check timed out (15s limit reached)");
           }
           return;
         }
@@ -60,6 +67,7 @@ export function useSupabaseSession() {
 
         if (customUser) {
           // User is authenticated with custom auth system
+          console.log("useSupabaseSession: Authenticated with custom user", customUser.userId);
           setSession({
             user: {
               id: customUser.userId,
@@ -75,6 +83,7 @@ export function useSupabaseSession() {
         }
 
         // Fallback to Supabase auth if no custom auth
+        console.log("useSupabaseSession: Checking Supabase auth fallback...");
         const user = await getCurrentUser();
 
         if (!isMounted) return;
@@ -118,15 +127,17 @@ export function useSupabaseSession() {
             });
             setStatus("authenticated");
           }
-        } else {
+          console.log("useSupabaseSession: No user found");
           setSession(null);
           setStatus("unauthenticated");
+          setError("No user found in either Custom Auth or Supabase Auth");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching session:", error);
         if (isMounted) {
           setSession(null);
           setStatus("unauthenticated");
+          setError(`Session fetch error: ${error?.message || String(error)}`);
         }
       }
     };
@@ -134,11 +145,12 @@ export function useSupabaseSession() {
     // Add a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       if (isMounted && status === "loading") {
-        console.warn("Session fetch timeout - setting unauthenticated");
+        console.warn("Session fetch timeout - setting unauthenticated (safety fallback)");
         setSession(null);
         setStatus("unauthenticated");
+        setError("Global safety timeout reached (15s)");
       }
-    }, 5000); // 5 second timeout
+    }, 15000); // 15 second timeout
 
     fetchSession();
 
@@ -163,11 +175,12 @@ export function useSupabaseSession() {
             businessUnit: "all"
           }
         },
-        status
+        status,
+        error: null // No error
       };
     }
   }
 
-  return { data: session, status };
+  return { data: session, status, error };
 }
 

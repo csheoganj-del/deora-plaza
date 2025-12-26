@@ -1,0 +1,84 @@
+/* Login Screen Styles - Scoped to .login-screen class */
+
+.login-screen {
+  background: radial-gradient(ellipse at center, #2E2A5E 0%, #1A1033 50%, #0F1C3F 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border-radius: 28px;
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  animation: floatIn 0.9s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Login Brand */
+.login-brand {
+  color: #4f8bff;
+  font-size: 22px;
+  font-weight: 600;
+  text-shadow: 0 0 16px rgba(79, 139, 255, 0.55), 0 6px 24px rgba(79, 139, 255, 0.35);
+  background: linear-gradient(180deg, rgba(79, 139, 255, 1) 0%, rgba(79, 139, 255, 0.9) 50%, rgba(79, 139, 255, 0.7) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(79, 139, 255, 0.4));
+}
+
+/* Login Inputs */
+.login-input {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 14px 16px;
+  color: white;
+  font-size: 15px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.25s cubic-bezier(.22, 1, .36, 1);
+  height: 48px;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: rgba(79, 139, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(79, 139, 255, 0.35), inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Login Button */
+.login-btn {
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #3b82f6, #2563eb);
+  font-weight: 600;
+  box-shadow: 0 0 26px rgba(59, 130, 246, 0.7), 0 14px 36px rgba(0, 0, 0, 0.45);
+  margin-top: 32px;
+  margin-bottom: 16px;
+  transition: all 0.25s cubic-bezier(.22, 1, .36, 1);
+}
+
+.login-btn:hover:not(:active) {
+  transform: scale(1.02) translateZ(0);
+  box-shadow: 0 0 32px rgba(59, 130, 246, 0.85), 0 18px 44px rgba(0, 0, 0, 0.55);
+}
+
+.login-btn:active {
+  transform: scale(0.98) translateZ(0);
+  transition: transform 0.1s cubic-bezier(.22, 1, .36, 1);
+}

@@ -1,0 +1,39 @@
+/* Dashboard Styles - Clean and Professional */
+
+.dashboard {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  animation: none !important;
+}
+
+.dashboard::before,
+.dashboard::after {
+  display: none !important;
+}
+
+/* Override any glass effects in dashboard */
+.dashboard .glass-strong,
+.dashboard .glass-soft {
+  backdrop-filter: none !important;
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Dashboard specific components */
+.dashboard .card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard .sidebar {
+  background: #f8fafc;
+  border-right: 1px solid #e5e7eb;
+}
+
+.dashboard .header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}

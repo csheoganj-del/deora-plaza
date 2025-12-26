@@ -6,54 +6,88 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff, ArrowUp } from "lucide-react";
 import { loginWithCustomUser } from "@/actions/custom-auth";
+import { SimpleBackgroundCustomizer } from "@/components/ui/simple-background-customizer";
+import { AppleMiniLoader } from "@/components/ui/apple-loader";
 
-// Simple iOS Clock Component
-function SimpleClock() {
+// Premium Apple-Level iOS Clock Component
+function PremiumClock() {
+  const [time, setTime] = useState(new Date());
   const [mounted, setMounted] = useState(false);
-  const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
     setMounted(true);
-    setTime(new Date());
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // During server-side rendering and initial client render, show nothing or a placeholder
-  // that matches perfectly to avoid hydration errors.
-  if (!mounted || !time) {
+  if (!mounted) {
     return (
       <div className="text-center mb-12">
-        <div className="text-8xl md:text-9xl font-thin text-white/10 mb-4 h-32 flex items-center justify-center">
-          {/* Empty placeholder with same dimensions */}
+        <div 
+          className="inline-block glass-strong time-card-depth animate-float-in mb-6"
+          style={{
+            padding: '32px 48px',
+            position: 'relative',
+            zIndex: 10
+          }}
+        >
+          <div 
+            className="apple-time-glow liquid-glass-text"
+            style={{
+              fontSize: '120px', /* Apple-level larger size */
+              fontWeight: '800', /* Bolder like iOS */
+              letterSpacing: '-0.03em', /* Tighter Apple spacing */
+              fontFamily: 'SF Pro Display, Inter, system-ui, sans-serif',
+              position: 'relative',
+              zIndex: 2
+            }}
+          >
+            --:--
+          </div>
+        </div>
+        <div style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.7)' }}>
+          Loading...
         </div>
       </div>
     );
   }
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-  };
+  const timeString = time.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  const dateString = time.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
 
   return (
     <div className="text-center mb-12">
-      <div className="text-8xl md:text-9xl font-thin text-white mb-4 drop-shadow-2xl">
-        {formatTime(time)}
+      <div 
+        className="inline-block glass-strong time-card-depth animate-float-in mb-6"
+        style={{
+          padding: '32px 48px'
+        }}
+      >
+        <div 
+          className="apple-time-glow liquid-glass-text"
+          style={{
+            fontSize: '120px', /* Apple-level larger size */
+            fontWeight: '800', /* Bolder like iOS */
+            letterSpacing: '-0.03em', /* Tighter Apple spacing */
+            fontFamily: 'SF Pro Display, Inter, system-ui, sans-serif',
+            position: 'relative',
+            zIndex: 2
+          }}
+        >
+          {timeString}
+        </div>
       </div>
-      <div className="text-xl md:text-2xl font-medium text-white/80 drop-shadow-lg">
-        {formatDate(time)}
+      <div style={{ fontSize: '18px' }} className="liquid-glass-text-secondary">
+        {dateString}
       </div>
     </div>
   );
@@ -69,6 +103,14 @@ export default function LoginPage() {
     username: "",
     password: "",
   });
+
+  // Initialize premium background
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.body.style.background = 'radial-gradient(ellipse at center, #2E2A5E 0%, #1A1033 50%, #0F1C3F 100%)';
+      document.body.style.backgroundAttachment = 'fixed';
+    }
+  }, []);
 
   const getRedirectPath = (role: string, businessUnit: string): string => {
     if (role === "super_admin" || role === "owner") return "/dashboard";
@@ -99,9 +141,14 @@ export default function LoginPage() {
       }
 
       if (result.user) {
+        // Add Apple-style loading transition
+        document.body.classList.add("route-loading");
+        
         const redirectPath = getRedirectPath(result.user.role, result.user.businessUnit || "");
-        // Use window.location for a full page navigation to ensure cookies are properly read
-        window.location.href = redirectPath;
+        // Add a small delay to ensure token is properly set and smooth transition
+        setTimeout(() => {
+          window.location.href = redirectPath;
+        }, 500);
       }
     } catch (err: any) {
       console.error("Login error:", err);
@@ -110,51 +157,95 @@ export default function LoginPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 text-center shadow-2xl relative z-10">
-          <Loader2 className="w-8 h-8 text-white mx-auto animate-spin mb-4" />
-          <p className="text-white">Verifying credentials...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background Effects - Made subtler to blend with dynamic background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20 pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.1),transparent_50%)] pointer-events-none" />
+    <div 
+      className="min-h-screen relative overflow-hidden" 
+      style={{ 
+        background: 'radial-gradient(ellipse at center, #2E2A5E 0%, #1A1033 50%, #0F1C3F 100%)',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Apple Mini Loader for Login Process */}
+      <AppleMiniLoader isVisible={loading} />
+      
+      {/* Cinematic Background Effects */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 50%)',
+          filter: 'blur(1px)'
+        }}
+      />
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4">
         {!showLoginForm ? (
-          // Lock Screen
+          // Premium Lock Screen
           <div className="text-center w-full max-w-md">
-            <SimpleClock />
+            <PremiumClock />
 
-            {/* DEORA Plaza Branding */}
+            {/* DEORA Plaza Brand Section - Apple Level */}
             <div className="mb-16">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-2">
+              <h1 
+                className="text-2xl font-semibold mb-3 apple-brand-glow liquid-glass-text-blue"
+                style={{
+                  fontFamily: 'SF Pro Display, Inter, system-ui, sans-serif',
+                  fontWeight: '600'
+                }}
+              >
                 DEORA Plaza
               </h1>
-              <p className="text-white/70 text-sm font-medium tracking-wide">
+              
+              {/* Premium Glass Divider */}
+              <div 
+                className="mx-auto mb-4"
+                style={{
+                  width: '220px',
+                  height: '1px',
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                  filter: 'blur(0.5px)',
+                  boxShadow: '0 0 4px rgba(255, 255, 255, 0.2)'
+                }}
+              />
+              
+              <p 
+                className="text-sm liquid-glass-text-secondary"
+                style={{
+                  fontWeight: '400'
+                }}
+              >
                 Hospitality Management System
               </p>
             </div>
 
-            {/* iOS Unlock Interface */}
-            <div className="backdrop-blur-xl bg-white/8 border border-white/15 rounded-3xl p-8 mx-auto max-w-sm shadow-2xl">
-              <div className="text-center">
-                <ArrowUp className="w-6 h-6 text-white/80 mx-auto mb-3 animate-bounce" />
-                <p className="text-white/80 text-sm font-medium mb-6">
+            {/* Apple-Level Unlock Card */}
+            <div className="mx-auto glass-soft unlock-card-depth animate-float-in" style={{ width: '320px', position: 'relative', zIndex: 10 }}>
+              <div className="text-center" style={{ position: 'relative', zIndex: 2 }}>
+                <ArrowUp 
+                  className="w-5 h-5 mx-auto mb-3 animate-pulse"
+                  style={{ 
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.3))'
+                  }}
+                />
+                <p 
+                  className="text-sm font-medium mb-6 liquid-glass-text"
+                  style={{ 
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+                  }}
+                >
                   Swipe up to unlock
                 </p>
 
                 <button
                   onClick={() => setShowLoginForm(true)}
-                  className="w-full py-3 px-6 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl text-white font-medium transition-all duration-300 backdrop-blur-sm hover:scale-105"
+                  className="w-full apple-button animate-button-pulse font-semibold"
+                  style={{
+                    height: '52px',
+                    color: '#ffffff',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    border: 'none'
+                  }}
                 >
                   Access System
                 </button>
@@ -162,23 +253,26 @@ export default function LoginPage() {
             </div>
           </div>
         ) : (
-          // Login Form
+          // Apple-Level Login Form
           <div className="w-full max-w-md">
-            <div className="backdrop-blur-xl bg-white/8 border border-white/15 rounded-3xl p-8 shadow-2xl">
+            <div className="login-card">
               {/* Header */}
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-2">
+              <div className="text-center login-section" style={{ position: 'relative', zIndex: 2 }}>
+                <h1 className="login-brand" style={{ fontFamily: 'SF Pro Display, Inter, system-ui, sans-serif' }}>
                   DEORA Plaza
                 </h1>
-                <p className="text-white/70 text-sm">Restaurant Management System</p>
+                <div className="login-divider"></div>
+                <p className="login-subtitle">
+                  Restaurant Management System
+                </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} style={{ position: 'relative', zIndex: 2 }}>
                 {/* Username Field */}
-                <div className="space-y-2">
-                  <Label htmlFor="username" className="text-white/90 font-medium text-sm">
+                <div className="login-input-group">
+                  <label htmlFor="username" className="login-label">
                     Username
-                  </Label>
+                  </label>
                   <Input
                     id="username"
                     type="text"
@@ -186,16 +280,16 @@ export default function LoginPage() {
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     required
-                    className="h-12 bg-white/8 border-white/20 text-white placeholder-white/40 rounded-xl backdrop-blur-sm focus:bg-white/12 focus:border-white/30 transition-all duration-300"
+                    className="login-input"
                   />
                 </div>
 
                 {/* Password Field */}
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white/90 font-medium text-sm">
+                <div className="login-input-group">
+                  <label htmlFor="password" className="login-label">
                     Password
-                  </Label>
-                  <div className="relative">
+                  </label>
+                  <div style={{ position: 'relative', display: 'block' }}>
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -203,12 +297,37 @@ export default function LoginPage() {
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       required
-                      className="h-12 bg-white/8 border-white/20 text-white placeholder-white/40 rounded-xl backdrop-blur-sm focus:bg-white/12 focus:border-white/30 transition-all duration-300 pr-12"
+                      className="login-input"
+                      style={{ paddingRight: '48px' }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/90 transition-colors duration-200"
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        background: 'none',
+                        border: 'none',
+                        padding: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                        transition: 'color 0.25s cubic-bezier(.22,1,.36,1)',
+                        filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.color = 'rgba(255, 255, 255, 1)';
+                        e.target.style.filter = 'drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4))';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                        e.target.style.filter = 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))';
+                      }}
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -217,8 +336,8 @@ export default function LoginPage() {
 
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-red-500/20 border border-red-400/30 text-red-200 p-4 rounded-xl text-sm text-center backdrop-blur-sm">
-                    {error}
+                  <div className="login-error">
+                    <p>{error}</p>
                   </div>
                 )}
 
@@ -226,43 +345,88 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !formData.username || !formData.password}
-                  className="w-full h-12 relative overflow-hidden rounded-xl font-medium transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+                  className="w-full login-btn disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ border: 'none', color: '#ffffff', fontSize: '16px' }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/80 to-purple-500/80 backdrop-blur-sm" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 group-hover:from-white/20 group-hover:to-white/10 transition-all duration-300" />
-                  <div className="absolute inset-0 border border-white/20 rounded-xl" />
-
-                  <div className="relative z-10 flex items-center justify-center text-white">
-                    {loading ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Signing in...
-                      </div>
-                    ) : (
-                      "Sign In"
-                    )}
-                  </div>
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Signing in...</span>
+                    </div>
+                  ) : (
+                    <span>Sign In</span>
+                  )}
                 </button>
               </form>
 
               {/* Back to Lock Screen */}
               <button
                 onClick={() => setShowLoginForm(false)}
-                className="w-full mt-6 py-2 text-white/60 hover:text-white/90 text-sm transition-colors duration-200"
+                style={{
+                  position: 'relative',
+                  zIndex: 2,
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '12px',
+                  padding: '12px 20px',
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 0.25s cubic-bezier(.22,1,.36,1)',
+                  textDecoration: 'none',
+                  marginTop: '16px',
+                  display: 'block',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  width: '100%'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+                  e.target.style.color = 'rgba(255, 255, 255, 0.95)';
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.08)';
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.color = 'rgba(255, 255, 255, 0.85)';
+                  e.target.style.transform = 'translateY(0px)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+                }}
+                onMouseDown={(e) => {
+                  e.target.style.transform = 'translateY(0px) scale(0.98)';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.06)';
+                }}
+                onMouseUp={(e) => {
+                  e.target.style.transform = 'translateY(-1px) scale(1)';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.12)';
+                }}
               >
                 ← Back to lock screen
               </button>
-
-              {/* Footer */}
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <p className="text-white/50 text-xs text-center">
-                  &copy; {new Date().getFullYear()} DEORA Plaza. All rights reserved.
-                </p>
-              </div>
             </div>
           </div>
         )}
       </div>
+      
+      {/* Premium Footer */}
+      <div 
+        className="absolute bottom-6 left-0 right-0 text-center z-10"
+        style={{
+          color: 'rgba(255, 255, 255, 0.45)',
+          fontSize: '12px'
+        }}
+      >
+        © 2025 DEORA Plaza. All rights reserved.
+      </div>
+      
+      {/* Simple Background Customizer */}
+      <SimpleBackgroundCustomizer />
     </div>
   );
 }

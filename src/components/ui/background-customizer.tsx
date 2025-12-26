@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBackgroundPreferences } from "@/hooks/useBackgroundPreferences";
-import { getPredefinedBackgrounds } from "@/lib/background-preferences";
+import { getPredefinedBackgrounds, getBackgroundPreferences, applyAdaptiveColors } from "@/lib/background-preferences";
 import { shouldUseDynamicBackgrounds } from "@/lib/route-aware-styling";
 
 export function BackgroundCustomizer() {
@@ -111,6 +111,8 @@ export function BackgroundCustomizer() {
     }
 
     try {
+      console.log('📤 Uploading custom image:', file.name);
+      
       // Convert to base64 for storage
       const reader = new FileReader();
       reader.onload = async (e) => {
@@ -123,7 +125,19 @@ export function BackgroundCustomizer() {
           value: imageUrl
         };
 
+        console.log('🎨 Setting custom background with color extraction...');
         await setBackground(customBackground);
+        
+        // Force immediate color application after a short delay for color extraction
+        setTimeout(() => {
+          const preferences = getBackgroundPreferences();
+          if (preferences.current?.dominantColors) {
+            applyAdaptiveColors(preferences.current.dominantColors);
+            document.body.classList.add('adaptive-colors-active');
+            console.log('✅ Custom image colors applied successfully');
+          }
+        }, 500); // Longer delay for color extraction
+        
         setIsOpen(false);
       };
       
@@ -135,7 +149,19 @@ export function BackgroundCustomizer() {
   }, [setBackground, setIsOpen]);
 
   const handlePresetSelect = useCallback(async (preset: any) => {
+    console.log('🎯 Selecting preset:', preset.name);
     await setBackground(preset);
+    
+    // Force immediate color application
+    setTimeout(() => {
+      const preferences = getBackgroundPreferences();
+      if (preferences.current?.dominantColors) {
+        applyAdaptiveColors(preferences.current.dominantColors);
+        document.body.classList.add('adaptive-colors-active');
+        console.log('✅ Preset colors applied immediately');
+      }
+    }, 100);
+    
     setIsOpen(false);
   }, [setBackground, setIsOpen]);
 
