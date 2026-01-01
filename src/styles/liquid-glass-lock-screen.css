@@ -1,0 +1,61 @@
+/* 🔒 LIQUID GLASS LOCK SCREEN STYLES */
+
+/* iOS-style lock screen background */
+.system-background {
+  background: 
+    /* Subtle vertical gradient (top slightly darker) */
+    linear-gradient(180deg, 
+      rgba(26, 29, 33, 1) 0%, 
+      rgba(26, 29, 33, 0.98) 30%,
+      rgba(26, 29, 33, 0.95) 100%),
+    /* Very light vignette */
+    radial-gradient(ellipse at center, 
+      transparent 40%, 
+      rgba(0, 0, 0, 0.05) 100%),
+    /* Warm atmospheric glow */
+    radial-gradient(1200px 600px at 50% -200px, 
+      rgba(255, 215, 170, 0.08), 
+      transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Lock screen glass effects */
+.lock-screen-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Lock screen text styling */
+.lock-screen-text {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
+}
+
+/* Lock screen button styling */
+.lock-screen-button {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lock-screen-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.lock-screen-button:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.2);
+}

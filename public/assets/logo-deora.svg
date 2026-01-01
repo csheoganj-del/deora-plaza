@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="44" viewBox="0 0 160 44" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="160" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CA9A2C"/>
+      <stop offset="0.5" stop-color="#0FA3B1"/>
+      <stop offset="1" stop-color="#E7B679"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="158" height="42" rx="10" fill="url(#g)" opacity="0.12"/>
+  <rect x="1" y="1" width="158" height="42" rx="10" stroke="url(#g)" stroke-width="2" opacity="0.35"/>
+  <g fill="url(#g)" font-family="'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial" font-weight="700">
+    <text x="20" y="28" font-size="20" letter-spacing="2">DEORA PLAZA</text>
+  </g>
+</svg>

@@ -1,0 +1,74 @@
+/* 🔵 DEORA PLAZA - GOOGLE MATERIAL DESIGN 3 / MATERIAL YOU TOKENS */
+
+:root {
+  /* 🎨 MATERIAL DESIGN 3 (MATERIAL YOU) COLOR SYSTEM */
+  --md-sys-color-primary: #1A73E8;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #D3E3FD;
+  --md-sys-color-on-primary-container: #041E49;
+
+  --md-sys-color-secondary: #00639B;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #D3E3FD;
+  --md-sys-color-on-secondary-container: #001D35;
+
+  --md-sys-color-surface: #F8F9FA;
+  --md-sys-color-on-surface: #1B1B1F;
+  --md-sys-color-surface-container-low: #F3F6FC;
+  --md-sys-color-surface-container: #F0F4F9;
+  --md-sys-color-surface-container-high: #E9EEF6;
+  --md-sys-color-surface-container-highest: #DDE3EA;
+  --md-sys-color-outline: #74777F;
+  --md-sys-color-outline-variant: #C4C6D0;
+
+  /* Semantic Colors */
+  --md-sys-color-success: #1E8E3E;
+  --md-sys-color-error: #B3261E;
+  --md-sys-color-warning: #F9AB00;
+
+  /* ✍️ MATERIAL YOU TYPOGRAPHY */
+  --font-display: "Google Sans", "Inter", sans-serif;
+  --font-body: "Roboto", "Inter", sans-serif;
+
+  /* 📐 MD3 GRID & SPACING */
+  --space-unit: 8px;
+  /* 8dp baseline grid */
+  --space-0-5: 4px;
+  --space-1: 8px;
+  --space-1-5: 12px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+
+  /* 🏗️ MD3 RADII */
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* 🎭 MD3 ELEVATION */
+  --md-sys-elevation-1: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --md-sys-elevation-2: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+
+  /* Touch Targets */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+
+  /* Focus and state colors */
+  --focus-ring: rgba(26, 115, 232, 0.4);
+  --focus-ring-offset: 2px;
+
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
+
+/* 🎯 ACCESSIBILITY & UTILITIES */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+  }
+}

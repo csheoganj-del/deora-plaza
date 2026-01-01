@@ -1,0 +1,17 @@
+/* DEORA Plaza Background Styles */
+.deora-plaza-background {
+  background-image: url('/images/deora-plaza-building.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.golden-glass-overlay {
+  background: linear-gradient(135deg, 
+    rgba(255, 193, 7, 0.1) 0%,
+    rgba(255, 152, 0, 0.15) 25%,
+    rgba(255, 87, 34, 0.1) 50%,
+    rgba(139, 69, 19, 0.2) 75%,
+    rgba(0, 0, 0, 0.3) 100%);
+}

@@ -1,0 +1,370 @@
+/* 🏨 DEORA PLAZA - DARK LUXURY ENTRY SCREEN */
+/* Premium dark-themed landing screen with Apple-level quality */
+/* Exact implementation of Dark Luxury (Option 3) specifications */
+
+/* VIEWPORT - Full Screen Dark Luxury Container */
+.deora-luxury-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Ensure dark luxury base */
+  background: #121212;
+}
+
+/* BACKGROUND - Dark Gradient with Soft Vignette & Cinematic Lighting */
+.deora-luxury-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* 🔧 FIXED: Smooth dark gradient with soft center glow + vignette edges */
+  background: 
+    /* Soft radial light in center + vignette edges */
+    radial-gradient(circle at center, 
+      rgba(255, 255, 255, 0.06) 0%, 
+      rgba(0, 0, 0, 0.9) 60%),
+    /* Main dark gradient (no banding) */
+    linear-gradient(180deg, #121212 0%, #1A1A1A 100%);
+  
+  /* Add grain/noise texture for depth */
+  background-blend-mode: overlay;
+  
+  /* Subtle noise pattern overlay */
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.015) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.01) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.008) 0%, transparent 30%);
+  
+  /* GPU acceleration for smooth performance */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* MAIN CONTENT CONTAINER */
+.deora-luxury-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  gap: clamp(48px, 8vh, 80px);
+  z-index: 1;
+  
+  /* Plenty of negative space - no clutter */
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* BRAND CONTAINER - Main Focus */
+.deora-brand-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  
+  /* Initial state for animation */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.deora-brand-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* BRAND NAME - MAIN FOCUS (Now uses SparkTextReveal component) */
+.deora-brand-name {
+  /* Container for SparkTextReveal component */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  
+  /* The SparkTextReveal component handles its own styling */
+  /* This container just provides positioning and spacing */
+}
+
+.deora-brand-name::before {
+  /* REMOVED: Old shimmer animation - replaced with SparkTextReveal component */
+  display: none;
+}
+
+/* BRAND SUBTITLE */
+.deora-brand-subtitle {
+  /* Under the name: Hospitality Management System */
+  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  font-weight: 400;
+  
+  /* 🔧 FIXED: Readable size and spacing */
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  margin-top: 10px;
+  
+  /* 🔧 FIXED: Subtle but readable - not invisible */
+  color: #A1A1A6;
+  
+  margin: 0;
+  
+  /* Appears after main title animation (300ms delay) */
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 600ms cubic-bezier(0.22, 1, 0.36, 1) 300ms;
+}
+
+.deora-brand-container.visible .deora-brand-subtitle {
+  opacity: 1; /* Full opacity - readable but subtle */
+  transform: translateY(0);
+}
+
+/* CTA CONTAINER */
+.deora-cta-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  
+  /* Initial state for animation */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 700ms cubic-bezier(0.22, 1, 0.36, 1) 600ms;
+}
+
+.deora-cta-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* CALL-TO-ACTION BUTTON - Single button only */
+.deora-luxury-button {
+  /* Text: Enter System */
+  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  
+  /* 🔧 FIXED: Stronger gradient for more presence */
+  background: linear-gradient(180deg, #F2B94B 0%, #D9A441 100%);
+  
+  /* Text color: #121212 (dark on light button) */
+  color: #121212;
+  
+  /* Shape: Pill / fully rounded, Height: 52-56px */
+  height: 54px;
+  padding: 0 32px;
+  border-radius: 27px;
+  border: none;
+  cursor: pointer;
+  
+  /* 🔧 FIXED: Stronger shadow + softer glow = "pressable luxury" */
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  
+  /* Smooth luxury transitions */
+  transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  
+  /* GPU acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+  
+  /* Ensure button is clearly visible even at low brightness */
+  min-width: 160px;
+}
+
+/* HOVER / TAP INTERACTIONS */
+.deora-luxury-button:hover {
+  /* 🔧 FIXED: Stronger scale and enhanced shadow */
+  transform: scale(1.03) translateZ(0);
+  
+  /* 🔧 FIXED: Enhanced glow and shadow for luxury presence */
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.55),
+    0 0 25px rgba(242, 185, 75, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  
+  /* Subtle brightness increase - no harsh color change */
+  background: linear-gradient(180deg, #F4BC52 0%, #DBA748 100%);
+}
+
+.deora-luxury-button:active {
+  /* Press feedback */
+  transform: scale(0.98) translateZ(0);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.deora-luxury-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ANIMATIONS - Updated for SparkTextReveal component */
+
+/* Breathing glow pulse - applies to brand container */
+.deora-brand-container {
+  animation: breatheGlow 12s ease-in-out infinite;
+}
+
+@keyframes breatheGlow {
+  0%, 100% { 
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
+  }
+  50% { 
+    filter: drop-shadow(0 6px 28px rgba(0, 0, 0, 0.7));
+  }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 640px) {
+  .deora-luxury-content {
+    padding: 32px 24px;
+    gap: clamp(40px, 8vh, 60px);
+  }
+  
+  .deora-brand-name {
+    font-size: clamp(28px, 10vw, 44px);
+    letter-spacing: 0.06em; /* Slightly reduced on mobile */
+  }
+  
+  .deora-brand-subtitle {
+    font-size: clamp(13px, 3.5vw, 15px);
+  }
+  
+  .deora-luxury-button {
+    height: 52px;
+    padding: 0 28px;
+    font-size: 15px;
+    min-width: 140px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .deora-brand-name {
+    font-size: clamp(48px, 6vw, 64px);
+  }
+  
+  .deora-luxury-content {
+    gap: clamp(60px, 10vh, 100px);
+  }
+}
+
+/* HIGH DPI DISPLAYS - Crisp rendering */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .deora-luxury-button {
+    /* Crisper text rendering on high DPI */
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+  
+  .deora-brand-name {
+    /* Enhanced text rendering */
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* ACCESSIBILITY & READABILITY */
+
+/* Contrast ratio AA+ compliant */
+.deora-brand-name {
+  /* #F5F5F7 on dark background = excellent contrast */
+  color: #F5F5F7;
+}
+
+.deora-brand-subtitle {
+  /* #A1A1A6 at 80% opacity still maintains good contrast */
+  color: #A1A1A6;
+}
+
+.deora-luxury-button {
+  /* #121212 on #F2B94B gradient = excellent contrast */
+  color: #121212;
+}
+
+/* REDUCED MOTION SUPPORT */
+@media (prefers-reduced-motion: reduce) {
+  .deora-brand-container,
+  .deora-brand-subtitle,
+  .deora-cta-container,
+  .deora-luxury-button {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .deora-brand-name::before {
+    display: none;
+  }
+  
+  /* Disable SparkTextReveal animations for reduced motion */
+  .spark {
+    display: none !important;
+  }
+  
+  .letter {
+    opacity: 1 !important;
+    text-shadow: 0 0 18px rgba(242,185,75,0.25) !important;
+    transition: none !important;
+  }
+  
+  .deora-luxury-button:hover,
+  .deora-luxury-button:active {
+    transform: none !important;
+  }
+  
+  /* Ensure visibility without animations */
+  .deora-brand-container,
+  .deora-cta-container {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  .deora-brand-subtitle {
+    opacity: 0.8 !important;
+    transform: none !important;
+  }
+}
+
+/* PERFORMANCE OPTIMIZATIONS */
+.deora-luxury-background,
+.deora-luxury-content,
+.deora-brand-container,
+.deora-luxury-button {
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+/* FOCUS MANAGEMENT - Accessibility */
+.deora-luxury-button:focus-visible {
+  outline: 2px solid #F2B94B;
+  outline-offset: 4px;
+  border-radius: 27px;
+}
+
+/* DARK MODE COMPATIBILITY (Already optimized for dark) */
+@media (prefers-color-scheme: dark) {
+  /* Already optimized - no changes needed */
+}
+
+/* PRINT STYLES (Hide for print) */
+@media print {
+  .deora-luxury-viewport {
+    display: none;
+  }
+}

@@ -1,0 +1,251 @@
+/* 🪟 LIQUID GLASS MORPHISM SYSTEM */
+
+/* Base Glass Card Components */
+.apple-glass-card {
+  /* True glass: Frosted air, not boxes */
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-glass-md);
+  position: relative;
+  overflow: hidden;
+  /* Subtle breathing animation */
+  animation: glass-breathe 6s ease-in-out infinite;
+}
+
+.apple-glass-card-elevated {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-glass-lg);
+  transform: translateY(-1px);
+  animation: glass-breathe 6s ease-in-out infinite;
+}
+
+.apple-glass-card-subtle {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-glass-sm);
+  animation: glass-breathe 6s ease-in-out infinite;
+}
+
+.apple-glass-card-strong {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-glass-xl);
+  animation: glass-breathe 6s ease-in-out infinite;
+}
+
+/* Glass Card Variants */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-glass-md);
+}
+
+.glass-overlay {
+  background: rgba(246, 244, 241, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-modal {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-2xl);
+  box-shadow: var(--shadow-glass-2xl);
+}
+
+/* Glass Card Hover Effects */
+.apple-glass-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  transform: translateY(-1px);
+  box-shadow: 
+    var(--shadow-glass-xl),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: none; /* Pause breathing on hover */
+  transition: all var(--duration-fast) var(--ease-apple);
+}
+
+.apple-glass-card-elevated:hover {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  transform: translateY(-2px);
+  box-shadow: 
+    var(--shadow-glass-2xl),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: none;
+  transition: all var(--duration-fast) var(--ease-apple);
+}
+
+.apple-glass-card-subtle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  transform: translateY(-0.5px);
+  box-shadow: 
+    var(--shadow-glass-md),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: none;
+  transition: all var(--duration-fast) var(--ease-apple);
+}
+
+.apple-glass-card-strong:hover {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 48px 96px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: none;
+  transition: all var(--duration-fast) var(--ease-apple);
+}
+
+/* Glass Card Active States */
+.apple-glass-card:active,
+.apple-glass-card-elevated:active,
+.apple-glass-card-subtle:active,
+.apple-glass-card-strong:active {
+  transform: scale(0.98);
+  transition: transform 0.1s var(--ease-apple);
+}
+
+/* Glass Card Focus States */
+.apple-glass-card:focus-visible,
+.apple-glass-card-elevated:focus-visible,
+.apple-glass-card-subtle:focus-visible,
+.apple-glass-card-strong:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Glass Animations */
+@keyframes glass-breathe {
+  0%, 100% { 
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(0);
+  }
+  50% { 
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-0.5px);
+  }
+}
+
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Glass Loading State */
+.glass-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: glass-shimmer 2s infinite;
+}
+
+/* Fallback for Unsupported Browsers */
+@supports not (backdrop-filter: blur(16px)) {
+  .apple-glass-card,
+  .apple-glass-card-elevated,
+  .apple-glass-card-subtle,
+  .apple-glass-card-strong,
+  .glass-panel,
+  .glass-overlay,
+  .glass-modal {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .apple-glass-card,
+  .apple-glass-card-elevated,
+  .apple-glass-card-subtle,
+  .apple-glass-card-strong {
+    animation: none;
+  }
+  
+  .glass-loading::before {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .apple-glass-card,
+  .apple-glass-card-elevated,
+  .apple-glass-card-subtle,
+  .apple-glass-card-strong,
+  .glass-panel,
+  .glass-overlay,
+  .glass-modal {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+  .apple-glass-card,
+  .apple-glass-card-elevated,
+  .apple-glass-card-subtle,
+  .apple-glass-card-strong {
+    border-radius: var(--border-radius-lg);
+    margin: 0 var(--space-4);
+    min-height: var(--touch-target-min);
+  }
+  
+  /* Reduce blur on mobile for performance */
+  .apple-glass-card {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+  
+  .apple-glass-card-elevated {
+    backdrop-filter: blur(10px) saturate(130%);
+    -webkit-backdrop-filter: blur(10px) saturate(130%);
+  }
+}
