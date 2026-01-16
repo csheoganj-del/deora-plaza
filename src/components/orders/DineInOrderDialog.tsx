@@ -514,7 +514,6 @@ export function DineInOrderDialog({
           guestCount,
           customerMobile: customerMobile,
           customerName: customerName,
-          customerName: customerName,
           items: orderItemsPayload,
           discountPercent: totals.discountPercentage,
           discountAmount: totals.discountAmount,

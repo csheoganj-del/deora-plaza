@@ -103,7 +103,7 @@ export function TakeawayOrderDialogRefactored({ isOpen, onClose, businessUnit }:
           customerMobile: selectedCustomer?.mobileNumber || manualCustomerMobile || undefined
         });
       } else {
-        result = await createOrder({ ...orderData, location });
+        result = await createOrder(orderData);
       }
 
       if (result.success) {
