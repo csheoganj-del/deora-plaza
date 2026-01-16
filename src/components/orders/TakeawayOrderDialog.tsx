@@ -62,7 +62,7 @@ const MenuGridItem = React.memo(({ columnIndex, rowIndex, style, data }: any) =>
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         <div className="flex-1 min-w-0">
-          <h4 className="font-bold text-white text-[11px] leading-tight line-clamp-2 group-hover:text-[#2fd180] transition-colors">
+          <h4 className="font-bold text-white text-[11px] leading-tight break-words group-hover:text-[#2fd180] transition-colors">
             {item.name}
           </h4>
           <span className="font-bold text-white/30 text-[9px] tracking-wide mt-0.5 block">₹{Number(item.price).toFixed(0)}</span>
@@ -153,12 +153,12 @@ export function TakeawayOrderDialog({
         const billingOnly = await isBillingOnlyModeEnabled(businessUnit);
         setIsBillingOnlyMode(billingOnly);
 
-        // Handle Tax Settings per Business Unit
+        // Handle Tax Settings per Business Unit - respect global gstEnabled toggle
         if (businessUnit === 'cafe') {
-          if (settings.cafeGstEnabled) setGstEnabled(true);
+          setGstEnabled(!!(settings.gstEnabled && settings.cafeGstEnabled));
           setGstPercentage(settings.cafeGstPercentage || 0);
         } else if (businessUnit === 'bar') {
-          if (settings.barGstEnabled) setGstEnabled(true);
+          setGstEnabled(!!(settings.gstEnabled && settings.barGstEnabled));
           setGstPercentage(settings.barGstPercentage || 0);
         } else {
           // Default global fallback
@@ -758,7 +758,7 @@ export function TakeawayOrderDialog({
                             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-white text-[11px] leading-tight line-clamp-2 group-hover:text-[#2fd180] transition-colors">
+                              <h4 className="font-bold text-white text-[11px] leading-tight break-words group-hover:text-[#2fd180] transition-colors">
                                 {item.name}
                               </h4>
                               <span className="font-bold text-white/30 text-[9px] tracking-wide mt-0.5 block">

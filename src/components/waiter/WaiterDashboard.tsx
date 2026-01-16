@@ -794,7 +794,7 @@ export default function WaiterDashboard({ initialTab = "new-order", soloMode = f
                                                 )}
                                             >
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="font-bold text-white text-[11px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                                                    <h4 className="font-bold text-white text-[11px] leading-tight break-words group-hover:text-primary transition-colors">
                                                         {item.name}
                                                     </h4>
                                                     <span className="font-bold text-white/30 text-[9px] tracking-wide mt-0.5 block">₹{item.price}</span>
