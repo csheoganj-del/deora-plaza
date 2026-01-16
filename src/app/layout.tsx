@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "./styles/animations.css";
 import { Toaster } from "sonner";
+import { BusinessSettingsProvider } from "@/contexts/BusinessSettingsContext";
+import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,9 +31,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
-        <Toaster position="top-right" />
+      <body className={inter.className} suppressHydrationWarning>
+        <ReactQueryProvider>
+          <BusinessSettingsProvider>
+            {children}
+            <Toaster position="top-right" />
+          </BusinessSettingsProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

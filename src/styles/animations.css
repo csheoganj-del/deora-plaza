@@ -6,6 +6,7 @@
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -17,6 +18,7 @@
     opacity: 0;
     transform: translateY(6px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -28,6 +30,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -39,6 +42,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -50,6 +54,7 @@
     opacity: 0;
     transform: translateX(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -61,6 +66,7 @@
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -72,6 +78,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -83,6 +90,7 @@
     opacity: 1;
     transform: scale(1);
   }
+
   to {
     opacity: 0;
     transform: scale(0.95);
@@ -93,6 +101,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -102,6 +111,7 @@
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -111,46 +121,70 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 @keyframes apple-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
 }
 
 @keyframes apple-bounce {
-  0%, 20%, 53%, 80%, 100% {
+
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
     animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
     transform: translate3d(0, 0, 0);
   }
-  40%, 43% {
+
+  40%,
+  43% {
     animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
     transform: translate3d(0, -30px, 0);
   }
+
   70% {
     animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
     transform: translate3d(0, -15px, 0);
   }
+
   90% {
     transform: translate3d(0, -4px, 0);
   }
 }
 
 @keyframes apple-shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-2px);
   }
-  20%, 40%, 60%, 80% {
+
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(2px);
   }
 }
@@ -161,10 +195,12 @@
     opacity: 0;
     transform: scale(0.8) translateY(20px);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.05) translateY(-5px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -176,10 +212,12 @@
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(0.95) translateY(-5px);
   }
+
   100% {
     opacity: 0;
     transform: scale(0.8) translateY(20px);
@@ -252,14 +290,37 @@
 }
 
 /* Staggered Animation Classes */
-.apple-card-enter-1 { animation-delay: 0ms; }
-.apple-card-enter-2 { animation-delay: 50ms; }
-.apple-card-enter-3 { animation-delay: 100ms; }
-.apple-card-enter-4 { animation-delay: 150ms; }
-.apple-card-enter-5 { animation-delay: 200ms; }
-.apple-card-enter-6 { animation-delay: 250ms; }
-.apple-card-enter-7 { animation-delay: 300ms; }
-.apple-card-enter-8 { animation-delay: 350ms; }
+.apple-card-enter-1 {
+  animation-delay: 0ms;
+}
+
+.apple-card-enter-2 {
+  animation-delay: 50ms;
+}
+
+.apple-card-enter-3 {
+  animation-delay: 100ms;
+}
+
+.apple-card-enter-4 {
+  animation-delay: 150ms;
+}
+
+.apple-card-enter-5 {
+  animation-delay: 200ms;
+}
+
+.apple-card-enter-6 {
+  animation-delay: 250ms;
+}
+
+.apple-card-enter-7 {
+  animation-delay: 300ms;
+}
+
+.apple-card-enter-8 {
+  animation-delay: 350ms;
+}
 
 /* Micro-interaction Classes */
 .apple-interactive {
@@ -315,15 +376,27 @@
   animation: loading-dot 1.4s ease-in-out infinite both;
 }
 
-.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
-.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
-.loading-dots span:nth-child(3) { animation-delay: 0s; }
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0s;
+}
 
 @keyframes loading-dot {
-  0%, 80%, 100% {
+
+  0%,
+  80%,
+  100% {
     transform: scale(0.8);
     opacity: 0.5;
   }
+
   40% {
     transform: scale(1);
     opacity: 1;
@@ -335,6 +408,7 @@
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -352,12 +426,10 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--warm-amber-500),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      var(--warm-amber-500),
+      transparent);
   animation: progress-indeterminate 2s ease-in-out infinite;
 }
 
@@ -367,6 +439,7 @@
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -378,6 +451,7 @@
     opacity: 1;
     transform: translateX(0);
   }
+
   to {
     opacity: 0;
     transform: translateX(100%);
@@ -394,6 +468,7 @@
 
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -401,20 +476,120 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .apple-spin {
     animation: none;
   }
-  
+
   .apple-pulse {
     animation: none;
   }
-  
+
   .loading-dots span {
     animation: none;
   }
-  
+
   .progress-indeterminate::before {
     animation: none;
   }
+}
+
+/* ?? POS PREMIUM ANIMATIONS */
+@keyframes pulse-feedback {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse-feedback {
+  animation: pulse-feedback 400ms cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+}
+
+.fly-clone {
+  box-shadow: 0 20px 40px rgba(47, 209, 128, 0.5) !important;
+  border-radius: 999px !important;
+  overflow: hidden;
+  background: rgba(47, 209, 128, 0.1);
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(47, 209, 128, 0.3) !important;
+}
+
+
+/* ?? BALLOON FLY ANIMATION */
+.fly-balloon {
+  box-shadow:
+    0 0 30px rgba(47, 209, 128, 0.6),
+    0 0 60px rgba(47, 209, 128, 0.4),
+    0 10px 40px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 999px !important;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(47, 209, 128, 0.2), rgba(31, 172, 96, 0.15)) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 2px solid rgba(47, 209, 128, 0.4) !important;
+  filter: drop-shadow(0 0 20px rgba(47, 209, 128, 0.5));
+}
+
+/* Floating wobble effect */
+@keyframes balloon-wobble {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  25% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(0deg);
+  }
+
+  75% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes kds-blink {
+
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  }
+}
+
+.animate-kds-blink {
+  animation: kds-blink 2s ease-in-out infinite;
+}
+
+@keyframes kds-blink-urgent {
+
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0);
+    border-color: rgba(239, 68, 68, 0.2);
+  }
+
+  50% {
+    box-shadow: inset 0 0 20px 0 rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.6);
+  }
+}
+
+.animate-kds-urgent {
+  animation: kds-blink-urgent 1.5s ease-in-out infinite;
 }

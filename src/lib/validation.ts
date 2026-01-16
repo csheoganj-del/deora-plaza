@@ -17,7 +17,7 @@ export const createBillSchema = z.object({
     businessUnit: z.enum(['cafe', 'bar', 'hotel', 'garden'], {
         message: 'Invalid business unit'
     }),
-    customerMobile: mobileSchema.optional(),
+    customerMobile: z.string().regex(/^[0-9]{10}$/, 'Mobile number must be 10 digits').or(z.literal('')).nullable().optional(),
     customerName: z.string().max(100).optional(),
     subtotal: positiveNumberSchema,
     discountPercent: percentageSchema.optional(),

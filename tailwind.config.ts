@@ -79,6 +79,10 @@ const config: Config = {
         float: "float 6s ease-in-out infinite",
         "float-delayed": "float-delayed 8s ease-in-out infinite",
         "float-slow": "float-slow 10s ease-in-out infinite",
+        "glass-breathe": "glass-breathe 6s ease-in-out infinite",
+      },
+      backdropBlur: {
+        xs: "2px",
       },
     },
   },

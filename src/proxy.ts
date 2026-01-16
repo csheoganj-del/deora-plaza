@@ -4,12 +4,10 @@ import type { NextRequest } from "next/server"
 export async function proxy(request: NextRequest) {
   // Add detailed logging for debugging
   console.log("Proxy: Processing request for:", request.nextUrl.pathname);
-  
+
   const isAuthPage = request.nextUrl.pathname.startsWith("/login")
   const isRootPage = request.nextUrl.pathname === "/"
-  const isDemoPage = request.nextUrl.pathname.startsWith("/dashboard-sample") ||
-    request.nextUrl.pathname.startsWith("/demo")
-  const isPublicPath = isAuthPage || isRootPage || isDemoPage || 
+  const isPublicPath = isAuthPage || isRootPage ||
     request.nextUrl.pathname.startsWith("/api/public") ||
     request.nextUrl.pathname.startsWith("/_next") ||
     request.nextUrl.pathname.startsWith("/favicon") ||
@@ -19,7 +17,6 @@ export async function proxy(request: NextRequest) {
     path: request.nextUrl.pathname,
     isAuthPage,
     isRootPage,
-    isDemoPage,
     isPublicPath
   });
 
@@ -40,7 +37,7 @@ export async function proxy(request: NextRequest) {
 
   try {
     console.log("Proxy: Attempting JWT verification");
-    
+
     // Verify JWT token with better error handling
     const { jwtVerify } = await import("jose")
     const JWT_SECRET = new TextEncoder().encode(
@@ -52,7 +49,7 @@ export async function proxy(request: NextRequest) {
     })
 
     console.log("Proxy: Token verified successfully for user:", payload.userId);
-    
+
     // Add user info to request headers for debugging
     const response = NextResponse.next()
     response.headers.set('x-user-id', payload.userId as string)
@@ -68,7 +65,7 @@ export async function proxy(request: NextRequest) {
       tokenStart: token?.substring(0, 20),
       jwtSecret: process.env.JWT_SECRET ? "Set" : "Not set"
     })
-    
+
     // Invalid token, redirect to login
     console.log("Proxy: Redirecting to login due to invalid token");
     const response = NextResponse.redirect(new URL("/login", request.url))

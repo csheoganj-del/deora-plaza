@@ -11,7 +11,6 @@ import { supabaseServer } from "@/lib/supabase/server"
 import { requireDeletePermission } from "@/lib/auth-helpers"
 import { validateInput, deletePasswordSchema } from "@/lib/validation"
 import { revalidatePath } from "next/cache"
-import { logActivityWithLocation } from "@/actions/location"
 
 const ROOMS_COLLECTION = "rooms"
 const BOOKINGS_COLLECTION = "bookings"
@@ -59,6 +58,7 @@ export type HotelBooking = {
     guestCount: number
     eventTime: string | null
     advancePayment: number
+    advancePaymentMethod?: string
     payments: Payment[]
     totalPaid: number
     remainingBalance: number
@@ -242,18 +242,36 @@ export async function deleteRoom(roomId: string, password: string) {
 
 export async function getHotelBookings() {
     console.log("=== GET HOTEL BOOKINGS START ===");
+
+    // DIAGNOSTIC CHECK
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    console.log("DIAGNOSTIC: SUPABASE_SERVICE_ROLE_KEY present?", !!serviceKey);
+    console.log("DIAGNOSTIC: Key Length:", serviceKey ? serviceKey.length : 0);
+    console.log("DIAGNOSTIC: SUPABASE_URL:", process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL);
+
     try {
-        console.log("Querying with filter: type == hotel");
-        const bookings = await queryDocuments(BOOKINGS_COLLECTION, [
-            { field: 'type', operator: '==', value: 'hotel' }
-        ], 'createdAt', 'desc')
+        console.log("Querying all bookings to filter in memory");
+        // Fetch specific hotel fields + generic fields
+        const bookings = await queryDocuments(BOOKINGS_COLLECTION, [], 'createdAt', 'desc');
 
-        console.log("Raw query result:", bookings);
-        console.log("Query result type:", typeof bookings);
-        console.log("Query result is array:", Array.isArray(bookings));
-        console.log("Number of bookings returned:", bookings.length);
+        console.log("Raw query result count:", bookings.length);
 
-        const processedBookings = bookings.map((booking: any) => {
+        // DIAGNOSTIC: Log FULL types to see what we actually have
+        if (bookings.length > 0) {
+            console.log("SAMPLE DATA FULL:", JSON.stringify(bookings.slice(0, 1), null, 2));
+            console.log("SAMPLE DATA TYPES:", bookings.map((b: any) => `ID:${b.id} TYPE:'${b.type}'`));
+        }
+
+        // Filter for hotel bookings in memory - RE-RELAXED FILTER
+        const hotelBookings = bookings.filter((b: any) =>
+            !b.type ||
+            b.type === 'hotel' ||
+            b.type === 'Hotel' ||
+            (typeof b.type === 'string' && b.type.toLowerCase() === 'hotel')
+        );
+        console.log("Filtered hotel bookings count:", hotelBookings.length);
+
+        const processedBookings = hotelBookings.map((booking: any) => {
             try {
                 // Safely convert dates
                 const startDate = booking.startDate ? new Date(booking.startDate) : new Date();
@@ -291,7 +309,7 @@ export async function getHotelBookings() {
                     roomNumber: booking.roomNumber || 'N/A', // Will be populated from room data
                     adults: adults,
                     children: children,
-                    paidAmount: booking.totalPaid || 0,
+                    paidAmount: Number(booking.paidAmount) || Number(booking.totalPaid) || Number(booking.advancePayment) || 0,
                     payments: booking.payments?.map((p: any) => {
                         try {
                             const paymentDate = p.date ? new Date(p.date) : null;
@@ -446,12 +464,15 @@ export async function createHotelBooking(data: any) {
             throw new Error("Invalid date format provided");
         }
 
-        const bookingData = {
+        const bookingData: any = {
             customerMobile: data.guestMobile,
             type: 'hotel',
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString(),
             roomId: data.roomId || null,
+            roomNumber: data.roomNumber || '',
+            guestName: data.guestName,
+            customerId: customerData?.id || null,
             notes: data.notes || '',
             totalAmount: data.totalAmount || 0,
             status: 'confirmed',
@@ -469,6 +490,7 @@ export async function createHotelBooking(data: any) {
             gstEnabled: data.gstEnabled !== undefined ? data.gstEnabled : true,
             gstPercentage: data.gstPercentage || 18,
             gstAmount: 0, // Calculate if needed
+            receiptNumber: '', // Initial empty receipt number
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         }
@@ -477,7 +499,30 @@ export async function createHotelBooking(data: any) {
 
         const booking = await createDocument(BOOKINGS_COLLECTION, bookingData)
 
-        console.log("Booking creation result:", booking);
+        // CRITICAL FIX: Update room status to 'occupied' immediately when booking is created
+        if (booking.success && data.roomId) {
+            console.log("✅ Booking created successfully, marking room as occupied:", data.roomId);
+            try {
+                const roomUpdateResult = await updateDocument(ROOMS_COLLECTION, data.roomId, {
+                    status: 'occupied',
+                    updatedAt: new Date().toISOString()  // Use camelCase - rooms table uses quoted identifiers
+                });
+                console.log("✅ Room status update result:", roomUpdateResult);
+                if (!roomUpdateResult.success) {
+                    console.error("❌ Failed to update room status:", roomUpdateResult.error);
+                }
+            } catch (roomError) {
+                console.error("❌ Exception updating room status:", roomError);
+            }
+        } else {
+            console.log("⚠️ Skipping room status update - booking success:", booking.success, "roomId:", data.roomId);
+        }
+
+        // CRITICAL FIX: Check if creation succeeded
+        if (!booking.success) {
+            console.error("Failed to create booking document:", booking.error);
+            return { success: false, error: booking.error || "Failed to save booking to database" };
+        }
 
         // 2. Generate receipt number and update booking
         if (booking.success && booking.data?.id) {
@@ -522,21 +567,19 @@ export async function createHotelBooking(data: any) {
             console.log("Advance payment result:", paymentResult);
         }
 
-        // Log location if provided
-        if (data.location && session.user && booking.data?.id) {
-            await logActivityWithLocation(
-                session.user.id,
-                "create_hotel_booking",
-                `Created hotel booking for ${data.guestName}`,
-                data.location.lat,
-                data.location.lng,
-                { bookingId: booking.data.id }
-            );
-        }
-
         revalidatePath("/dashboard/hotel");
         console.log("=== CREATE HOTEL BOOKING END ===");
-        return { success: true, id: booking.data?.id }
+
+        // Return the full booking data so the frontend can use it (e.g., for auto-printing)
+        return {
+            success: true,
+            id: booking.data?.id,
+            data: {
+                ...bookingData,
+                id: booking.data?.id,
+                receiptNumber: bookingData.receiptNumber // Might have been updated by sequential generator
+            }
+        }
     } catch (error) {
         console.error("=== CREATE HOTEL BOOKING ERROR ===");
         console.error("Error creating hotel booking:", error)
@@ -558,6 +601,59 @@ export async function updateHotelBooking(id: string, data: Partial<HotelBooking>
     }
 }
 
+export async function getHotelBookingById(id: string) {
+    try {
+        const booking = await getDocument(BOOKINGS_COLLECTION, id) as any
+        if (!booking) return null
+
+        // Perform mapping to ensure derived fields and consistent dates exist
+        // (Similar to plural fetch for consistency)
+        try {
+            const startDate = booking.startDate ? new Date(booking.startDate) : new Date();
+            const endDate = booking.endDate ? new Date(booking.endDate) : new Date();
+            const checkIn = booking.checkIn ? new Date(booking.checkIn) : null;
+            const checkOut = booking.checkOut ? new Date(booking.checkOut) : null;
+            const createdAt = booking.createdAt ? new Date(booking.createdAt) : new Date();
+            const updatedAt = booking.updatedAt ? new Date(booking.updatedAt) : new Date();
+
+            const guestCount = booking.guestCount || 1;
+            const adults = Math.max(1, guestCount);
+            const children = Math.max(0, guestCount - adults);
+
+            return {
+                ...booking,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                checkIn: checkIn?.toISOString() || null,
+                checkOut: checkOut?.toISOString() || null,
+                createdAt: createdAt.toISOString(),
+                updatedAt: updatedAt.toISOString(),
+                guestName: booking.guestName || 'Guest',
+                guestMobile: booking.customerMobile,
+                roomNumber: booking.roomNumber || 'N/A',
+                adults,
+                children,
+                paidAmount: booking.totalPaid || 0,
+                payments: booking.payments?.map((p: any) => ({
+                    ...p,
+                    date: p.date ? new Date(p.date).toISOString() : null,
+                    createdAt: p.createdAt ? new Date(p.createdAt).toISOString() : null
+                })) || [],
+                roomServiceCharges: booking.roomServiceCharges?.map((charge: any) => ({
+                    ...charge,
+                    createdAt: charge.createdAt ? new Date(charge.createdAt).toISOString() : null
+                })) || []
+            } as HotelBooking;
+        } catch (mapError) {
+            console.error("Error mapping hotel booking data:", mapError);
+            return booking; // Fallback to raw
+        }
+    } catch (error) {
+        console.error("Error fetching hotel booking by ID:", error)
+        return null
+    }
+}
+
 export async function addHotelPayment(bookingId: string, payment: Omit<Payment, 'id'>) {
     try {
         const booking = await getDocument(BOOKINGS_COLLECTION, bookingId) as HotelBooking
@@ -574,17 +670,96 @@ export async function addHotelPayment(bookingId: string, payment: Omit<Payment, 
         const totalPaid = updatedPayments.reduce((sum, p) => sum + p.amount, 0)
         const remainingBalance = booking.totalAmount - totalPaid
         const paymentStatus = remainingBalance <= 0 ? 'completed' : (totalPaid > 0 ? 'partial' : 'pending')
+        const isFullyPaid = remainingBalance <= 0
 
-        await updateDocument(BOOKINGS_COLLECTION, bookingId, {
+        // Prepare booking update
+        const bookingUpdate: any = {
             payments: updatedPayments,
             paidAmount: totalPaid,
             remainingBalance,
             paymentStatus,
             updatedAt: new Date().toISOString()
-        })
+        }
+
+        // AUTO-CHECKOUT if fully paid
+        if (isFullyPaid && booking.status !== 'checked-out') {
+            bookingUpdate.status = 'checked-out'
+            bookingUpdate.checkOut = new Date().toISOString()
+        }
+
+        // Update booking
+        console.log('[addHotelPayment] Updating booking with:', bookingUpdate)
+        const updateResult = await updateDocument(BOOKINGS_COLLECTION, bookingId, bookingUpdate)
+        console.log('[addHotelPayment] Update result:', updateResult)
+
+        if (!updateResult.success) {
+            console.error('[addHotelPayment] Failed to update booking:', updateResult.error)
+            throw new Error(`Failed to update booking: ${updateResult.error}`)
+        }
+
+        // Make room available if checked out
+        if (isFullyPaid && booking.roomId) {
+            // Clear active room service orders (mark as completed)
+            console.log('[addHotelPayment] Clearing active orders for booking:', bookingId);
+            const { error: orderError } = await supabaseServer
+                .from('orders')
+                .update({
+                    status: 'completed',
+                    isPaid: true,
+                    completedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                })
+                .eq('bookingId', bookingId)
+                // Update any that are not already completed or cancelled
+                .in('status', ['pending', 'preparing', 'ready', 'served', 'bill_requested']);
+
+            if (orderError) {
+                console.error("Error clearing linked orders:", orderError);
+            }
+
+            console.log('[addHotelPayment] Making room available:', booking.roomId)
+            try {
+                const roomUpdate = await updateDocument(ROOMS_COLLECTION, booking.roomId, {
+                    status: 'available',
+                    currentBookingId: null,
+                    updatedAt: new Date().toISOString()
+                })
+            } catch (roomError) {
+                console.error("Error updating room status:", roomError)
+                // Continue even if room update fails
+            }
+        }
+
+        // Create cash transaction for super admin dashboard (if payment method is cash)
+        if (payment.method === 'cash') {
+            try {
+                const transactionData = {
+                    id: `txn_${Date.now()}`,
+                    type: 'income',
+                    category: 'hotel_payment',
+                    amount: payment.amount,
+                    paymentMethod: 'cash',
+                    description: `Hotel payment - ${booking.guestName || 'Guest'} (Room ${booking.roomNumber})`,
+                    bookingId: bookingId,
+                    businessUnit: 'hotel',
+                    date: new Date().toISOString(),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+
+                await createDocument('transactions', transactionData)
+            } catch (txnError) {
+                console.error("Error creating transaction:", txnError)
+                // Continue even if transaction creation fails
+            }
+        }
 
         revalidatePath("/dashboard/hotel")
-        return { success: true }
+        revalidatePath("/dashboard")
+
+        // Fetch and return updated booking
+        const updatedBooking = await getHotelBookingById(bookingId)
+        return { success: true, booking: updatedBooking }
     } catch (error) {
         console.error("Error adding hotel payment:", error)
         return { success: false, error }
@@ -599,22 +774,19 @@ export async function deleteHotelBooking(id: string, password?: string) {
         const isPasswordProtectionEnabled = settings?.enablePasswordProtection ?? true;
 
         if (isPasswordProtectionEnabled) {
-            // Only super_admin can delete; if super_admin, allow without password
-            const session = await requireDeletePermission()
-            if (session.user.role !== 'super_admin') {
-                const DELETION_PASSWORD = process.env.ADMIN_DELETION_PASSWORD;
-                if (!DELETION_PASSWORD) {
-                    return { success: false, error: 'Deletion password not configured in environment' }
-                }
-                try {
-                    const { validateInput, deletePasswordSchema } = await import('@/lib/validation');
-                    const validatedPassword = validateInput(deletePasswordSchema, (password || '').trim());
-                    if ((validatedPassword || '').trim() !== (DELETION_PASSWORD || '').trim()) {
-                        return { success: false, error: 'Invalid password' }
-                    }
-                } catch (validationError) {
-                    return { success: false, error: 'Invalid password format' }
-                }
+            const { requireDeletePermission } = await import("@/lib/auth-helpers");
+            await requireDeletePermission();
+
+            const DELETION_PASSWORD = process.env.ADMIN_DELETION_PASSWORD;
+            if (!DELETION_PASSWORD) {
+                return { success: false, error: 'Deletion password not configured in environment' }
+            }
+
+            const pwd = (password || '').trim();
+            const envPwd = (DELETION_PASSWORD || '').trim();
+
+            if (pwd !== envPwd) {
+                return { success: false, error: 'Incorrect password' }
             }
         } else {
             // If protection is disabled, still require authentication
@@ -622,11 +794,75 @@ export async function deleteHotelBooking(id: string, password?: string) {
             await requireAuth();
         }
 
-        const result = await deleteDocument(BOOKINGS_COLLECTION, id)
-        if (result.success) {
-            revalidatePath("/dashboard/hotel")
+        // Perform deletion with check using Service Role to bypass RLS
+        const { data, error } = await supabaseServer
+            .from(BOOKINGS_COLLECTION)
+            .delete()
+            .eq("id", id)
+            .select();
+
+        if (error) {
+            return { success: false, error: error.message };
         }
-        return result
+
+        if (!data || data.length === 0) {
+            return { success: false, error: "Record not found or could not be deleted" };
+        }
+
+        // Delete all room service orders linked to this booking
+        const deletedBooking = data[0];
+        console.log(`[deleteHotelBooking] Deleted booking data:`, {
+            id: deletedBooking.id,
+            roomId: deletedBooking.roomId,
+            roomNumber: deletedBooking.roomNumber,
+            status: deletedBooking.status,
+            guestName: deletedBooking.guestName
+        });
+
+        console.log(`[deleteHotelBooking] Deleting room service orders for booking ${id}`);
+        try {
+            const { error: ordersError } = await supabaseServer
+                .from('orders')
+                .delete()
+                .eq('bookingId', id);
+
+            if (ordersError) {
+                console.error("[deleteHotelBooking] Error deleting linked orders:", ordersError);
+                // Continue with booking deletion even if order deletion fails
+            } else {
+                console.log("[deleteHotelBooking] ✅ Linked orders deleted successfully");
+            }
+        } catch (orderDeleteError) {
+            console.error("[deleteHotelBooking] Exception deleting linked orders:", orderDeleteError);
+            // Continue with booking deletion
+        }
+
+        // Release room - always make it available when booking is deleted
+        if (deletedBooking.roomId) {
+            console.log(`[deleteHotelBooking] 🔓 Attempting to release room ${deletedBooking.roomId} (Status was: ${deletedBooking.status})`);
+            try {
+                const roomUpdate = await updateDocument(ROOMS_COLLECTION, deletedBooking.roomId, {
+                    status: 'available',
+                    currentBookingId: null,
+                    updatedAt: new Date().toISOString()
+                });
+                console.log("[deleteHotelBooking] Room update result:", roomUpdate);
+
+                if (roomUpdate.success) {
+                    console.log(`[deleteHotelBooking] ✅ Room ${deletedBooking.roomId} successfully set to available`);
+                } else {
+                    console.error(`[deleteHotelBooking] ❌ Room update failed:`, roomUpdate.error);
+                }
+            } catch (roomError) {
+                console.error("[deleteHotelBooking] ❌ Exception updating room:", roomError);
+            }
+        } else {
+            console.warn("[deleteHotelBooking] ⚠️ No roomId found in deleted booking - cannot release room");
+        }
+
+        revalidatePath("/dashboard/hotel")
+        revalidatePath("/dashboard/statistics")
+        return { success: true }
     } catch (error) {
         console.error("Error deleting hotel booking:", error)
         return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
@@ -671,6 +907,13 @@ export async function checkInGuest(bookingId: string, roomId: string) {
 
 export async function checkOutGuest(bookingId: string, roomId: string) {
     try {
+        // Fetch booking to check payment status
+        const booking = await getDocument(BOOKINGS_COLLECTION, bookingId) as HotelBooking
+
+        // Determine if fully paid
+        // Use tolerance for float comparison or just <= 0
+        const isFullyPaid = booking && (booking.remainingBalance <= 1 || booking.totalPaid >= booking.totalAmount);
+
         // Update booking status
         await updateDocument(BOOKINGS_COLLECTION, bookingId, {
             status: 'checked-out',
@@ -678,9 +921,32 @@ export async function checkOutGuest(bookingId: string, roomId: string) {
             updatedAt: new Date().toISOString()
         })
 
+        // Clear active room service orders (mark as completed)
+        console.log(`Clearing active orders for booking ${bookingId}`);
+        const { error: orderError } = await supabaseServer
+            .from('orders')
+            .update({
+                status: 'completed',
+                isPaid: true,
+                completedAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            })
+            .eq('bookingId', bookingId)
+            // Update any that are not already completed or cancelled
+            .in('status', ['pending', 'preparing', 'ready', 'served', 'bill_requested']);
+
+        if (orderError) {
+            console.error("Error clearing linked orders:", orderError);
+        }
+
         // Update room status
+        // If fully paid, make available immediately. Else cleaning (requires housekeeping).
+        const nextRoomStatus = isFullyPaid ? 'available' : 'cleaning';
+
         await updateDocument(ROOMS_COLLECTION, roomId, {
-            status: 'cleaning' // Mark as dirty/cleaning after checkout
+            status: nextRoomStatus,
+            currentBookingId: null, // Clear the link
+            updatedAt: new Date().toISOString()
         })
 
         revalidatePath("/dashboard/hotel")
@@ -781,3 +1047,122 @@ export async function getActiveBookingForRoom(roomId: string, roomNumber?: strin
     }
 }
 
+// Get real-time hotel metrics for dashboard
+export async function getHotelMetrics() {
+    try {
+        const supabase = supabaseServer;
+
+        // Get all rooms
+        const { data: rooms, error: roomsError } = await supabase
+            .from('rooms')
+            .select('*');
+
+        if (roomsError) throw roomsError;
+
+        // Get today's bookings
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const { data: todayBookings, error: todayError } = await supabase
+            .from('bookings')
+            .select('*')
+            .eq('type', 'hotel')
+            .gte('startDate', today.toISOString())
+            .lt('startDate', tomorrow.toISOString());
+
+        if (todayError) throw todayError;
+
+        // Get all active bookings (currently checked in)
+        const { data: activeBookings, error: activeError } = await supabase
+            .from('bookings')
+            .select('*')
+            .eq('type', 'hotel')
+            .eq('status', 'checked_in');
+
+        if (activeError) throw activeError;
+
+        // Calculate metrics
+        const totalRooms = rooms?.length || 0;
+        const occupiedRooms = activeBookings?.length || 0;
+        const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+
+        // Count check-ins and check-outs today
+        const checkInsToday = todayBookings?.filter((b: any) => {
+            const startDate = new Date(b.startDate);
+            return startDate >= today && startDate < tomorrow;
+        }).length || 0;
+
+        const { data: checkOutBookings, error: checkOutError } = await supabase
+            .from('bookings')
+            .select('*')
+            .eq('type', 'hotel')
+            .gte('endDate', today.toISOString())
+            .lt('endDate', tomorrow.toISOString());
+
+        const checkOutsToday = checkOutBookings?.length || 0;
+
+        // Calculate TOTAL revenue from ALL hotel bookings (not just today's!)
+        const { data: allHotelBookings, error: allBookingsError } = await supabase
+            .from('bookings')
+            .select('paidAmount')
+            .eq('type', 'hotel');
+
+        const dailyRevenue = allHotelBookings?.reduce((sum: number, b: any) => sum + (b.paidAmount || 0), 0) || 0;
+
+        // Calculate average room rate from active bookings
+        const totalRevenue = activeBookings?.reduce((sum: number, b: any) => sum + (b.totalAmount || 0), 0) || 0;
+        const averageRoomRate = occupiedRooms > 0 ? Math.round(totalRevenue / occupiedRooms) : 0;
+
+        // Get upcoming check-ins (next 6 hours)
+        const sixHoursLater = new Date();
+        sixHoursLater.setHours(sixHoursLater.getHours() + 6);
+
+        const upcomingCheckIns = todayBookings
+            ?.filter((b: any) => {
+                const startDate = new Date(b.startDate);
+                return startDate >= new Date() && startDate <= sixHoursLater;
+            })
+            .map((b: any) => ({
+                time: new Date(b.startDate).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                guest: b.guestName || b.customerMobile,
+                room: b.roomNumber || 'TBD'
+            }))
+            .slice(0, 5) || [];
+
+        // Count rooms by status
+        const roomStatusCounts = {
+            available: rooms?.filter((r: any) => r.status === 'available').length || 0,
+            occupied: rooms?.filter((r: any) => r.status === 'occupied').length || 0,
+            cleaning: rooms?.filter((r: any) => r.status === 'cleaning').length || 0,
+            maintenance: rooms?.filter((r: any) => r.status === 'maintenance').length || 0
+        };
+
+        return {
+            success: true,
+            metrics: {
+                dailyRevenue,
+                occupiedRooms,
+                totalRooms,
+                occupancyRate,
+                checkInsToday,
+                checkOutsToday,
+                averageRoomRate,
+                upcomingCheckIns,
+                roomStatusCounts,
+                // Placeholder for features not yet implemented
+                staffOnDuty: 0,
+                maintenanceRequests: 0,
+                reservations: todayBookings?.length || 0
+            }
+        };
+    } catch (error) {
+        console.error('Error getting hotel metrics:', error);
+        return {
+            success: false,
+            error: 'Failed to fetch hotel metrics',
+            metrics: null
+        };
+    }
+}

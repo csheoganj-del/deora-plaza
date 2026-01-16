@@ -112,7 +112,7 @@ function ThemePreviewCard({ theme, isActive, onClick }: ThemePreviewCardProps) {
       <div className={cn("w-full h-48 relative", theme.backgroundClass)}>
         {/* Lighting Effects */}
         <LightingComponent />
-        
+
         {/* Glass Overlay */}
         <div className={cn("absolute inset-4", `glass-${theme.glassStyle}`)}>
           <div className="p-4 h-full flex flex-col justify-between">
@@ -127,11 +127,11 @@ function ThemePreviewCard({ theme, isActive, onClick }: ThemePreviewCardProps) {
             <div className="text-2xl">{theme.preview.split(' ')[0]}</div>
           </div>
         </div>
-        
+
         {/* Hover Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      
+
       {/* Theme Info */}
       <div className="p-4 glass-soft">
         <div className="text-sm font-medium text-adaptive-primary mb-2">
@@ -162,11 +162,11 @@ export function ThemeShowcase() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const categories = ['all', ...Array.from(new Set(themes.map(t => t.category)))]
-  
+
   const filteredThemes = themes.filter(theme => {
     const matchesCategory = selectedCategory === 'all' || theme.category === selectedCategory
     const matchesSearch = theme.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         theme.description.toLowerCase().includes(searchTerm.toLowerCase())
+      theme.description.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
@@ -178,7 +178,7 @@ export function ThemeShowcase() {
           🎨 World-Class Theme Gallery
         </h1>
         <p className="text-lg text-adaptive-secondary max-w-2xl mx-auto">
-          Discover our collection of artistic themes featuring professional lighting effects, 
+          Discover our collection of artistic themes featuring professional lighting effects,
           natural scenery, and sophisticated visual components.
         </p>
       </div>
@@ -207,8 +207,8 @@ export function ThemeShowcase() {
               onClick={() => setSelectedCategory(category)}
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
-                selectedCategory === category 
-                  ? "ios-button-primary" 
+                selectedCategory === category
+                  ? "ios-button-primary"
                   : "ios-button-secondary"
               )}
             >
@@ -283,7 +283,7 @@ export function ThemeShowcase() {
             Ambient, directional, accent, dramatic, and ethereal lighting effects
           </p>
         </div>
-        
+
         <div className="glass-soft rounded-28 p-6 text-center">
           <div className="text-4xl mb-4">🌿</div>
           <h3 className="text-lg font-semibold text-adaptive-primary mb-2">
@@ -293,7 +293,7 @@ export function ThemeShowcase() {
             Aurora, ocean depths, mountains, forests, and seasonal themes
           </p>
         </div>
-        
+
         <div className="glass-soft rounded-28 p-6 text-center">
           <div className="text-4xl mb-4">🎭</div>
           <h3 className="text-lg font-semibold text-adaptive-primary mb-2">
@@ -302,65 +302,6 @@ export function ThemeShowcase() {
           <p className="text-adaptive-secondary text-sm">
             Glassmorphism, gradients, shadows, and sophisticated visual hierarchy
           </p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Theme Demo Component for testing individual themes
-export function ThemeDemo({ themeId }: { themeId?: string }) {
-  const { themes, setTheme } = useTheme()
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  useEffect(() => {
-    if (themeId) {
-      const theme = themes.find(t => t.id === themeId)
-      if (theme) {
-        setTheme(theme)
-      }
-    }
-  }, [themeId, themes, setTheme])
-
-  const nextTheme = () => {
-    const nextIndex = (currentIndex + 1) % themes.length
-    setCurrentIndex(nextIndex)
-    setTheme(themes[nextIndex])
-  }
-
-  const prevTheme = () => {
-    const prevIndex = currentIndex === 0 ? themes.length - 1 : currentIndex - 1
-    setCurrentIndex(prevIndex)
-    setTheme(themes[prevIndex])
-  }
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center p-4">
-      <div className="glass-strong rounded-28 p-8 max-w-md w-full text-center space-y-6">
-        <h2 className="text-2xl font-bold text-adaptive-primary">
-          Theme Demo
-        </h2>
-        
-        <div className="space-y-4">
-          <div className="text-6xl">{themes[currentIndex].preview.split(' ')[0]}</div>
-          <h3 className="text-xl font-semibold text-adaptive-primary">
-            {themes[currentIndex].name}
-          </h3>
-          <p className="text-adaptive-secondary text-sm">
-            {themes[currentIndex].description}
-          </p>
-        </div>
-        
-        <div className="flex justify-between items-center">
-          <button onClick={prevTheme} className="ios-button-secondary px-4 py-2">
-            ← Previous
-          </button>
-          <span className="text-adaptive-tertiary text-sm">
-            {currentIndex + 1} / {themes.length}
-          </span>
-          <button onClick={nextTheme} className="ios-button-secondary px-4 py-2">
-            Next →
-          </button>
         </div>
       </div>
     </div>

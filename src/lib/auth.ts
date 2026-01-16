@@ -2,6 +2,7 @@ import { supabaseServer } from "@/lib/supabase/server"
 import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
 
+
 // SECURE: Get JWT secret from environment variables only
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET
@@ -43,7 +44,7 @@ export async function createAuthToken(user: AuthUser): Promise<string> {
 export async function verifyAuthToken(token: string): Promise<AuthUser | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET)
-    
+
     return {
       id: payload.userId as string,
       email: payload.email as string,
@@ -84,36 +85,36 @@ export async function verifySupabaseAuth(request: Request): Promise<{ authentica
     if (!cookieHeader) {
       return { authenticated: false, user: null }
     }
-    
+
     // Parse cookies to find Supabase session
     const cookies = cookieHeader.split(';').map(cookie => cookie.trim())
     const sessionCookie = cookies.find(cookie => cookie.startsWith('sb-access-token='))
-    
+
     if (!sessionCookie) {
       return { authenticated: false, user: null }
     }
-    
+
     // Extract token from cookie
     const token = sessionCookie.split('=')[1]
-    
+
     // Verify the token with Supabase
     const { data: { user }, error } = await supabaseServer.auth.getUser(token)
-    
+
     if (error || !user) {
       return { authenticated: false, user: null }
     }
-    
+
     // Get additional user metadata from Supabase database
     const { data: userData, error: userError } = await supabaseServer
       .from('users')
       .select('*')
       .eq('id', user.id)
       .single()
-    
+
     if (userError || !userData) {
       return { authenticated: false, user: null }
     }
-    
+
     const authUser: AuthUser = {
       id: user.id,
       email: user.email || '',
@@ -123,7 +124,7 @@ export async function verifySupabaseAuth(request: Request): Promise<{ authentica
       permissions: userData.permissions || [],
       isActive: userData.isActive !== false,
     }
-    
+
     return {
       authenticated: true,
       user: authUser
@@ -138,7 +139,7 @@ export async function verifySupabaseAuth(request: Request): Promise<{ authentica
 export async function setAuthCookie(user: AuthUser): Promise<void> {
   const token = await createAuthToken(user)
   const cookieStore = await cookies()
-  
+
   cookieStore.set("deora-auth-token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -157,10 +158,10 @@ export async function clearAuthCookie(): Promise<void> {
 // Check if user has specific permission
 export function hasPermission(user: AuthUser | null, permission: string): boolean {
   if (!user || !user.isActive) return false
-  
+
   // Super admin has all permissions
   if (user.role === 'super_admin') return true
-  
+
   // Check if user has the specific permission
   return user.permissions.includes(permission)
 }
@@ -168,7 +169,7 @@ export function hasPermission(user: AuthUser | null, permission: string): boolea
 // Check if user has any of the specified roles
 export function hasRole(user: AuthUser | null, roles: string | string[]): boolean {
   if (!user || !user.isActive) return false
-  
+
   const roleArray = Array.isArray(roles) ? roles : [roles]
   return roleArray.includes(user.role)
 }
@@ -177,12 +178,12 @@ export function hasRole(user: AuthUser | null, roles: string | string[]): boolea
 export async function verifyAuth(request: Request): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
     const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '') || 
-                  request.headers.get('x-auth-token') ||
-                  // Try to get from cookie if no header
-                  request.headers.get('cookie')?.split(';')
-                    .find(c => c.trim().startsWith('deora-auth-token='))
-                    ?.split('=')[1];
+    const token = authHeader?.replace('Bearer ', '') ||
+      request.headers.get('x-auth-token') ||
+      // Try to get from cookie if no header
+      request.headers.get('cookie')?.split(';')
+        .find(c => c.trim().startsWith('deora-auth-token='))
+        ?.split('=')[1];
 
     if (!token) {
       return { success: false, error: 'No authentication token provided' };
@@ -208,11 +209,11 @@ export async function getUserById(id: string) {
       .select('*')
       .eq('id', id)
       .single()
-    
+
     if (error || !data) {
       return null
     }
-    
+
     return {
       id: data.id,
       ...data
@@ -222,4 +223,6 @@ export async function getUserById(id: string) {
     return null
   }
 }
+
+
 

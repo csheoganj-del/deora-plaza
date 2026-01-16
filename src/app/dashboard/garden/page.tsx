@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { getGardenBookings, deleteGardenBooking } from "@/actions/garden";
 import { getBusinessSettings } from "@/actions/businessSettings";
 import { LayoutGrid, Calendar as CalendarIcon, Plus, Search, Filter, BarChart3, Users, IndianRupee, Clock } from "lucide-react";
+import { PremiumLiquidGlass, PremiumStatsCard } from "@/components/ui/glass/premium-liquid-glass";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventCalendar from "@/components/garden/EventCalendar";
@@ -137,161 +139,116 @@ export default function GardenPage() {
   };
 
   return (
-    <div
-      className="h-screen flex flex-col bg-transparent"
-      onKeyDown={handleKeyDown}
-      tabIndex={-1}
-      role="main"
-      aria-label="Garden Management Dashboard"
-    >
+    <div className="space-y-8 pb-32" onKeyDown={handleKeyDown} tabIndex={-1}>
       {/* Header Section */}
-      <div className="px-4 sm:px-6 py-5 glass-adaptive border-b flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-adaptive-primary tracking-tight">Garden Management</h1>
-          <p className="text-adaptive-secondary text-sm mt-1">Manage event bookings, schedules, and billing</p>
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70">
+            Garden Management
+          </h1>
+          <p className="text-white/50 mt-1">Manage event bookings, schedules, and billing</p>
         </div>
-        <div className="flex gap-2 sm:gap-3">
-          <div className="bg-[#F1F5F9] p-1 rounded-lg border border-[#E5E7EB] flex" role="tablist" aria-label="View mode selection">
-            <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
-              size="sm"
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
+            <button
               onClick={() => setViewMode('cards')}
-              className={viewMode === 'cards' ? 'shadow-sm' : ''}
-              role="tab"
-              aria-selected={viewMode === 'cards'}
-              aria-controls="garden-view-content"
-              id="cards-tab"
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'cards' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}
             >
-              <LayoutGrid className="h-4 w-4 mr-2" /> Cards
-            </Button>
-            <Button
-              variant={viewMode === 'calendar' ? 'default' : 'ghost'}
-              size="sm"
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
               onClick={() => setViewMode('calendar')}
-              className={viewMode === 'calendar' ? 'shadow-sm' : ''}
-              role="tab"
-              aria-selected={viewMode === 'calendar'}
-              aria-controls="garden-view-content"
-              id="calendar-tab"
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'calendar' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}
             >
-              <CalendarIcon className="h-4 w-4 mr-2" /> Calendar
-            </Button>
+              <CalendarIcon className="w-4 h-4" />
+            </button>
           </div>
+
           <Button
-            className="bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-md shadow-emerald-200"
+            className="bg-[#22C55E] hover:bg-[#16A34A] text-white shadow-lg shadow-[#22C55E]/20 border-0"
             onClick={() => setIsNewBookingOpen(true)}
-            aria-label="Create new booking"
           >
-            <Plus className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">New Booking</span>
+            <Plus className="mr-2 h-4 w-4" /> New Booking
           </Button>
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="px-4 sm:px-6 py-4 glass-adaptive border-b">
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
-          <div className="premium-card glass-adaptive">
-            <div className="flex items-center">
-              <div className="p-2 rounded-lg bg-[#BBF7D0]/20 text-[#22C55E]" aria-hidden="true">
-                <Users className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-adaptive-secondary">Total Events</p>
-                <p className="text-lg sm:text-xl font-bold text-adaptive-primary">{stats.totalEvents}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card glass-adaptive">
-            <div className="flex items-center">
-              <div className="p-2 rounded-lg bg-[#F59E0B]/20 text-[#F59E0B]" aria-hidden="true">
-                <CalendarIcon className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-adaptive-secondary">Upcoming</p>
-                <p className="text-lg sm:text-xl font-bold text-adaptive-primary">{stats.upcomingEvents}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Bookings Card */}
-          <div className="premium-card glass-adaptive">
-            <div className="flex items-center">
-              <div className="p-2 rounded-lg bg-[#6D5DFB]/20 text-[#6D5DFB]" aria-hidden="true">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-adaptive-secondary">Active Bookings</p>
-                <p className="text-lg sm:text-xl font-bold text-adaptive-primary">{stats.activeEvents}</p>
-                <p className="text-xs text-[#6D5DFB] mt-1">Ongoing &amp; Pending</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card glass-adaptive">
-            <div className="flex items-center">
-              <div className="p-2 rounded-lg bg-[#6D5DFB]/20 text-[#6D5DFB]" aria-hidden="true">
-                <IndianRupee className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-adaptive-secondary">Revenue</p>
-                <p className="text-lg sm:text-xl font-bold text-adaptive-primary">₹{stats.revenue.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card glass-adaptive">
-            <div className="flex items-center">
-              <div className="p-2 rounded-lg bg-[#C084FC]/20 text-[#C084FC]" aria-hidden="true">
-                <Users className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-adaptive-secondary">Total Guests</p>
-                <p className="text-lg sm:text-xl font-bold text-adaptive-primary">{stats.guests.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <PremiumStatsCard
+          title="Total Events"
+          value={stats.totalEvents.toString()}
+          icon={Users}
+          delay={0.1}
+        />
+        <PremiumStatsCard
+          title="Upcoming"
+          value={stats.upcomingEvents.toString()}
+          icon={CalendarIcon}
+          trend="Upcoming"
+          trendUp={true}
+          delay={0.2}
+        />
+        <PremiumStatsCard
+          title="Active"
+          value={stats.activeEvents.toString()}
+          icon={Clock}
+          trend="Ongoing"
+          trendUp={true}
+          delay={0.3}
+        />
+        <PremiumStatsCard
+          title="Revenue"
+          value={`₹${stats.revenue.toLocaleString()}`}
+          icon={IndianRupee}
+          trend="+12%"
+          trendUp={true}
+          delay={0.4}
+        />
+        <PremiumStatsCard
+          title="Guests"
+          value={stats.guests.toLocaleString()}
+          icon={Users}
+          delay={0.5}
+        />
       </div>
 
-      {/* Toolbar */}
-      <div className="px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full sm:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" aria-hidden="true" />
-          <Input
-            placeholder="Search by name or mobile..."
-            className="pl-10 bg-white"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Search bookings by customer name or mobile number"
-          />
-        </div>
-        <Tabs value={filterStatus} onValueChange={setFilterStatus} className="w-full sm:w-auto">
-          <TabsList className="glass-adaptive border">
-            <TabsTrigger value="all" aria-label="Show all events" className="data-[state=active]:bg-adaptive-button">All Events</TabsTrigger>
-            <TabsTrigger value="upcoming" aria-label="Show upcoming events" className="data-[state=active]:bg-adaptive-button">Upcoming</TabsTrigger>
-            <TabsTrigger value="active" aria-label="Show active bookings with pending payments" className="data-[state=active]:bg-adaptive-button">Active</TabsTrigger>
-            <TabsTrigger value="completed" aria-label="Show past events" className="data-[state=active]:bg-adaptive-button">Past</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+      <PremiumLiquidGlass title={viewMode === 'cards' ? "Bookings Overview" : "Calendar View"}>
+        {/* Toolbar */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+            <input
+              placeholder="Search bookings..."
+              className="w-full pl-10 h-10 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-white/20"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-      {/* Content Area */}
-      <div
-        className="flex-1 overflow-y-auto px-4 sm:px-6 pb-6"
-        id="garden-view-content"
-        role="tabpanel"
-        aria-labelledby={viewMode === 'cards' ? 'cards-tab' : 'calendar-tab'}
-      >
+          <div className="flex gap-1 bg-white/5 p-1 rounded-xl border border-white/5 flex-wrap">
+            {['all', 'upcoming', 'active', 'completed'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${filterStatus === status ? 'bg-[#22C55E] text-white shadow-lg shadow-[#22C55E]/20' : 'text-white/50 hover:text-white'}`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#22C55E]" role="status" aria-label="Loading bookings"></div>
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/20"></div>
           </div>
         ) : (
           <>
             {viewMode === 'cards' ? (
               filteredBookings.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredBookings.map((booking) => (
                     <GardenBookingCard
                       key={booking.id}
@@ -301,23 +258,6 @@ export default function GardenPage() {
                         if (passwordProtection) {
                           setIsDeleteDialogOpen(true);
                         } else {
-                          // Bypass dialog
-                          // We need to call a function that can handle delete directly.
-                          // But handleDelete expects a password string.
-                          // We can refactor handleDelete to be flexible or just pass empty string.
-                          // But we can't call handleDelete directly with empty string because it uses 'deleteBookingId' state 
-                          // which might not be updated yet if we call it immediately here.
-                          // However, setDeleteBookingId(b.id) is async.
-                          //
-                          // Better: Call delete directly here with the ID.
-                          // But we need the toast logic etc.
-                          // Let's create a helper or just do it.
-                          // Since we are in a map, we can't easily use state immediately.
-
-                          // Quick fix: define an inline function or call deleteGardenBooking directly and handle UI.
-                          // But to be consistent, we should reuse logical flow.
-
-                          // Use a timeout 0 trick to allow state to settle, then call handleDelete("")
                           setTimeout(() => handleDelete(""), 0);
                         }
                       }}
@@ -327,23 +267,13 @@ export default function GardenPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20">
-                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#F1F5F9] mb-4" aria-hidden="true">
-                    <CalendarIcon className="h-8 w-8 text-[#9CA3AF]" />
-                  </div>
-                  <h3 className="text-lg font-medium text-adaptive-primary">No bookings found</h3>
-                  <p className="text-adaptive-secondary mt-1">Try adjusting your search or create a new booking.</p>
-                  <Button
-                    className="mt-4 bg-[#22C55E] hover:bg-[#16A34A] text-white"
-                    onClick={() => setIsNewBookingOpen(true)}
-                    aria-label="Create new booking"
-                  >
-                    <Plus className="mr-2 h-4 w-4" /> Create Booking
-                  </Button>
+                <div className="text-center py-20 text-white/40">
+                  <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                  <p>No bookings found</p>
                 </div>
               )
             ) : (
-              <div className="bg-white p-4 sm:p-6 rounded-xl border border-[#E5E7EB] shadow-sm">
+              <div className="bg-white/5 rounded-xl border border-white/10 p-4">
                 <EventCalendar
                   bookings={filteredBookings}
                   onSelectDate={(date) => console.log("Date selected", date)}
@@ -352,7 +282,7 @@ export default function GardenPage() {
             )}
           </>
         )}
-      </div>
+      </PremiumLiquidGlass>
 
       <GardenBookingDialog
         isOpen={isNewBookingOpen}

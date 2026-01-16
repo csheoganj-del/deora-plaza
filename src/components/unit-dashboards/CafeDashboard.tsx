@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { BusinessUnitType } from "@/lib/business-units";
 import { getUnitMetrics } from "@/actions/unit-stats";
-
+import { createClient } from "@/lib/supabase/client";
+import { ensureBillForOrder } from "@/actions/billing";
+import { getOrderById } from "@/actions/orders";
+import ReprintBill from "@/components/billing/ReprintBill";
+import { toast } from "sonner";
 
 interface CafeMetrics {
   dailyRevenue: number;
@@ -18,6 +22,7 @@ interface CafeMetrics {
 
 export function CafeDashboard() {
   const [loading, setLoading] = useState(true);
+  const [autoPrintBill, setAutoPrintBill] = useState<any>(null); // State for auto-print
   const [metrics, setMetrics] = useState<CafeMetrics>({
     dailyRevenue: 0,
     ordersToday: 0,
@@ -29,6 +34,81 @@ export function CafeDashboard() {
     peakHours: []
   });
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Realtime Subscription for Auto-Print
+  useEffect(() => {
+    const supabase = createClient();
+    console.log("🖨️ Initializing Auto-Print Listener for Cafe...");
+    toast.success("Auto-Print System Active", { duration: 2000 });
+
+    const channel = supabase
+      .channel('cafe-auto-print')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          // Removed filter to be safe, check status in JS
+        },
+        async (payload) => {
+          const newOrder = payload.new as any;
+          const oldOrder = payload.old as any;
+
+          console.log("🔔 Order Update Detected:", newOrder.id, "Status:", newOrder.status);
+
+          // 1. Check if status changed to 'served'
+          // Use loose check for oldOrder.status (might be undefined)
+          const wasServed = oldOrder.status === 'served';
+          const isServed = newOrder.status === 'served';
+
+          if (!wasServed && isServed) {
+            console.log("🔍 Checking if order is Takeaway...", newOrder.id);
+
+            // 2. Fetch FULL order details from server (Reliable)
+            try {
+              const fullOrder = await getOrderById(newOrder.id);
+
+              if (!fullOrder) {
+                console.error("❌ Could not fetch order details:", newOrder.id);
+                return;
+              }
+
+              console.log("📋 Fetched Order Type:", fullOrder.type);
+
+              // 3. Verify Type is Takeaway
+              if (fullOrder.type && fullOrder.type.toLowerCase() === 'takeaway') {
+                console.log("✅ Valid Takeaway Order! Ensuring Bill...");
+                toast.info("New Takeaway Served! Preparing Bill...");
+
+                // 4. Ensure Bill
+                const result = await ensureBillForOrder(fullOrder.id);
+
+                if (result.success && result.bill) {
+                  console.log("📄 Bill Ready:", result.bill.billNumber);
+                  setAutoPrintBill(result.bill);
+                  toast.success(`Bill generated: ${result.bill.billNumber}`);
+                  // Keep alive?
+                } else {
+                  console.error("❌ Failed to ensure bill:", result.error);
+                  toast.error("Failed to generate bill for auto-print");
+                }
+              } else {
+                console.log("ℹ️ Ignored: Not a takeaway order (Type: " + fullOrder.type + ")");
+              }
+
+            } catch (err) {
+              console.error("❌ Error processing auto-print trigger:", err);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   useEffect(() => {
     loadCafeMetrics();
@@ -263,10 +343,56 @@ export function CafeDashboard() {
               </svg>
               <p className="text-sm font-medium text-[#111827]">Staff</p>
             </button>
+            {/* DEBUG BUTTON */}
+            <button
+              onClick={async () => {
+                toast.info("Simulating Takeaway Served...");
+                // Mock a complete bill structure
+                setAutoPrintBill({
+                  id: "mock-bill-id",
+                  billNumber: "TEST-BILL-001",
+                  orderId: "mock-order-id", // Required by ReprintBill
+                  grandTotal: 500,
+                  subtotal: 450,
+                  gstAmount: 50,
+                  businessUnit: 'cafe',
+                  createdAt: new Date().toISOString(),
+                  items: JSON.stringify([
+                    { name: "Test Coffee", quantity: 2, price: 150, amount: 300 },
+                    { name: "Sandwich", quantity: 1, price: 150, amount: 150 }
+                  ])
+                });
+              }}
+              className="p-4 border-2 border-dashed border-red-200 bg-red-50 rounded-lg hover:bg-red-100 text-center"
+            >
+              <p className="text-xs font-bold text-red-600 uppercase">Test Popup</p>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Auto-Print Dialog Overlay */}
+      {autoPrintBill && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  New Takeaway Served!
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">Order #{autoPrintBill.billNumber}</p>
+              </div>
+            </div>
+            <div className="p-6">
+              <ReprintBill
+                bill={autoPrintBill}
+                onClose={() => setAutoPrintBill(null)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

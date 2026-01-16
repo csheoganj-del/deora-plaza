@@ -182,15 +182,10 @@ export class BusinessUnitManager {
 
   private async initializeBusinessUnits(): Promise<void> {
     try {
-      // Test API keys first
-      const { validateAPIKeys, testAPIKeys } = await import('./test-api-keys');
-      const keyValidation = validateAPIKeys();
-      const keyTest = await testAPIKeys();
-
-      if (!keyTest.success) {
-        console.error('API key validation failed:', keyTest.error);
-        throw new Error(`Supabase API key issue: ${keyTest.error}`);
-      }
+      // Test API keys removed for production build
+      // const { validateAPIKeys, testAPIKeys } = await import('./test-api-keys');
+      // const keyValidation = validateAPIKeys();
+      // const keyTest = await testAPIKeys();
 
       // Load business units from database or use defaults
       // Use client-side functions if in browser, server-side if on server
@@ -203,14 +198,14 @@ export class BusinessUnitManager {
 
       console.log('BusinessUnitManager: Using database functions from', isClient ? 'client' : 'server');
 
-      // Test Supabase connection first
-      const { testSupabaseConnection } = await import('./test-supabase');
-      const connectionTest = await testSupabaseConnection();
-      console.log('Supabase connection test result:', connectionTest);
+      // Test Supabase connection removed for production build
+      // const { testSupabaseConnection } = await import('./test-supabase');
+      // const connectionTest = await testSupabaseConnection();
+      // console.log('Supabase connection test result:', connectionTest);
 
-      if (!connectionTest.success) {
-        throw new Error('Supabase connection failed');
-      }
+      // if (!connectionTest.success) {
+      //   throw new Error('Supabase connection failed');
+      // }
 
       // Check if business units exist - use businesssettings table
       const existingUnits = await getDocuments('businesssettings');

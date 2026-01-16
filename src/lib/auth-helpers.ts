@@ -115,10 +115,10 @@ export async function requireFinancialAccess(): Promise<AuthSession> {
 
 /**
  * Verify user can delete data
- * Only super_admin can delete
+ * Now allows owner and managers because deletion is guarded by password check in the action itself
  */
 export async function requireDeletePermission(): Promise<AuthSession> {
-    return requireRole(['super_admin'])
+    return requireRole(['super_admin', 'owner', 'manager', 'cafe_manager', 'bar_manager', 'hotel_manager', 'garden_manager'])
 }
 
 /**

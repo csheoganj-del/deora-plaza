@@ -9,11 +9,8 @@ export const metadata: Metadata = {
 
 export default function InventoryPage() {
   return (
-    <DashboardPageWrapper
-      title="Inventory Management"
-      description="Track stock levels, manage inventory, and receive low stock alerts"
-    >
+    <div className="pb-20">
       <InventoryManager />
-    </DashboardPageWrapper>
+    </div>
   );
 }

@@ -4,8 +4,10 @@ import { useState } from "react";
 ;
 
 import { Badge } from "@/components/ui/badge";
-import { Bed, User, Star, CheckCircle2, XCircle, Wrench, Sparkles, MoreVertical, Pencil, Trash2, UtensilsCrossed, Calendar } from "lucide-react";
+import { Bed, User, Star, CheckCircle2, XCircle, Wrench, Sparkles, MoreVertical, Pencil, Trash2, UtensilsCrossed, Calendar, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PremiumLiquidGlass } from "@/components/ui/glass/premium-liquid-glass";
+import { motion } from "framer-motion";
 import { Room, HotelBooking } from "@/actions/hotel";
 import {
   DropdownMenu,
@@ -26,8 +28,10 @@ type RoomGridProps = {
   onDelete: (room: Room, password?: string) => void;
   onRoomService: (room: Room) => void;
   onMarkCleaned?: (room: Room) => void;
+  onResetStatus?: (room: Room) => void;
   bookings?: HotelBooking[];
   enablePasswordProtection?: boolean;
+  className?: string;
 };
 
 export default function RoomGrid({
@@ -37,8 +41,10 @@ export default function RoomGrid({
   onDelete,
   onRoomService,
   onMarkCleaned,
+  onResetStatus,
   bookings = [],
-  enablePasswordProtection = true
+  enablePasswordProtection = true,
+  className
 }: RoomGridProps) {
   const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -85,7 +91,7 @@ export default function RoomGrid({
       case 'occupied':
         return "bg-[#FEE2E2]0/20 text-red-400"
       case 'maintenance':
-        return "bg-[#F8FAFC]/20 text-[#9CA3AF]"
+        return "bg-[#F8FAFC]/20 text-white/50"
       case 'cleaning':
         return "bg-[#F59E0B]/100/20 text-[#F59E0B]400"
       default:
@@ -176,79 +182,129 @@ export default function RoomGrid({
         </div>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)}>
         {rooms.map((room) => {
           // Ensure room.id is defined
           if (!room.id) return null;
 
+          // Calculate effective status based on bookings
+          let effectiveStatus = room.status;
+          const activeBooking = bookings.find(b =>
+            (b.roomId === room.id || b.roomNumber === room.number) &&
+            ['confirmed', 'checked-in'].includes(b.status) &&
+            new Date(b.endDate) > new Date() // Only if booking is still valid
+          );
+
+          if (activeBooking) {
+            effectiveStatus = 'occupied';
+          }
+
           const nightlyRate = typeof room.price === "number" ? room.price : typeof room.pricePerNight === "number" ? room.pricePerNight : 0
           return (
             <div key={room.id} className="relative group">
-              <div className="absolute top-3 left-3 z-10">
+              <div className="absolute top-3 left-3 z-20">
                 <Checkbox
                   checked={selectedRooms.includes(room.id)}
                   onCheckedChange={() => toggleRoomSelection(room.id!)}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
-              <button onClick={() => onSelect(room)} className="w-full text-left transition-transform duration-200 hover:-translate-y-1 focus:outline-none" >
-                <div className="premium-card">
-                  <div className="p-8 border-b border-[#E5E7EB] pb-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onSelect(room)}
+                className="w-full text-left focus:outline-none h-full"
+              >
+                <PremiumLiquidGlass
+                  variant="card"
+                  className={cn("h-full relative overflow-hidden transition-all duration-300 !p-0",
+                    selectedRooms.includes(room.id) ? "ring-2 ring-emerald-500" : ""
+                  )}
+                >
+                  <div className="p-4 pb-3 border-b border-white/5 relative z-10">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Room</p>
-                        <h2 className="text-3xl font-bold text-[#111827] text-3xl font-bold text-[var(--text-primary)]">{room.number}</h2>
+                        {/* <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">Room</p> */}
+                        <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70">{room.number}</h2>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-white/50">
+                          <span className="bg-white/5 border border-white/5 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <Bed className="w-3 h-3" /> {room.type}
+                          </span>
+                        </div>
                       </div>
+
                       <div className={cn(
-                        "rounded-full px-2 py-1 text-xs font-semibold flex items-center gap-1",
-                        getStatusBadgeColor(room.status)
+                        "rounded-xl px-2.5 py-1 text-[10px] font-semibold flex items-center gap-1.5 backdrop-blur-md border",
+                        effectiveStatus === 'available' && "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
+                        effectiveStatus === 'occupied' && "bg-rose-500/10 border-rose-500/20 text-rose-400",
+                        effectiveStatus === 'maintenance' && "bg-amber-500/10 border-amber-500/20 text-amber-400",
+                        effectiveStatus === 'cleaning' && "bg-blue-500/10 border-blue-500/20 text-blue-400",
                       )}>
-                        {getStatusIcon(room.status)}
-                        <span className="capitalize">{room.status}</span>
+                        {getStatusIcon(effectiveStatus)}
+                        <span className="capitalize hidden sm:inline">{effectiveStatus}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="p-8 space-y-4">
-                    <div className="flex items-center gap-2 text-sm bg-[var(--glass-bg)] border border-[var(--glass-border)] px-3 py-2 rounded-lg">
-                      <Bed className="h-4 w-4 text-[var(--brand-primary)]" />
-                      <span className="font-medium text-[var(--text-secondary)]">{room.type}</span>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-[var(--glass-border)] pt-3">
-                      <div>
-                        <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Per Night</span>
-                        <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">₹{nightlyRate.toLocaleString()}</p>
+
+                  <div className="p-4 space-y-3 relative z-10">
+                    <div className="flex flex-col gap-2">
+                      {/* Price Section */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xl font-bold text-white tracking-tight">₹{nightlyRate.toLocaleString()}</p>
+                          <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide">Per Night</p>
+                        </div>
                       </div>
+
                       {room.type === "Suite" && (
-                        <div className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 text-xs font-semibold text-[var(--brand-primary)] flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-[var(--brand-primary)] text-[var(--brand-primary)]" /> Premium
+                        <div className="self-start mt-2">
+                          <div className="rounded-full bg-gradient-to-r from-purple-500/20 to-purple-600/20 border border-purple-500/30 px-3 py-1 text-xs font-semibold text-purple-400 flex items-center gap-1 shadow-[0_0_10px_rgba(242,185,75,0.15)]">
+                            <Star className="h-3 w-3 fill-[#F2B94B]" /> Premium
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
-              </button>
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                  {/* Decorative Gradient Background based on status */}
+                  <div className={cn("absolute inset-0 opacity-10 blur-xl transition-all duration-500",
+                    effectiveStatus === 'available' && "bg-gradient-to-br from-emerald-500/40 via-transparent to-transparent",
+                    effectiveStatus === 'occupied' && "bg-gradient-to-br from-rose-500/40 via-transparent to-transparent",
+                    effectiveStatus === 'maintenance' && "bg-gradient-to-br from-amber-500/40 via-transparent to-transparent",
+                    effectiveStatus === 'cleaning' && "bg-gradient-to-br from-blue-500/40 via-transparent to-transparent",
+                  )} />
+
+                </PremiumLiquidGlass>
+              </motion.button>
+
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 glass-card frosted-glass-light hover:bg-white shadow-sm rounded-full">
-                      <MoreVertical className="h-4 w-4 text-[var(--text-secondary)]" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-black/60 rounded-full">
+                      <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-white">
-                    {room.status === 'occupied' && (
-                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRoomService(room); }}>
+                  <DropdownMenuContent align="end" className="bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 text-white">
+                    {effectiveStatus === 'occupied' && (
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRoomService(room); }} className="focus:bg-white/10 focus:text-white cursor-pointer">
                         <UtensilsCrossed className="mr-2 h-4 w-4" /> Room Service
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setAvailabilityRoom(room); setAvailabilityOpen(true); }}>
+                    {/* Add Force Available option for phantom bookings */}
+                    {(effectiveStatus === 'occupied' || effectiveStatus === 'maintenance') && onResetStatus && (
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onResetStatus(room); }} className="focus:bg-white/10 focus:text-white cursor-pointer text-amber-400 focus:text-amber-400">
+                        <RotateCcw className="mr-2 h-4 w-4" /> Force Available
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setAvailabilityRoom(room); setAvailabilityOpen(true); }} className="focus:bg-white/10 focus:text-white cursor-pointer">
                       <Calendar className="mr-2 h-4 w-4" /> Availability
                     </DropdownMenuItem>
-                    {room.status === 'cleaning' && onMarkCleaned && (
-                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onMarkCleaned(room); }}>
+                    {effectiveStatus === 'cleaning' && onMarkCleaned && (
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onMarkCleaned(room); }} className="focus:bg-white/10 focus:text-white cursor-pointer">
                         <Sparkles className="mr-2 h-4 w-4" /> Mark Cleaned
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(room); }}>
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(room); }} className="focus:bg-white/10 focus:text-white cursor-pointer">
                       <Pencil className="mr-2 h-4 w-4" /> Edit Room
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -256,7 +312,7 @@ export default function RoomGrid({
                         e.stopPropagation();
                         handleSingleDelete(room.id!, room.number);
                       }}
-                      className="text-[#EF4444] focus:text-[#EF4444]"
+                      className="text-rose-400 focus:text-rose-400 focus:bg-rose-500/10 cursor-pointer"
                     >
                       <Trash2 className="mr-2 h-4 w-4" /> Delete Room
                     </DropdownMenuItem>
@@ -315,12 +371,12 @@ export default function RoomGrid({
                     const e = new Date(b.endDate);
                     return s <= availabilityDate && e > availabilityDate;
                   }) : roomBookings.slice(0, 5);
-                  if (selectedBookings.length === 0) return <div className="text-sm text-[#9CA3AF]">No bookings</div>;
+                  if (selectedBookings.length === 0) return <div className="text-sm text-white/50">No bookings</div>;
                   return selectedBookings.map((b, idx) => (
                     <div key={idx} className="border rounded p-2 text-sm">
                       <div className="font-medium">{b.guestName || 'Guest'}</div>
-                      <div className="text-[#6B7280]">{new Date(b.startDate).toLocaleDateString()} - {new Date(b.endDate).toLocaleDateString()}</div>
-                      <div className="text-[#6B7280]">Status: {b.status}</div>
+                      <div className="text-white/60">{new Date(b.startDate).toLocaleDateString()} - {new Date(b.endDate).toLocaleDateString()}</div>
+                      <div className="text-white/60">Status: {b.status}</div>
                     </div>
                   ));
                 })()}
@@ -332,4 +388,3 @@ export default function RoomGrid({
     </div>
   )
 }
-

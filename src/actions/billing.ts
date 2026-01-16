@@ -54,84 +54,128 @@ async function getNextBillNumber(): Promise<string> {
   }
 }
 
-export async function deleteBill(billId: string, password: string) {
+export async function deleteBill(billId: string, password: string, businessUnit?: string) {
   try {
+    console.log(`🗑️ deleteBill called for ${billId} (Unit: ${businessUnit})`);
+
+    // Check generic business settings
     // Check generic business settings
     const { getBusinessSettings } = await import("@/actions/businessSettings");
     const settings = await getBusinessSettings();
+
     const isPasswordProtectionEnabled = settings?.enablePasswordProtection ?? true;
+    console.log(`🔒 deleteBill Protection: ${isPasswordProtectionEnabled}, Password provided length: ${password?.length}`);
 
     if (isPasswordProtectionEnabled) {
-      // SECURITY: Require super_admin role for deletion if protection is enabled
+      const { requireDeletePermission } = await import("@/lib/auth-helpers");
       await requireDeletePermission();
 
-      // SECURITY: Validate password
       const validatedPassword = validateInput(deletePasswordSchema, password);
-
-      // SECURE: Get deletion password from environment variables only
       const DELETION_PASSWORD = process.env.ADMIN_DELETION_PASSWORD;
 
-      if (!DELETION_PASSWORD) {
-        return { success: false, error: "Deletion password not configured in environment" };
-      }
+      // Explicitly log failure condition (masked)
+      if (!DELETION_PASSWORD) console.error("❌ ADMIN_DELETION_PASSWORD not set in env");
+      if (validatedPassword !== DELETION_PASSWORD) console.warn("❌ Password mismatch");
 
-      if (validatedPassword !== DELETION_PASSWORD) {
-        // AUDIT: Log failed deletion attempt
-        await createAuditLog(
-          "DELETE_BILL",
-          { billId, reason: "Incorrect password" },
-          false,
-          "Incorrect password"
-        );
+      if (!DELETION_PASSWORD || validatedPassword !== DELETION_PASSWORD) {
         return { success: false, error: "Incorrect password" };
       }
     } else {
-      // If protection is disabled, just ensure the user is authenticated
       const { requireAuth } = await import("@/lib/auth-helpers");
       await requireAuth();
-
-      // Still log the deletion for audit purposes
-      console.log(`⚠️ Bill deletion performed without password (Protection User-Disabled)`);
     }
 
-    // Get the bill to find the orderId
-    const { data: billData, error: billError } = await supabaseServer
-      .from("bills")
+    // Determine collection: garden and hotel are in 'bookings' table
+    const collectionName = (businessUnit === 'hotel' || businessUnit === 'garden') ? "bookings" : "bills";
+
+    // Get the record first for auditing
+    const { data: recordData, error: fetchError } = await supabaseServer
+      .from(collectionName)
       .select("*")
       .eq("id", billId)
       .single();
 
-    if (billError || !billData) {
-      return { success: false, error: "Bill not found" };
+    if (fetchError || !recordData) {
+      return { success: false, error: "Record not found" };
     }
 
-    // AUDIT: Log bill deletion
+    // AUDIT
     await auditBillOperation(
-      "DELETE_BILL",
+      "DELETE_RECORD",
       billId,
-      billData?.billNumber,
-      billData?.grandTotal,
+      recordData.billNumber || recordData.receiptNumber || 'N/A',
+      recordData.grandTotal || recordData.totalAmount || 0
     );
 
-    // Delete the bill
-    const { error: deleteError } = await supabaseServer
-      .from("bills")
-      .delete()
-      .eq("id", billId);
+    // Delete the record
+    // If it's a booking type, delegate to specific handlers if possible or handle specialized logic
+    let specializedDeleteSuccess = false;
+    let genericDeleteSuccess = false;
+    let deletionError = '';
 
-    if (deleteError) {
-      throw deleteError;
+    if (businessUnit === 'hotel') {
+      const { deleteHotelBooking } = await import("@/actions/hotel");
+      const hotelResult = await deleteHotelBooking(billId, password);
+
+      if (hotelResult.success) {
+        specializedDeleteSuccess = true;
+      } else if (hotelResult.error && !hotelResult.error.toLowerCase().includes('not found')) {
+        // Real error (like db constraint), not just missing record
+        deletionError = hotelResult.error;
+      }
+    } else if (businessUnit === 'garden') {
+      const { deleteGardenBooking } = await import("@/actions/garden");
+      const gardenResult = await deleteGardenBooking(billId, password);
+
+      if (!gardenResult.error) {
+        specializedDeleteSuccess = true;
+      } else if (gardenResult.error && !gardenResult.error.toLowerCase().includes('not found')) {
+        // Real error
+        deletionError = gardenResult.error;
+      }
+    }
+
+    // ALWAYS try 'bills' table cleanup for these units (or if it's a generic bill)
+    // This handles "zombie" records that linger in the bills table
+    if (!deletionError) { // Only proceed if no critical error in specialized delete
+      console.log(`🧹 Performing cleanup check on generic bills table for ID: ${billId} (${businessUnit || 'generic'})...`);
+      const { data: billData, error: billError } = await supabaseServer
+        .from('bills')
+        .delete()
+        .eq('id', billId)
+        .select();
+
+      if (!billError && billData && billData.length > 0) {
+        genericDeleteSuccess = true;
+        console.log("✅ Deleted ghost/generic record from bills table.");
+      } else if (businessUnit !== 'hotel' && businessUnit !== 'garden' && (!billData || billData.length === 0)) {
+        // If it was PURELY a generic bill and we found nothing, that's an error
+        deletionError = "Record not found in bills database";
+      }
+    }
+
+    // Determine final result
+    // If either deletion succeeded, we consider it a success.
+    // If we had a specialized error (e.g. password) we return it.
+    if (deletionError) {
+      // If we had a specific error that wasn't "Not Found", report it
+      return { success: false, error: deletionError };
+    }
+
+    if (!specializedDeleteSuccess && !genericDeleteSuccess) {
+      // Both returned "Not Found"
+      return { success: false, error: "Record not found in any database table" };
     }
 
     revalidatePath("/dashboard/billing");
-    revalidatePath("/dashboard/orders");
+    if (businessUnit === 'hotel' || businessUnit === 'garden') revalidatePath("/dashboard/statistics");
 
     return {
       success: true,
-      message: `Successfully deleted bill ${billData?.billNumber}`,
+      message: `Successfully deleted ${businessUnit || 'bill'}`,
     };
   } catch (error) {
-    console.error("Error deleting bill:", error);
+    console.error("Error deleting bill/booking:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -233,6 +277,7 @@ export async function createBill(data: {
   gstAmount: number;
   grandTotal: number;
   paymentMethod?: string;
+  paymentStatus?: string; // 'paid' or 'pending'
   source?: string; // 'dine-in', 'online', 'zomato', 'swiggy'
   address?: string;
   items?: any[]; // Add items array
@@ -275,7 +320,7 @@ export async function createBill(data: {
       gstAmount: data.gstAmount,
       grandTotal: data.grandTotal,
       paymentMethod: data.paymentMethod || "cash",
-      paymentStatus: "paid",
+      paymentStatus: data.paymentStatus || "paid",
       source: data.source || "dine-in",
       address: data.address || null,
       items: JSON.stringify(data.items || []), // Save items array as JSON string
@@ -334,7 +379,7 @@ export async function createBill(data: {
           .select("id")
           .eq("id", result.data.id)
           .single();
-          
+
         if (!verifyBill) {
           console.error("❌ CRITICAL: Bill created but not found in DB immediately:", result.data.id);
           // Wait a moment and try again (Replication lag handling)
@@ -515,17 +560,63 @@ export async function createBill(data: {
 
 export async function getBills(businessUnit?: string) {
   try {
-    const filters = businessUnit
-      ? [{ field: "businessUnit", operator: "==", value: businessUnit }]
-      : [];
+    let allBills: any[] = [];
 
-    const bills = await queryDocuments("bills", filters, "createdAt", "desc");
+    // 1. Fetch from 'bills' collection (Cafe/Bar standard bills)
+    if (!businessUnit || businessUnit === 'cafe' || businessUnit === 'bar') {
+      const filters = businessUnit
+        ? [{ field: "businessUnit", operator: "==", value: businessUnit }]
+        : [];
+      const bills = await queryDocuments("bills", filters, "createdAt", "desc");
+      allBills = [...allBills, ...bills];
+    }
 
-    return bills.map((bill: any) => ({
+    // 2. Fetch from 'bookings' collection (Hotel/Garden revenue)
+    if (!businessUnit || businessUnit === 'hotel' || businessUnit === 'garden') {
+      const filters: any[] = [{ field: "type", operator: "in", value: ['hotel', 'garden'] }];
+      if (businessUnit) {
+        // If specific unit requested, filter by that type
+        filters[0] = { field: "type", operator: "==", value: businessUnit } as any;
+      }
+
+      const bookings = await queryDocuments("bookings", filters, "createdAt", "desc");
+
+      // Map bookings to Bill format
+      const mappedBookings = bookings.map((b: any) => ({
+        id: b.id,
+        billNumber: b.receiptNumber || b.payments?.[0]?.receiptNumber || `BK-${b.id.slice(0, 8)}`,
+        orderId: b.id,
+        businessUnit: b.type, // 'hotel' or 'garden'
+        customerName: b.customerName || b.guestName || 'Valued Guest',
+        customerMobile: b.customerMobile,
+        subtotal: b.basePrice || b.totalAmount || 0,
+        discountPercent: b.discountPercent || 0,
+        discountAmount: b.discountAmount || 0,
+        gstPercent: b.gstPercentage || 0,
+        gstAmount: b.gstAmount || 0,
+        grandTotal: b.totalAmount || 0,
+        paymentMethod: b.payments?.[0]?.type || 'Cash/Online',
+        paymentStatus: (b.status === 'completed' || (b.remainingBalance !== undefined && b.remainingBalance <= 0)) ? 'paid' : 'unpaid',
+        source: b.type === 'garden' ? (b.eventType || 'Event') : 'Booking',
+        address: b.notes || '',
+        createdAt: b.createdAt,
+        updatedAt: b.updatedAt,
+        items: b.payments || [] // Include payment history as items for reference
+      }));
+
+      allBills = [...allBills, ...mappedBookings];
+    }
+
+    // Sort by date descending
+    return allBills.map((bill: any) => ({
       ...bill,
       createdAt: bill.createdAt ? new Date(bill.createdAt).toISOString() : null,
       updatedAt: bill.updatedAt ? new Date(bill.updatedAt).toISOString() : null,
-    }));
+    })).sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error("Error fetching bills:", error);
     return [];
@@ -636,6 +727,81 @@ export async function generateBillDebug(data: any) {
   }
 }
 
+export async function ensureBillForOrder(orderId: string) {
+  try {
+    // 1. Check if bill already exists
+    const { data: existingBill, error: fetchError } = await supabaseServer
+      .from("bills")
+      .select("*")
+      .eq("orderId", orderId)
+      .single();
+
+    if (existingBill) {
+      return { success: true, bill: existingBill, created: false };
+    }
+
+    // 2. Fetch Order Data to create new bill
+    const { data: order, error: orderError } = await supabaseServer
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .single();
+
+    if (orderError || !order) {
+      return { success: false, error: "Order not found" };
+    }
+
+    // 3. Create Bill Data
+    // Calculate totals if not present (simple fallback)
+    const subtotal = order.totalAmount || 0;
+    // Assuming inclusive or default logic if details missing
+    const gstPercent = 5; // Default for F&B
+    const gstAmount = subtotal * (gstPercent / 100);
+    const grandTotal = subtotal + gstAmount;
+
+    // Use generateBillDebug logic but production ready?
+    // Actually, better to use createBill if we can map data, but createBill requires detailed breakdown.
+    // For now, let's construct a valid payload for createBill
+
+    // Parse items for createBill
+    let items = order.items;
+    if (typeof items === 'string') {
+      try { items = JSON.parse(items); } catch (e) { }
+    }
+
+    const billPayload: any = {
+      orderId: order.id,
+      businessUnit: order.businessUnit || 'cafe',
+      customerName: order.customerName,
+      customerMobile: order.customerMobile,
+      subtotal: subtotal,
+      grandTotal: subtotal,
+      gstPercent: 0,
+      gstAmount: 0,
+      paymentStatus: 'pending',
+      items: items,
+      source: 'takeaway-auto'
+    };
+
+    const result = await createBill(billPayload);
+
+    if (result.success && result.billId) {
+      const { data: newBill } = await supabaseServer
+        .from("bills")
+        .select("*")
+        .eq("id", result.billId)
+        .single();
+      return { success: true, bill: newBill, created: true };
+    }
+
+    return { success: false, error: result.error };
+
+  } catch (error) {
+    console.error("ensureBillForOrder error:", error);
+    return { success: false, error: "Failed to ensure bill" };
+  }
+}
+
 export async function processPayment(
   billId: string,
   paymentMethod: string,
@@ -651,9 +817,9 @@ export async function processPayment(
 
     // Validate payment method
     if (!(await validateInternalPaymentMethod(paymentMethod))) {
-      return { 
-        success: false, 
-        error: `Unsupported payment method: ${paymentMethod}` 
+      return {
+        success: false,
+        error: `Unsupported payment method: ${paymentMethod}`
       };
     }
 
@@ -686,8 +852,8 @@ export async function processPayment(
     });
 
     if (paymentResult.success) {
-      return { 
-        success: true, 
+      return {
+        success: true,
         transactionId: paymentResult.transactionId,
         message: "Internal payment processed successfully"
       };
@@ -700,16 +866,16 @@ export async function processPayment(
         updatedAt: new Date().toISOString(),
       });
 
-      return { 
-        success: false, 
-        error: paymentResult.error || "Internal payment processing failed" 
+      return {
+        success: false,
+        error: paymentResult.error || "Internal payment processing failed"
       };
     }
   } catch (error) {
     console.error("Error processing internal payment:", error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : "Internal payment processing failed" 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Internal payment processing failed"
     };
   }
 }
@@ -783,7 +949,7 @@ export async function processOrderCancellation(
     // Process order cancellation through internal system
     const { processOrderCancellation: internalCancellation } = await import("@/lib/payment-gateway");
     const session = await requireFinancialAccess();
-    
+
     const cancellationResult = await internalCancellation(
       orderId,
       billId,
@@ -831,13 +997,163 @@ export async function processOrderCancellation(
   }
 }
 
+/**
+ * Create a bill directly without creating an order (billing-only mode)
+ * This function is used when billing-only mode is enabled for a business unit
+ */
+export async function createDirectBill(data: {
+  businessUnit: string;
+  tableId?: string;
+  tableNumber?: string;
+  customerMobile?: string;
+  customerName?: string;
+  address?: string;
+  subtotal: number;
+  discountPercent?: number;
+  discountAmount?: number;
+  gstPercent: number;
+  gstAmount: number;
+  grandTotal: number;
+  paymentMethod?: string;
+  items: Array<{
+    menuItemId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    specialInstructions?: string;
+  }>;
+  offlineId?: string; // For offline sync
+}) {
+  try {
+    console.log("=== CREATE DIRECT BILL (BILLING-ONLY MODE) ===");
+    console.log("Data:", JSON.stringify(data, null, 2));
+
+    const { requireAuth } = await import("@/lib/auth-helpers");
+    const session = await requireAuth();
+
+    // Generate bill number
+    const billNumber = await getNextBillNumber();
+    console.log("Generated bill number:", billNumber);
+
+    // Handle customer creation if needed
+    if (data.customerMobile) {
+      try {
+        const { getCustomerByMobile, createCustomer } = await import("@/actions/customers");
+        const existingCustomer = await getCustomerByMobile(data.customerMobile);
+
+        if (!existingCustomer) {
+          await createCustomer({
+            mobileNumber: data.customerMobile,
+            name: data.customerName || "Walk-in Customer",
+          });
+        }
+      } catch (customerError) {
+        console.warn("Error handling customer:", customerError);
+      }
+    }
+
+    // Create bill directly (no order)
+    const billData: any = {
+      billNumber,
+      orderId: null, // No order in billing-only mode
+      businessUnit: data.businessUnit,
+      customerMobile: data.customerMobile || null,
+      customerName: data.customerName || null,
+      address: data.address || null,
+      subtotal: data.subtotal,
+      discountPercent: data.discountPercent || 0,
+      discountAmount: data.discountAmount || 0,
+      gstPercent: data.gstPercent,
+      gstAmount: data.gstAmount,
+      grandTotal: data.grandTotal,
+      paymentMethod: data.paymentMethod || null,
+      paymentStatus: data.paymentMethod ? "paid" : "unpaid",
+      source: "billing-only-mode",
+      items: JSON.stringify(data.items), // Store items as JSON string
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Add offline ID if provided (for sync tracking)
+    if (data.offlineId) {
+      billData.offlineId = data.offlineId;
+    }
+
+    const result = await createDocument("bills", billData);
+
+    if (!result.success) {
+      console.error("Failed to create direct bill:", result.error);
+      return {
+        success: false,
+        error: result.error || "Failed to create bill",
+      };
+    }
+
+    console.log("Direct bill created successfully:", result.data?.id);
+
+    // Update table status if applicable (mark as occupied with bill)
+    if (data.tableId) {
+      try {
+        const { updateTableStatus } = await import("./tables");
+        await updateTableStatus(data.tableId, "occupied", 0, result.data?.id);
+      } catch (tableError) {
+        console.warn("Failed to update table status:", tableError);
+      }
+    }
+
+    // Record discount if applicable
+    if (data.discountAmount && data.discountAmount > 0) {
+      try {
+        await recordDiscount({
+          billId: result.data?.id || "",
+          orderId: null,
+          discountType: data.discountPercent ? "percentage" : "fixed",
+          discountValue: data.discountPercent || data.discountAmount,
+          discountAmount: data.discountAmount,
+          reason: "Direct billing discount",
+          appliedBy: session.user?.id || "system",
+        });
+      } catch (discountError) {
+        console.warn("Failed to record discount:", discountError);
+      }
+    }
+
+    // Create audit log
+    try {
+      await auditBillOperation(
+        "create",
+        result.data?.id || "",
+        session.user?.id || "system",
+        "Direct bill created (billing-only mode)",
+        { billNumber, businessUnit: data.businessUnit, items: data.items.length }
+      );
+    } catch (auditError) {
+      console.warn("Failed to create audit log:", auditError);
+    }
+
+    console.log("=== DIRECT BILL CREATED SUCCESSFULLY ===");
+
+    return {
+      success: true,
+      billId: result.data?.id,
+      billNumber,
+    };
+  } catch (error) {
+    console.error("Error creating direct bill:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
 export async function getCancellationHistory(orderId?: string) {
   try {
-    const filters = orderId 
+    const filters = orderId
       ? [
-          { field: "orderId", operator: "==", value: orderId },
-          { field: "type", operator: "==", value: "order_cancellation" }
-        ]
+        { field: "orderId", operator: "==", value: orderId },
+        { field: "type", operator: "==", value: "order_cancellation" }
+      ]
       : [{ field: "type", operator: "==", value: "order_cancellation" }];
 
     const cancellations = await queryDocuments("internal_transactions", filters, "createdAt", "desc");
@@ -870,35 +1186,40 @@ export async function updateBill(
     address: string;
     items: any[] | string;
   }>,
+  businessUnit?: string
 ) {
   try {
-    const payload = {
+    const { requireAuth } = await import("@/lib/auth-helpers");
+    await requireAuth();
+
+    const collectionName = (businessUnit === 'hotel' || businessUnit === 'garden') ? "bookings" : "bills";
+    const payload: any = {
       ...data,
       updatedAt: new Date().toISOString(),
     };
 
-    const result = await updateDocument("bills", billId, payload);
-    if (!result.success) {
-      throw new Error(String(result.error || "Failed to update bill"));
+    if (collectionName === "bookings" && data.grandTotal !== undefined) {
+      payload.totalAmount = data.grandTotal;
     }
 
-    await auditBillOperation(
-      "UPDATE_BILL",
-      billId,
-      undefined,
-      typeof data?.grandTotal === "number" ? data.grandTotal : undefined,
-    );
+    const result = await updateDocument(collectionName, billId, payload);
+    if (!result.success) {
+      throw new Error(String(result.error || `Failed to update ${collectionName}`));
+    }
 
     revalidatePath("/dashboard/billing");
+    if (collectionName === "bookings") revalidatePath("/dashboard/statistics");
+
     return { success: true };
   } catch (error) {
-    console.error("Error updating bill:", error);
+    console.error("Error updating record:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
+
 
 export async function getDailyRevenue(businessUnit?: string) {
   try {

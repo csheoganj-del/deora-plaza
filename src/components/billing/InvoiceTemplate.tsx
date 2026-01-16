@@ -104,23 +104,23 @@ export const InvoiceTemplate = React.forwardRef<HTMLDivElement, InvoiceProps>(({
             <div className="space-y-1 text-right">
                 <div className="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>{bill.subtotal.toFixed(2)}</span>
+                    <span>{Math.round(bill.subtotal)}</span>
                 </div>
-                {bill.discountPercent > 0 && (
+                {(bill.discountPercent > 0 || bill.discountAmount > 0) && (
                     <div className="flex justify-between text-xs text-[#22C55E]">
-                        <span>Discount ({bill.discountPercent}%):</span>
-                        <span>-{bill.discountAmount.toFixed(2)}</span>
+                        <span>Discount ({bill.discountPercent > 0 ? `${bill.discountPercent}%` : '₹'}):</span>
+                        <span>-{Math.round(bill.discountAmount)}</span>
                     </div>
                 )}
                 {bill.gstPercent > 0 && (
                     <div className="flex justify-between text-xs text-muted-foreground">
                         <span>GST ({bill.gstPercent}%):</span>
-                        <span>{bill.gstAmount.toFixed(2)}</span>
+                        <span>{Math.round(bill.gstAmount)}</span>
                     </div>
                 )}
                 <div className="my-1 border-t border-dashed border-[#9CA3AF]"></div>
                 <div className="flex justify-between font-bold text-lg">                    <span>Total:</span>
-                    <span>{bill.grandTotal.toFixed(2)}</span>
+                    <span>{Math.round(bill.grandTotal)}</span>
                 </div>
             </div>
 

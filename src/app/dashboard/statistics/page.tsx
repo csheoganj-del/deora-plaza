@@ -33,88 +33,6 @@ import { RevenueChart } from "@/components/billing/RevenueChart"
 
 
 
-// --- Live Tracking Component ---
-function LiveTrackingGrid() {
-    const [locations, setLocations] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchLocations = async () => {
-        try {
-            // Dynamic import to avoid server/client issues
-            const { getAllUserLocations } = await import("@/actions/location");
-            const data = await getAllUserLocations();
-            setLocations(data);
-        } catch (e) {
-            console.error("Failed to fetch locations", e);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchLocations();
-        const interval = setInterval(fetchLocations, 30000); // Update every 30s
-        return () => clearInterval(interval);
-    }, []);
-
-    if (loading) return <div className="text-sm text-[#9CA3AF]">Loading live locations...</div>;
-    if (locations.length === 0) return <div className="text-sm text-[#9CA3AF]">No active users tracked recently.</div>;
-
-    return (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {locations.map((loc) => (
-                <div className="premium-card">
-                    <div className="p-4 bg-[#F8FAFC] border-b border-[#E5E7EB]">
-                        <div className="flex justify-between items-center">
-                            <div className="font-semibold text-sm truncate text-[#111827]">{loc.userName || 'Unknown'}</div>
-                            <Badge variant="outline" className="text-xs uppercase scale-90 origin-right">{loc.userRole?.replace('_', ' ')}</Badge>
-                        </div>
-                        <div className="text-xs text-[#6B7280]">{new Date(loc.timestamp).toLocaleTimeString()}</div>
-                    </div>
-                    <div className="p-0 relative h-40 group">
-                        {/* Map Placeholder / Image */}
-                        <div className="absolute inset-0 bg-[#F1F5F9] flex items-center justify-center">
-                            {/* 
-                  Using static map image or iframe would be better, but for "live" feel without API key:
-                  We can use OpenStreetMap static image or just a link.
-                  For this MVP, we provide a direct link button over a placeholder.
-                */}
-                            <div className="text-center opacity-40">
-                                <div className="mx-auto w-8 h-8 rounded-full border-2 border-[#9CA3AF] flex items-center justify-center mb-1">
-                                    <div className="w-4 h-4 rounded-full bg-[#6D5DFB] animate-pulse"></div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Map Iframe (Leaflet is complex to embed directly in card without client lib, using simple approach first) */}
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            frameBorder="0"
-                            scrolling="no"
-                            marginHeight={0}
-                            marginWidth={0}
-                            src={`https://www.openstreetmap.org/export/embed.html?bbox=${loc.longitude - 0.01}%2C${loc.latitude - 0.01}%2C${loc.longitude + 0.01}%2C${loc.latitude + 0.01}&layer=mapnik&marker=${loc.latitude}%2C${loc.longitude}`}
-                            style={{ border: 0 }}
-                            className="z-0 pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity"
-                        ></iframe>
-                
-                        <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="absolute inset-0 z-10 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 hover:bg-black/10 transition-all cursor-pointer"
-                            title="View on Google Maps"
-                        >
-                            <div className="glass-card px-3 py-1 rounded-full shadow-lg text-xs font-bold text-[#6D5DFB] flex items-center gap-1">
-                                Open Map <TrendingUp className="w-3 h-3" />
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
 
 // --- Money Flow Component ---
 function MoneyFlowCard({ revenue, timePeriod }: { revenue: any, timePeriod: string }) {
@@ -350,19 +268,6 @@ export default function StatisticsPage() {
                     {/* Admin Specific View: Live Map & Money Flow */}
                     {isAdmin && effectiveBusinessUnit === 'all' && (
                         <div className="space-y-6">
-                            {/* Live Maps */}
-                            <section>
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                                        <div className="w-2 h-2 rounded-full bg-[#FEE2E2]0 animate-pulse" />
-                                        Live Activity Tracking
-                                    </h3>
-                                    <Button className="apple-interactive" variant="outline" size="sm" onClick={() => window.open('/dashboard/map', '_blank')}>
-                                        Full Screen Map
-                                    </Button>
-                                </div>
-                                <LiveTrackingGrid />
-                            </section>
 
                             {/* Money Flow */}
                             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">

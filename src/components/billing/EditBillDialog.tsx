@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -15,9 +15,10 @@ interface EditBillDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onBillUpdated: () => void
+  businessUnit?: string
 }
 
-export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated }: EditBillDialogProps) {
+export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated, businessUnit }: EditBillDialogProps) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
+
     try {
       // Parse items if they're in JSON format
       let items = formData.items
@@ -53,7 +54,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
       } catch (e) {
         // If parsing fails, keep as string
       }
-      
+
       const updateData = {
         customerName: formData.customerName,
         customerMobile: formData.customerMobile,
@@ -66,9 +67,9 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
         address: formData.address,
         items: items
       }
-      
-      const result = await updateBill(bill.id, updateData)
-      
+
+      const result = await updateBill(bill.id, updateData, businessUnit || bill.businessUnit)
+
       if (result.success) {
         toast({
           title: "Success",
@@ -95,8 +96,9 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Bill</DialogTitle>
+          <DialogDescription>Update the bill details below.</DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="customerName">Customer Name</Label>
@@ -106,7 +108,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               onChange={handleChange}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="customerMobile">Customer Mobile</Label>
             <Input
@@ -115,7 +117,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               onChange={handleChange}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="subtotal">Subtotal</Label>
             <Input
@@ -126,7 +128,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               onChange={handleChange}
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="discountPercent">Discount %</Label>
@@ -138,7 +140,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
                 onChange={handleChange}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="discountAmount">Discount Amount</Label>
               <Input
@@ -150,7 +152,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               />
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="gstPercent">GST %</Label>
@@ -162,7 +164,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
                 onChange={handleChange}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="gstAmount">GST Amount</Label>
               <Input
@@ -174,7 +176,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="grandTotal">Grand Total</Label>
             <Input
@@ -185,7 +187,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               onChange={handleChange}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
             <Input
@@ -194,7 +196,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               onChange={handleChange}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="items">Items (JSON)</Label>
             <Textarea
@@ -205,7 +207,7 @@ export default function EditBillDialog({ bill, open, onOpenChange, onBillUpdated
               className="font-mono text-xs"
             />
           </div>
-          
+
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"

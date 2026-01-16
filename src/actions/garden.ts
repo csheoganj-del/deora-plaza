@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache"
 import {
   createDocument,
   queryDocuments,
+  getDocument,
   updateDocument,
   deleteDocument,
 } from "@/lib/supabase/database"
 import { supabaseServer } from "@/lib/supabase/server"
-import { logActivityWithLocation } from "@/actions/location"
 
 // Basic error handler
 const handleError = (error: unknown) => {
@@ -162,7 +162,6 @@ export async function createGardenBooking(data: {
   advancePayment: number
   notes?: string
   guestCount?: number
-  location?: { lat: number; lng: number }
 }) {
   const {
     customerName,
@@ -178,7 +177,6 @@ export async function createGardenBooking(data: {
     advancePayment,
     notes,
     guestCount,
-    location,
   } = data
 
   try {
@@ -313,17 +311,6 @@ export async function createGardenBooking(data: {
         }
       }
 
-      if (location && session.user) {
-        await logActivityWithLocation(
-          session.user.id,
-          "create_garden_booking",
-          `Created garden booking for ${customerName}`,
-          location.lat,
-          location.lng,
-          { bookingId: result.data.id }
-        );
-      }
-
       revalidateGardenPaths()
       return {
         booking: finalBooking
@@ -423,6 +410,107 @@ export async function addGardenBookingPayment(
   }
 }
 
+// Update an existing garden booking
+export async function updateGardenBooking(bookingId: string, data: {
+  customerName: string
+  customerMobile: string
+  eventType: string
+  startDate: Date
+  endDate: Date
+  basePrice: number
+  gstEnabled: boolean
+  gstPercentage: number
+  discountPercent?: number
+  totalAmount: number
+  notes?: string
+  guestCount?: number
+}) {
+  try {
+    const { requireAuth } = await import("@/lib/auth-helpers");
+    const session = await requireAuth();
+
+    // Get current booking to calculate new balance
+    const { data: currentBooking, error: fetchError } = await supabaseServer
+      .from("bookings")
+      .select("*")
+      .eq("id", bookingId)
+      .single();
+
+    if (fetchError || !currentBooking) {
+      return { error: "Booking not found" };
+    }
+
+    // Update customer info if changed
+    if (data.customerMobile !== currentBooking.customerMobile) {
+      // Logic to update customer association if needed, but for now we basically just update the booking's reference
+      // Ideally we might upsert the new customer similar to create
+    }
+
+    // Recalculate balance
+    const totalPaid = currentBooking.payments?.reduce((sum: any, p: any) => sum + (p.amount || 0), 0) || 0;
+    const remainingBalance = data.totalAmount - totalPaid;
+
+    // Determine status
+    let status = currentBooking.status;
+    if (status !== 'cancelled') {
+      if (remainingBalance <= 0) status = 'completed';
+      else if (totalPaid > 0) status = 'confirmed'; // ongoing/partial
+      else status = 'confirmed'; // default
+    }
+
+    const updateData = {
+      customerMobile: data.customerMobile,
+      // We don't change type
+      startDate: data.startDate.toISOString(),
+      endDate: data.endDate.toISOString(),
+      basePrice: data.basePrice,
+      gstEnabled: data.gstEnabled,
+      gstPercentage: data.gstPercentage,
+      discountPercent: data.discountPercent || 0,
+      totalAmount: data.totalAmount,
+      notes: data.notes || "",
+      eventType: data.eventType,
+      guestCount: data.guestCount || null,
+      updatedAt: new Date().toISOString(),
+      remainingBalance,
+      status, // update status based on new balance
+    };
+
+    const result = await updateDocument("bookings", bookingId, updateData);
+
+    if (result.success) {
+      revalidateGardenPaths();
+      return { success: true, booking: { ...currentBooking, ...updateData } };
+    } else {
+      return { error: result.error };
+    }
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+// Cancel a garden booking
+export async function cancelGardenBooking(bookingId: string) {
+  try {
+    const { requireAuth } = await import("@/lib/auth-helpers");
+    await requireAuth();
+
+    const result = await updateDocument("bookings", bookingId, {
+      status: "cancelled",
+      updatedAt: new Date().toISOString(),
+    });
+
+    if (result.success) {
+      revalidateGardenPaths();
+      return { success: true };
+    } else {
+      return { error: result.error };
+    }
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
 // Delete a garden booking
 export async function deleteGardenBooking(bookingId: string, password?: string) {
   try {
@@ -433,27 +521,44 @@ export async function deleteGardenBooking(bookingId: string, password?: string) 
 
     if (isPasswordProtectionEnabled) {
       const { requireDeletePermission } = await import("@/lib/auth-helpers");
-      const session = await requireDeletePermission();
-      if (session.user.role !== 'super_admin') {
-        const DELETION_PASSWORD = process.env.ADMIN_DELETION_PASSWORD;
-        if (!DELETION_PASSWORD) {
-          return { error: 'Deletion password not configured in environment' }
-        }
-        const pwd = (password || '').trim();
-        const envPwd = (DELETION_PASSWORD || '').trim();
-        if (pwd !== envPwd) {
-          return { error: 'Invalid password' }
-        }
+      await requireDeletePermission(); // Ensure auth/role
+
+      const DELETION_PASSWORD = process.env.ADMIN_DELETION_PASSWORD;
+      if (!DELETION_PASSWORD) {
+        return { error: 'Deletion password not configured in environment' }
+      }
+
+      const pwd = (password || '').trim();
+      const envPwd = (DELETION_PASSWORD || '').trim();
+
+      if (pwd !== envPwd) {
+        return { error: 'Incorrect password' }
       }
     }
 
-    const result = await deleteDocument("bookings", bookingId)
-    if (result.success) {
-      revalidateGardenPaths()
-      return { success: true }
-    } else {
-      return { error: result.error }
+    // Perform deletion with check
+    const { data, error } = await supabaseServer
+      .from("bookings")
+      .delete()
+      .eq("id", bookingId)
+      .select();
+
+    if (error) {
+      return { error: error.message };
     }
+
+    if (!data || data.length === 0) {
+      // If no data returned, deletion didn't happen (possibly ID mismatch or already deleted)
+      // But acts as success if idempotency is desired.
+      // However, user complained about "reappearing", meaning it WAS there.
+      // So this implies RLS blocked it IF we weren't using Service Role.
+      // But we ARE using Service Role (supabaseServer).
+      // So if data is empty, it means ID was wrong?
+      return { error: "Record not found or could not be deleted" };
+    }
+
+    revalidateGardenPaths()
+    return { success: true }
   } catch (error) {
     return handleError(error)
   }
@@ -498,6 +603,77 @@ export async function getGardenDailyRevenue() {
   } catch (error) {
     console.error("Error calculating garden revenue:", error)
     return { total: 0, count: 0 }
+  }
+}
+
+// Get a single garden booking by ID
+export async function getGardenBookingById(id: string) {
+  try {
+    const booking = await getDocument("bookings", id)
+    if (!booking || booking.type !== 'garden') return { error: "Booking not found" }
+
+    let customerName = ""
+    if (booking.customerMobile) {
+      const { data: customerData, error: customerError } = await supabaseServer
+        .from("customers")
+        .select("name")
+        .eq("mobileNumber", booking.customerMobile)
+        .limit(1)
+        .single()
+
+      if (!customerError && customerData) {
+        customerName = customerData.name || booking.customerMobile
+      }
+    }
+
+    // Calculate derived properties
+    const totalPaid = booking.payments?.reduce((sum: number, p: any) => sum + p.amount, 0) || 0
+    const remainingBalance = booking.totalAmount - totalPaid
+    const paymentStatus =
+      remainingBalance <= 0
+        ? "completed"
+        : totalPaid > 0
+          ? "partial"
+          : "pending"
+
+    // Convert payment timestamps to ISO strings
+    const paymentsWithDates = booking.payments?.map((payment: any) => ({
+      ...payment,
+      date: payment.date ? new Date(payment.date).toISOString() : new Date().toISOString()
+    })) || []
+
+    return {
+      booking: {
+        id: booking.id,
+        customerMobile: booking.customerMobile,
+        customerName,
+        // Compatibility aliases for printing
+        customer_name: customerName,
+        customer_phone: booking.customerMobile,
+        total_amount: booking.totalAmount,
+        advance_paid: totalPaid,
+
+        type: booking.type,
+        eventType: booking.eventType,
+        startDate: new Date(booking.startDate).toISOString(),
+        endDate: new Date(booking.endDate).toISOString(),
+        createdAt: new Date(booking.createdAt).toISOString(),
+        updatedAt: new Date(booking.updatedAt).toISOString(),
+        status: booking.status,
+        basePrice: booking.basePrice,
+        gstEnabled: booking.gstEnabled,
+        gstPercentage: booking.gstPercentage,
+        totalAmount: booking.totalAmount,
+        notes: booking.notes,
+        guestCount: booking.guestCount,
+        payments: paymentsWithDates,
+        totalPaid,
+        remainingBalance,
+        paymentStatus,
+      }
+    }
+  } catch (error) {
+    return handleError(error)
   }
 }
 

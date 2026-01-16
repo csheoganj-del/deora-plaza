@@ -51,10 +51,13 @@ export function useServerAuth() {
 
     checkAuth();
 
-    // Check auth periodically to handle token expiration
+    // DISABLED: This was causing dashboard to reload/refresh every 30 seconds
+    // Token-based auth should handle expiration naturally without polling
+    // If needed, implement event-based auth checking instead
+    /*
     const interval = setInterval(checkAuth, 30000); // Check every 30 seconds
-
     return () => clearInterval(interval);
+    */
   }, []);
 
   return {

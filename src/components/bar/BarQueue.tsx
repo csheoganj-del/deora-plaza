@@ -1,34 +1,12 @@
-"use client"
+import BarKitchenOrderDialog from "@/components/bar/BarKitchenOrderDialog"
+import { UtensilsCrossed } from "lucide-react"
 
-import { useState, useEffect } from "react"
-import { getBarOrders, updateBarOrderStatus } from "@/actions/bar"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Clock, CheckCircle2, Coffee } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
-
-type OrderItem = {
-    id: string
-    name: string
-    quantity: number
-    specialInstructions: string | null
-}
-
-type Order = {
-    id: string
-    orderNumber: string
-    tableId: string | null
-    status: string
-    createdAt: Date
-    items: OrderItem[]
-    type: string
-}
+// ... existing imports
 
 export default function BarQueue() {
     const [orders, setOrders] = useState<Order[]>([])
     const [loading, setLoading] = useState(true)
+    const [isFoodOrderOpen, setIsFoodOrderOpen] = useState(false)
 
     const fetchOrders = async () => {
         const data = await getBarOrders()
@@ -54,11 +32,26 @@ export default function BarQueue() {
     return (
         <div className="h-full space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-white">Active Orders</h2>
+                <div className="flex items-center gap-4">
+                    <h2 className="text-xl font-bold text-white">Active Orders</h2>
+                    <Button
+                        size="sm"
+                        onClick={() => setIsFoodOrderOpen(true)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white border-none shadow-lg shadow-orange-500/20"
+                    >
+                        <UtensilsCrossed className="w-4 h-4 mr-2" />
+                        Kitchen Order
+                    </Button>
+                </div>
                 <Badge variant="outline" className="text-white border-white/20">
                     {orders.length} Pending
                 </Badge>
             </div>
+
+            <BarKitchenOrderDialog
+                isOpen={isFoodOrderOpen}
+                onClose={() => setIsFoodOrderOpen(false)}
+            />
 
             <ScrollArea className="h-[calc(100%-3rem)]">
                 <div className="grid gap-4 pr-4">
@@ -88,10 +81,10 @@ export default function BarQueue() {
                                         <div className="space-y-1">
                                             {(() => {
                                                 try {
-                                                    const items = Array.isArray(order.items) 
-                                                        ? order.items 
+                                                    const items = Array.isArray(order.items)
+                                                        ? order.items
                                                         : (typeof order.items === 'string' ? JSON.parse(order.items) : []);
-                                                    
+
                                                     return items.map((item: any) => (
                                                         <div key={item.id} className="flex justify-between text-sm">
                                                             <span className="flex items-center gap-2">

@@ -9,11 +9,8 @@ export const metadata: Metadata = {
 
 export default function KitchenDisplayPage() {
   return (
-    <DashboardPageWrapper
-      title="Kitchen Display System"
-      description="Real-time kitchen display with order timers and status management"
-    >
+    <div className="pb-20">
       <KitchenDisplay />
-    </DashboardPageWrapper>
+    </div>
   );
 }

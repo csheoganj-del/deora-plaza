@@ -85,9 +85,9 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
       {/* HERO SECTION - WORLD-CLASS */}
       <section className="relative min-h-screen flex items-center justify-center px-4 py-20">
         <div className="absolute inset-0 bg-gradient-to-br from-[#6D5DFB]/20 via-[#C084FC]/20 to-[#EC4899]/20" />
-        
+
         {/* Animated Gradient Orbs */}
-        <motion.div 
+        <motion.div
           className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-[#6D5DFB]/30 to-[#C084FC]/30 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
@@ -99,7 +99,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-[#EC4899]/30 to-[#6D5DFB]/30 rounded-full blur-3xl"
           animate={{
             scale: [1.2, 1, 1.2],
@@ -114,14 +114,14 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
         />
 
         <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.div 
+          <motion.div
             className="max-w-5xl mx-auto space-y-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             {/* Premium Badge */}
-            <motion.div 
+            <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-morphism border border-white/20 text-sm font-medium text-[#111827] shadow-lg"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -142,7 +142,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
             </motion.div>
 
             {/* MASSIVE Headline */}
-            <motion.div 
+            <motion.div
               className="space-y-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -159,7 +159,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
             </motion.div>
 
             {/* Powerful Description */}
-            <motion.p 
+            <motion.p
               className="text-lg md:text-xl text-[#6B7280] max-w-3xl mx-auto leading-relaxed font-medium"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -170,13 +170,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
               featuring real-time sync, spatial audio notifications, and enterprise-grade reliability.
             </motion.p>
 
-            {/* CTA Buttons - PREMIUM */}
-            <motion.div 
-              className="flex flex-col sm:flex-row items-center justify-center gap-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.0 }}
-            >
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <MagneticButton
                 variant="primary"
                 size="xl"
@@ -188,19 +182,10 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
                 Start Your Journey
                 <ArrowRight className="h-5 w-5" />
               </MagneticButton>
-              
-              <MagneticButton
-                variant="secondary"
-                size="xl"
-                magnetic={false}
-              >
-                <Play className="h-5 w-5" />
-                Watch Demo
-              </MagneticButton>
-            </motion.div>
+            </div>
 
             {/* Trust Indicators */}
-            <motion.div 
+            <motion.div
               className="flex flex-wrap items-center justify-center gap-6 text-[#6B7280]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -226,7 +211,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
       {/* BUSINESS UNITS SECTION */}
       <section className="relative py-20 px-4">
         <div className="container mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-12 md:mb-16 lg:mb-20"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -290,15 +275,15 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
                       <ArrowRight className="h-6 w-6 text-[#6D5DFB]" />
                     </div>
                   </div>
-                  
+
                   <h3 className="text-2xl font-bold text-[#111827] mb-3 group-hover:holographic-text transition-all duration-300">
                     {unit.name}
                   </h3>
-                  
+
                   <p className="text-[#6B7280] leading-relaxed mb-6">
                     {unit.description}
                   </p>
-                  
+
                   <div className="flex items-center text-[#6D5DFB] font-semibold text-sm group-hover:gap-3 gap-2 transition-all duration-300">
                     <span>Explore Features</span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
@@ -315,7 +300,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
         <div className="absolute inset-0 bg-gradient-to-r from-[#6D5DFB]/10 via-[#C084FC]/10 to-[#EC4899]/10" />
 
         <div className="container mx-auto relative z-10">
-          <motion.div 
+          <motion.div
             className="text-center mb-12 md:mb-16 lg:mb-20"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -339,39 +324,39 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
 
           <EtherealGrid cols={3}>
             {[
-              { 
+              {
                 icon: BarChart3,
-                title: 'Real-Time Analytics', 
+                title: 'Real-Time Analytics',
                 description: 'Advanced reporting with live data visualization and predictive insights.',
                 variant: 'glass'
               },
-              { 
+              {
                 icon: Smartphone,
-                title: 'Mobile-First Design', 
+                title: 'Mobile-First Design',
                 description: 'Responsive interface optimized for all devices with native app experience.',
                 variant: 'holographic'
               },
-              { 
+              {
                 icon: CreditCard,
-                title: 'Secure Payments', 
+                title: 'Secure Payments',
                 description: 'Enterprise-grade payment processing with fraud protection and compliance.',
                 variant: 'liquid'
               },
-              { 
+              {
                 icon: Zap,
-                title: 'Lightning Fast', 
+                title: 'Lightning Fast',
                 description: 'Sub-second response times with intelligent caching and optimization.',
                 variant: 'ambient'
               },
-              { 
+              {
                 icon: Globe,
-                title: 'Global Scale', 
+                title: 'Global Scale',
                 description: 'Multi-location support with centralized management and local customization.',
                 variant: 'glass'
               },
-              { 
+              {
                 icon: Shield,
-                title: 'Enterprise Security', 
+                title: 'Enterprise Security',
                 description: 'Bank-level security with encryption, audit trails, and compliance certifications.',
                 variant: 'holographic'
               },
@@ -393,7 +378,7 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-[#C084FC]/20 to-transparent" />
 
         <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.div 
+          <motion.div
             className="max-w-4xl mx-auto space-y-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -425,17 +410,8 @@ export default function HomePageClient({ businessUnits }: HomePageClientProps) {
                 glowColor="rgba(99, 102, 241, 0.4)"
               >
                 <Crown className="h-5 w-5" />
-                Start Free Trial
+                Get Started Now
                 <ArrowRight className="h-5 w-5" />
-              </MagneticButton>
-              
-              <MagneticButton 
-                variant="secondary"
-                size="xl"
-                magnetic={false}
-              >
-                <Calendar className="h-5 w-5" />
-                Book Demo
               </MagneticButton>
             </div>
 

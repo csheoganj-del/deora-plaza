@@ -10,11 +10,19 @@
 @import '../styles/tokens.css';
 @import '../styles/typography.css';
 @import '../styles/glass-effects.css';
+@import '../styles/theme-backgrounds.css';
+@import '../styles/tokens.css';
+
 @import '../styles/animations.css';
+@import '../styles/balloon.css';
 @import '../styles/components.css';
 @import '../styles/responsive.css';
 @import '../styles/liquid-glass-lock-screen.css';
 @import '../styles/deora-home-screen.css';
+
+:root {
+  font-display: swap;
+}
 
 /* Tailwind CSS */
 @tailwind base;
@@ -417,6 +425,26 @@ textarea,
   width: 24px;
   height: 24px;
   border-width: 3px;
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.contain-layout {
+  contain: layout style;
+}
+
+.low-blur {
+  backdrop-filter: blur(8px) saturate(180%);
+}
+
+.ultra-low-blur {
+  backdrop-filter: blur(4px) saturate(150%);
 }
 
 /* Button Loading Text Animation */
@@ -1279,7 +1307,7 @@ textarea,
 
 
 
-/* � AINSTANT UI PERFORMANCE STYLES */
+/*  AINSTANT UI PERFORMANCE STYLES */
 .instant-button {
   position: relative;
   overflow: hidden;
@@ -2140,8 +2168,10 @@ textarea,
   top: 0;
   z-index: 30;
   height: 64px;
-  background: #FFFFFF !important;
-  border-bottom: 1px solid #E0E0E0 !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
   display: flex;
   align-items: center;
 }
@@ -2168,12 +2198,13 @@ textarea,
 }
 
 .dashboard-title-container {
-  background: #F8F9FA !important;
-  /* Flat light grey pill */
-  border: 1px solid #E0E0E0 !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(12px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 8px;
   padding: 6px 16px;
-  box-shadow: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
 .dashboard-title {
@@ -6382,4 +6413,68 @@ textarea,
 
 .dashboard-stat-card * {
   pointer-events: none !important;
+}/* 🍽️ Serving Plate & Steam - Premium Restaurant Animation */
+
+.serving-plate {
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        /* Ambient depth */
+        0 1px 2px rgba(255, 255, 255, 0.2) inset;
+    /* Ceramic rim highlight */
+    background: radial-gradient(circle at 30% 30%, #f5f5f7, #e0e0e2);
+    /* Ceramic texture */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    will-change: transform, left, top;
+}
+
+/* 💨 Steam Particle */
+.plate-steam {
+    position: absolute;
+    width: 6px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    filter: blur(3px);
+    pointer-events: none;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: steam-rise 1.2s ease-out forwards;
+}
+
+@keyframes steam-rise {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-30px) scale(1.5) translateX(var(--drift));
+        opacity: 0;
+    }
+}
+
+/* Target Pulse Feedback */
+.plate-landed {
+    animation: plate-pulse 0.4s ease-out;
+}
+
+@keyframes plate-pulse {
+    0% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    50% {
+        transform: scale(1.02);
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.03);
+    }
 }

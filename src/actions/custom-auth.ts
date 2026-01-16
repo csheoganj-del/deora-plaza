@@ -6,7 +6,6 @@ import { cookies } from "next/headers"
 import { SignJWT, jwtVerify } from "jose"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
-// import { logActivityWithLocation } from "@/actions/location"
 
 const JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || (() => {
@@ -42,14 +41,14 @@ export async function loginWithCustomUser(
     // Add timeout wrapper to prevent hanging
     return Promise.race([
         loginWithCustomUserInternal(identifier, password),
-        new Promise<LoginResult>((_, reject) => 
-            setTimeout(() => reject(new Error("Login timeout")), 15000)
+        new Promise<LoginResult>((_, reject) =>
+            setTimeout(() => reject(new Error("Login timeout")), 8000) // Reduced from 15s to 8s
         )
     ]).catch((error) => {
         console.error("Login timeout or error:", error);
         return {
             success: false,
-            error: "Login is taking too long. Please try again."
+            error: "Login is taking too long. Please check your connection and try again."
         };
     });
 }
@@ -59,31 +58,32 @@ async function loginWithCustomUserInternal(
     password: string
 ): Promise<LoginResult> {
     try {
-        let user = null;
-        
-        // Try to find by username first
-        const usersByUsername = await queryDocuments("users", [
-            { field: "username", operator: "==", value: identifier.toLowerCase() }
-        ], undefined, "asc", 1);
-        
-        if (usersByUsername.length > 0) {
-            user = usersByUsername[0];
-        } else {
-            // Try to find by phone number
-            const usersByPhone = await queryDocuments("users", [
-                { field: "phoneNumber", operator: "==", value: identifier }
-            ], undefined, "asc", 1);
-            
-            if (usersByPhone.length > 0) {
-                user = usersByPhone[0];
-            }
+        const totalStartTime = Date.now();
+        console.log(`[PERF] Login attempt started for identifier: ${identifier}`);
+
+        // Optimized: Use single query with OR condition instead of sequential queries
+        const queryStartTime = Date.now();
+        const { data: users, error } = await (await import("@/lib/supabase/server")).supabaseServer
+            .from("users")
+            .select("*")
+            .or(`username.eq.${identifier.toLowerCase()},phoneNumber.eq.${identifier}`)
+            .limit(1);
+
+        const queryDuration = Date.now() - queryStartTime;
+        console.log(`[PERF] User lookup query completed in ${queryDuration}ms`);
+
+        if (error) {
+            console.error("Database query error:", error);
+            return { success: false, error: "An error occurred during login. Please try again." };
         }
+
+        const user = users && users.length > 0 ? users[0] : null;
 
         if (!user) {
             console.log("User not found:", identifier);
             return { success: false, error: "Invalid username or password" }
         }
-        
+
         console.log("Found user:", user);
 
         // Check if user is active
@@ -97,7 +97,11 @@ async function loginWithCustomUserInternal(
                 return { success: false, error: "Invalid username or password" }
             }
 
+            const bcryptStartTime = Date.now();
             const isValidPassword = await bcrypt.compare(password, user.password)
+            const bcryptDuration = Date.now() - bcryptStartTime;
+            console.log(`[PERF] Password verification completed in ${bcryptDuration}ms`);
+
             if (!isValidPassword) {
                 return { success: false, error: "Invalid username or password" }
             }
@@ -107,9 +111,10 @@ async function loginWithCustomUserInternal(
         }
 
         // Create JWT token with more robust timing
+        const jwtStartTime = Date.now();
         const now = Math.floor(Date.now() / 1000);
         console.log("Creating JWT token with timestamp:", now);
-        
+
         const token = await new SignJWT({
             userId: user.id,
             username: user.username,
@@ -124,7 +129,8 @@ async function loginWithCustomUserInternal(
             .setNotBefore(now - 5) // Allow 5 seconds clock skew
             .sign(JWT_SECRET)
 
-        console.log("JWT token created successfully, length:", token.length);
+        const jwtDuration = Date.now() - jwtStartTime;
+        console.log(`[PERF] JWT token created in ${jwtDuration}ms, length:`, token.length);
         console.log("Token payload:", {
             userId: user.id,
             username: user.username,
@@ -133,6 +139,7 @@ async function loginWithCustomUserInternal(
         });
 
         // Set cookie with more explicit options
+        const cookieStartTime = Date.now();
         const cookieStore = await cookies()
         console.log("Setting auth cookie with options:", {
             httpOnly: true,
@@ -142,7 +149,7 @@ async function loginWithCustomUserInternal(
             path: "/",
             domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
         });
-        
+
         cookieStore.set("deora-auth-token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -152,7 +159,11 @@ async function loginWithCustomUserInternal(
             domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
         })
 
-        console.log("Auth cookie set successfully");
+        const cookieDuration = Date.now() - cookieStartTime;
+        console.log(`[PERF] Cookie set in ${cookieDuration}ms`);
+
+        const totalDuration = Date.now() - totalStartTime;
+        console.log(`[PERF] ✅ Total login completed in ${totalDuration}ms`);
         console.log("Login successful, returning user data:", {
             id: user.id,
             username: user.username,
@@ -220,7 +231,7 @@ export async function getCurrentCustomUser() {
         const verified = await jwtVerify(token, JWT_SECRET, {
             clockTolerance: 10 // Allow 10 seconds clock skew
         })
-        
+
         console.log("Token verified successfully for user:", verified.payload.userId)
         return verified.payload as any
     } catch (error) {
@@ -234,14 +245,14 @@ export async function debugAuthStatus() {
     try {
         const cookieStore = await cookies()
         const token = cookieStore.get("deora-auth-token")?.value
-        
+
         console.log("Debug Auth Status:", {
             hasToken: !!token,
             tokenLength: token?.length,
             tokenPreview: token?.substring(0, 20) + "...",
             jwtSecret: process.env.JWT_SECRET ? "Set" : "Not set"
         })
-        
+
         if (token) {
             try {
                 const verified = await jwtVerify(token, JWT_SECRET, {
@@ -254,7 +265,7 @@ export async function debugAuthStatus() {
                 return { valid: false, error: error instanceof Error ? error.message : String(error) }
             }
         }
-        
+
         return { valid: false, error: "No token" }
     } catch (error) {
         console.error("Debug auth status error:", error)

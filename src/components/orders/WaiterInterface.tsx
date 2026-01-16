@@ -1,27 +1,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PremiumLiquidGlass, PremiumContainer, PremiumStatsCard } from '@/components/ui/glass/premium-liquid-glass';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Plus, 
-  Minus, 
-  ShoppingCart, 
-  Users, 
-  Clock, 
-  CheckCircle, 
+import {
+  Plus,
+  Minus,
+  ShoppingCart,
+  Users,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Search,
   Filter,
   Edit3,
-  Trash2
+  Trash2,
+  Utensils,
+  Smartphone
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
+import { getMenuItems } from '@/actions/menu';
+
 
 interface MenuItem {
   id: string;
@@ -76,26 +80,20 @@ export default function WaiterInterface() {
 
   const fetchMenuItems = async () => {
     try {
-      const supabase = createClient();
-      const { data: menuData, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .eq('businessUnit', businessUnit)
-        .eq('available', true)
-        .order('category', { ascending: true });
+      const menuData = await getMenuItems(businessUnit);
 
-      if (error) throw error;
-
-      const formattedItems: MenuItem[] = (menuData || []).map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        category: item.category,
-        description: item.description,
-        prepTime: item.prepTime || 10,
-        available: item.available,
-        businessUnit: item.businessUnit
-      }));
+      const formattedItems: MenuItem[] = (menuData || [])
+        .filter(item => item.isAvailable)
+        .map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          category: item.category,
+          description: item.description,
+          prepTime: item.prepTime || 10,
+          available: item.isAvailable,
+          businessUnit: item.businessUnit
+        }));
 
       setMenuItems(formattedItems);
     } catch (error) {
@@ -134,7 +132,7 @@ export default function WaiterInterface() {
 
   const addToOrder = (menuItem: MenuItem) => {
     const existingItem = currentOrder.find(item => item.menuItemId === menuItem.id);
-    
+
     if (existingItem) {
       setCurrentOrder(prev => prev.map(item =>
         item.menuItemId === menuItem.id
@@ -150,7 +148,7 @@ export default function WaiterInterface() {
         category: menuItem.category
       }]);
     }
-    
+
     toast.success(`Added ${menuItem.name} to order`);
   };
 
@@ -223,14 +221,14 @@ export default function WaiterInterface() {
 
       // In a real app, this would save to database
       console.log('Order submitted:', orderData);
-      
+
       toast.success(`Order ${orderData.orderNumber} submitted successfully!`);
-      
+
       // Reset form
       setCurrentOrder([]);
       setSelectedTable('');
       setCustomerInfo({ id: '', name: '' });
-      
+
       // Update table status
       setTables(prev => prev.map(table =>
         table.id === selectedTable
@@ -254,17 +252,17 @@ export default function WaiterInterface() {
 
   const getTableStatusColor = (status: Table['status']) => {
     switch (status) {
-      case 'available': return 'bg-green-100 text-green-800 border-green-200';
-      case 'occupied': return 'bg-red-100 text-red-800 border-red-200';
-      case 'reserved': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'cleaning': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'available': return 'bg-[#22C55E]/10 border-[#22C55E]/30 hover:border-[#22C55E]/50 text-[#22C55E]';
+      case 'occupied': return 'bg-red-500/10 border-red-500/30 hover:border-red-500/50 text-red-400';
+      case 'reserved': return 'bg-yellow-500/10 border-yellow-500/30 hover:border-yellow-500/50 text-yellow-500';
+      case 'cleaning': return 'bg-white/5 border-white/10 hover:border-white/20 text-white/50';
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/20"></div>
       </div>
     );
   }
@@ -272,238 +270,210 @@ export default function WaiterInterface() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold">Waiter Interface</h2>
-          <p className="text-gray-600">Take orders and manage tables efficiently</p>
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 text-primary">
+              <Smartphone className="w-6 h-6" />
+            </div>
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70">
+              Waiter Interface
+            </h1>
+          </div>
+          <p className="text-white/50 mt-1 pl-[3.5rem]">Take orders and manage tables</p>
         </div>
-        
+
         <select
           value={businessUnit}
           onChange={(e) => setBusinessUnit(e.target.value)}
-          className="px-3 py-2 border rounded-md"
+          className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-primary/50"
         >
-          <option value="restaurant">Restaurant</option>
-          <option value="cafe">Cafe</option>
-          <option value="bar">Bar</option>
-          <option value="hotel">Hotel</option>
-          <option value="garden">Garden</option>
+          <option value="restaurant" className="bg-[#1f1f23]">Restaurant</option>
+          <option value="cafe" className="bg-[#1f1f23]">Cafe</option>
+          <option value="bar" className="bg-[#1f1f23]">Bar</option>
+          <option value="hotel" className="bg-[#1f1f23]">Hotel</option>
+          <option value="garden" className="bg-[#1f1f23]">Garden</option>
         </select>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Menu Items */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Menu Items</CardTitle>
-              <CardDescription>Select items to add to the order</CardDescription>
-              
-              {/* Search and Filter */}
-              <div className="flex gap-4 mt-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search menu items..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border rounded-md"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-14rem)]">
+        {/* Menu Items (Left 2 Columns) */}
+        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden">
+          <PremiumLiquidGlass title="Menu Items" className="h-full flex flex-col">
+            {/* Search and Filter */}
+            <div className="flex gap-4 mb-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                <input
+                  placeholder="Search items..."
+                  className="w-full pl-10 h-10 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-white/20"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-            </CardHeader>
-            
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="h-10 px-3 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20"
+              >
+                <option value="all" className="bg-[#1f1f23]">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category} className="bg-[#1f1f23]">{category}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredMenuItems.map(item => (
-                  <Card key={item.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
+                  <div
+                    key={item.id}
+                    onClick={() => addToOrder(item)}
+                    className="group relative p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
                       <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
-                          <h4 className="font-medium">{item.name}</h4>
-                          <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Clock className="h-3 w-3" />
-                            <span>{item.prepTime} min</span>
-                            <Badge variant="outline" className="text-xs">
-                              {item.category}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-lg">₹{item.price}</div>
-                          <Button
-                            size="sm"
-                            onClick={() => addToOrder(item)}
-                            className="mt-2"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <h4 className="font-semibold text-white group-hover:text-primary transition-colors">{item.name}</h4>
+                        <span className="font-bold text-white">₹{item.price}</span>
                       </div>
-                    </CardContent>
-                  </Card>
+                      <p className="text-xs text-white/40 line-clamp-2 mb-3">{item.description}</p>
+
+                      <div className="flex items-center gap-2 text-[10px] text-white/30">
+                        <Clock className="h-3 w-3" />
+                        <span>{item.prepTime} min</span>
+                        <Badge variant="outline" className="text-[10px] bg-white/5 text-white/40 border-white/10 ml-auto">
+                          {item.category}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <button className="w-full mt-3 py-1.5 rounded-lg bg-white/5 hover:bg-primary text-white/40 hover:text-white transition-all text-xs font-medium flex items-center justify-center gap-2">
+                      <Plus className="h-3 w-3" /> Add to Order
+                    </button>
+                  </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </PremiumLiquidGlass>
         </div>
 
-        {/* Order Summary & Table Selection */}
-        <div className="space-y-4">
+        {/* Order Summary & Table Selection (Right Column) */}
+        <div className="flex flex-col gap-4 h-full overflow-y-auto custom-scrollbar">
           {/* Table Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Select Table</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-2">
-                {tables.map(table => (
-                  <button
-                    key={table.id}
-                    onClick={() => table.status === 'available' && setSelectedTable(table.id)}
-                    disabled={table.status !== 'available'}
-                    className={`p-3 rounded-lg border-2 text-sm font-medium transition-colors ${
-                      selectedTable === table.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : getTableStatusColor(table.status)
-                    } ${table.status !== 'available' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
-                  >
-                    <div>{table.tableNumber}</div>
-                    <div className="text-xs">
-                      <Users className="h-3 w-3 inline mr-1" />
-                      {table.capacity}
-                    </div>
-                    <div className="text-xs capitalize">{table.status}</div>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4">
+            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" /> Select Table
+            </h3>
+            <div className="grid grid-cols-4 gap-2">
+              {tables.map(table => (
+                <button
+                  key={table.id}
+                  onClick={() => table.status === 'available' && setSelectedTable(table.id)}
+                  disabled={table.status !== 'available'}
+                  className={`p-2 rounded-lg border text-xs font-medium transition-all flex flex-col items-center justify-center aspect-square ${selectedTable === table.id
+                    ? 'border-primary bg-primary/20 text-white shadow-[0_0_10px_rgba(34,197,94,0.2)]'
+                    : getTableStatusColor(table.status)
+                    } ${table.status !== 'available' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}`}
+                >
+                  <span className="text-lg font-bold">{table.tableNumber}</span>
+                  <span className="text-[9px] opacity-70">{table.capacity}P</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Customer Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <Label htmlFor="customerName">Name *</Label>
+          <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4">
+            <h3 className="text-sm font-semibold text-white mb-3">Customer Info</h3>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label htmlFor="customerName" className="text-xs text-white/60">Name *</Label>
                 <Input
                   id="customerName"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Customer name"
+                  className="h-8 bg-black/20 border-white/10 text-xs text-white"
+                  placeholder="Guest Name"
                 />
               </div>
-              <div>
-                <Label htmlFor="customerPhone">Phone</Label>
+              <div className="space-y-1">
+                <Label htmlFor="customerPhone" className="text-xs text-white/60">Phone</Label>
                 <Input
                   id="customerPhone"
                   value={customerInfo.phone || ''}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="Phone number"
+                  className="h-8 bg-black/20 border-white/10 text-xs text-white"
+                  placeholder="Optional"
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Current Order */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" />
-                Current Order ({currentOrder.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {currentOrder.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No items added yet</p>
-              ) : (
-                <div className="space-y-3">
+          <PremiumLiquidGlass title={`Order (${currentOrder.length})`} className="flex-1 flex flex-col">
+            {currentOrder.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-white/20">
+                <ShoppingCart className="h-8 w-8 mb-2 opacity-50" />
+                <p className="text-xs">Cart Empty</p>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col">
+                <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-4 max-h-[300px]">
                   {currentOrder.map(item => (
-                    <div key={item.menuItemId} className="border rounded-lg p-3 space-y-2">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h5 className="font-medium">{item.name}</h5>
-                          <p className="text-sm text-gray-600">₹{item.price} each</p>
+                    <div key={item.menuItemId} className="bg-black/20 rounded-lg p-3 border border-white/5 relative group">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="text-sm font-medium text-white">{item.name}</p>
+                          <p className="text-xs text-white/40">₹{item.price} x {item.quantity}</p>
                         </div>
                         <button
                           onClick={() => removeFromOrder(item.menuItemId)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-white/20 hover:text-red-400 transition-colors"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3" />
                         </button>
                       </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateQuantity(item.menuItemId, -1)}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="font-medium px-2">{item.quantity}</span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateQuantity(item.menuItemId, 1)}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                        <span className="ml-auto font-medium">
-                          ₹{item.price * item.quantity}
-                        </span>
+
+                      <div className="flex items-center gap-2 mb-2">
+                        <button onClick={() => updateQuantity(item.menuItemId, -1)} className="h-6 w-6 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white">-</button>
+                        <span className="text-sm font-medium text-white w-4 text-center">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.menuItemId, 1)} className="h-6 w-6 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white">+</button>
+                        <span className="ml-auto font-bold text-white text-sm">₹{item.price * item.quantity}</span>
                       </div>
-                      
-                      <div>
-                        <Input
-                          placeholder="Special instructions..."
-                          value={item.specialInstructions || ''}
-                          onChange={(e) => updateSpecialInstructions(item.menuItemId, e.target.value)}
-                          className="text-sm"
-                        />
-                      </div>
+
+                      <input
+                        placeholder="Notes..."
+                        value={item.specialInstructions || ''}
+                        onChange={(e) => updateSpecialInstructions(item.menuItemId, e.target.value)}
+                        className="w-full bg-transparent border-b border-white/10 text-xs text-white/60 focus:text-white focus:border-white/40 focus:outline-none pb-1"
+                      />
                     </div>
                   ))}
-                  
-                  <div className="border-t pt-3 space-y-2">
-                    <div className="flex justify-between items-center font-medium">
-                      <span>Total Amount:</span>
-                      <span className="text-lg">₹{calculateTotal()}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm text-gray-600">
-                      <span>Estimated Time:</span>
-                      <span>{calculateEstimatedTime()} minutes</span>
-                    </div>
+                </div>
+
+                <div className="border-t border-white/10 pt-3 mt-auto">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-white/60 text-sm">Total</span>
+                    <span className="text-xl font-bold text-white">₹{calculateTotal()}</span>
                   </div>
-                  
+                  <div className="flex justify-between items-center mb-4 text-xs text-white/40">
+                    <span>Est. Time</span>
+                    <span>{calculateEstimatedTime()} mins</span>
+                  </div>
+
                   <Button
                     onClick={submitOrder}
-                    className="w-full"
+                    className="w-full bg-primary hover:bg-primary/90 text-white"
                     disabled={!selectedTable || !customerInfo.name.trim()}
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Submit Order
                   </Button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            )}
+          </PremiumLiquidGlass>
         </div>
       </div>
     </div>

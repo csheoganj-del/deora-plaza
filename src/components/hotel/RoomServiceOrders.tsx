@@ -71,13 +71,13 @@ export default function RoomServiceOrders() {
     }, [])
 
     if (loading) {
-        return <div className="flex items-center justify-center p-8 text-[#9CA3AF]">Loading orders...</div>
+        return <div className="flex items-center justify-center p-8 text-white/50">Loading orders...</div>
     }
 
     if (orders.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 text-[#9CA3AF]">
-                <div className="p-6 rounded-full bg-[#F1F5F9] mb-4">
+            <div className="flex flex-col items-center justify-center p-12 text-white/50">
+                <div className="p-6 rounded-full bg-white/5 mb-4">
                     <UtensilsCrossed className="h-16 w-16 opacity-50" />
                 </div>
                 <p className="text-xl font-medium">No room service orders</p>
@@ -89,15 +89,15 @@ export default function RoomServiceOrders() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case "pending":
-                return "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20/20300"
+                return "bg-amber-500/10 text-amber-400 border-[#F59E0B]/20/20300"
             case "preparing":
                 return "bg-orange-100 text-orange-700 border-orange-300"
             case "ready":
-                return "bg-[#BBF7D0] text-[#16A34A] border-green-300"
+                return "bg-emerald-500/10 text-emerald-400 border-green-300"
             case "served":
-                return "bg-[#EDEBFF]/30 text-[#6D5DFB] border-[#EDEBFF]/40"
+                return "bg-purple-500/10/30 text-[#6D5DFB] border-[#EDEBFF]/40"
             default:
-                return "bg-[#F1F5F9] text-[#111827] border-[#9CA3AF]"
+                return "bg-white/5 text-white border-[#9CA3AF]"
         }
     }
 
@@ -130,11 +130,11 @@ export default function RoomServiceOrders() {
         <div className="space-y-6">
             {Object.entries(ordersByRoom).map(([roomNumber, roomOrders]) => (
                 <div key={roomNumber} className="space-y-4">
-                    <h3 className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                        <span className="bg-[#EDEBFF] text-[#A855F7] px-3 py-1 rounded-lg">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <span className="bg-purple-500/10 text-purple-400 px-3 py-1 rounded-lg">
                             Room {roomNumber}
                         </span>
-                        <span className="text-sm text-[#9CA3AF]">
+                        <span className="text-sm text-white/50">
                             ({roomOrders.length} {roomOrders.length === 1 ? 'order' : 'orders'})
                         </span>
                     </h3>
@@ -153,17 +153,17 @@ export default function RoomServiceOrders() {
                                             {getStatusText(order.status)}
                                         </Badge>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs text-[#9CA3AF] font-mono">#{order.orderNumber}</span>
+                                            <span className="text-xs text-white/50 font-mono">#{order.orderNumber}</span>
                                             <button
                                                 onClick={() => handleDeleteOrder(order.id)}
-                                                className="h-7 w-7 inline-flex items-center justify-center rounded border border-red-200 text-[#EF4444] hover:bg-[#FEE2E2]"
+                                                className="h-7 w-7 inline-flex items-center justify-center rounded border border-red-200 text-rose-400 hover:bg-rose-500/10"
                                                 aria-label="Delete order"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </button>
                                         </div>
                                     </div>
-                                    <h2 className="text-3xl font-bold text-[#111827] text-base flex items-center gap-2 text-[#111827]">
+                                    <h2 className="text-3xl font-bold text-white text-base flex items-center gap-2 text-white">
                                         <Clock className="h-4 w-4" />
                                         {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
                                     </h2>
@@ -181,7 +181,7 @@ export default function RoomServiceOrders() {
                                             </button>
                                         )}
                                         {order.status === "served" && (
-                                            <div className="flex-1 px-4 py-2 bg-[#F1F5F9] text-[#6B7280] rounded-lg font-medium text-sm flex items-center justify-center gap-2">
+                                            <div className="flex-1 px-4 py-2 bg-white/5 text-white/60 rounded-lg font-medium text-sm flex items-center justify-center gap-2">
                                                 <CheckCircle className="h-4 w-4" />
                                                 Completed
                                             </div>
@@ -199,10 +199,10 @@ export default function RoomServiceOrders() {
                                                 return items.map((item: any, idx: number) => (
                                                     <div key={item.menuItemId || item.id || `${order.id}-${item.name}-${idx}`}
                                                         className="flex justify-between text-sm border-b border-[#F1F5F9] pb-2 last:border-0">
-                                                        <span className="text-[#111827]">
-                                                            <span className="font-bold text-[#C084FC]">{item.quantity}x</span> {item.name}
+                                                        <span className="text-white">
+                                                            <span className="font-bold text-purple-300">{item.quantity}x</span> {item.name}
                                                         </span>
-                                                        <span className="text-[#9CA3AF]">₹{(item.price * item.quantity).toLocaleString()}</span>
+                                                        <span className="text-white/50">₹{(item.price * item.quantity).toLocaleString()}</span>
                                                     </div>
                                                 ));
                                             } catch (error) {
@@ -210,7 +210,7 @@ export default function RoomServiceOrders() {
                                                 return null;
                                             }
                                         })()}
-                                        <div className="flex justify-between font-semibold text-[#111827] pt-2 border-t">
+                                        <div className="flex justify-between font-semibold text-white pt-2 border-t">
                                             <span>Total</span>
                                             <span>₹{order.totalAmount.toLocaleString()}</span>
                                         </div>

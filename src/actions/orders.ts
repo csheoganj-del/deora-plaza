@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -8,7 +8,6 @@ import {
   createDocument,
   queryDocuments,
 } from "@/lib/supabase/database";
-import { logActivityWithLocation } from "@/actions/location";
 import { updateTableStatus } from "./tables";
 
 export async function createOrder(data: {
@@ -27,11 +26,14 @@ export async function createOrder(data: {
     quantity: number;
     price: number;
     specialInstructions?: string;
+    description?: string; // Add description support
+    status?: string; // Allow initial status override for items
   }>;
-  location?: {
-    lat: number;
-    lng: number;
-  };
+  initialStatus?: string; // Add initialStatus parameter
+  discountPercent?: number;
+  discountAmount?: number;
+  gstPercent?: number;
+  gstAmount?: number;
 }) {
   try {
     console.log("=== CREATE ORDER ACTION STARTED ===");
@@ -65,14 +67,21 @@ export async function createOrder(data: {
     console.log("createOrder: Generated order number:", orderNumber);
 
     // Calculate total
-    const totalAmount = data.items.reduce((sum, item) => {
+    // Calculate total
+    const subtotal = data.items.reduce((sum, item) => {
       const itemTotal = (item.price || 0) * (item.quantity || 0);
       console.log(
         `Item calculation: ${item.name} - Price: ${item.price}, Quantity: ${item.quantity}, Total: ${itemTotal}`,
       );
       return sum + itemTotal;
     }, 0);
-    console.log("createOrder: Calculated total amount:", totalAmount);
+
+    // Apply GST for Cafe (Food) orders
+    // TODO: Centralize rates? For now using fixed 5% as per requirements
+    const taxAmount = data.businessUnit === 'cafe' ? Math.round(subtotal * 0.05) : 0;
+    const totalAmount = subtotal + taxAmount;
+
+    console.log("createOrder: Calculated subtotal:", subtotal, "Tax:", taxAmount, "Total:", totalAmount);
 
     // Handle customer creation if customer details are provided
     if (data.customerMobile) {
@@ -140,11 +149,18 @@ export async function createOrder(data: {
       roomNumber: data.roomNumber || null,
       source: data.source || "pos",
       customerMobile: data.customerMobile || null,
-      status: "pending",
+      discountPercent: data.discountPercent || 0,
+      discountAmount: data.discountAmount || 0,
+      gstPercent: data.gstPercent || 0,
+      gstAmount: data.gstAmount || 0,
+      status: data.initialStatus || "pending",
       settlementStatus,
       totalAmount,
       isPaid: false,
-      items: data.items,
+      items: data.items.map((item: any) => ({
+        ...item,
+        status: data.initialStatus || "pending"
+      })),
       guestCount: data.guestCount || 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -201,6 +217,7 @@ export async function createOrder(data: {
         data.tableId,
         "occupied",
         data.guestCount || 0,
+        result.data?.id,
       );
       console.log(
         "createOrder: Table status update result:",
@@ -209,15 +226,17 @@ export async function createOrder(data: {
     }
 
     // Create notification for kitchen
-    console.log("createOrder: Creating kitchen notification");
-    await createKitchenNotification(orderNumber, data);
-    console.log("createOrder: Kitchen notification created");
+    try {
+      await createKitchenNotification(orderNumber, data);
+    } catch (notifError) {
+      console.error("createOrder: Error creating kitchen notification:", notifError);
+    }
 
     // Send integrated notification
     try {
       const { getIntegratedNotificationSystem } = await import("@/lib/integrated-notification-system");
       const notificationSystem = getIntegratedNotificationSystem();
-      
+
       await notificationSystem.handleOrderStatusChange(
         result.data?.id || '',
         orderNumber,
@@ -229,7 +248,15 @@ export async function createOrder(data: {
           roomNumber: data.roomNumber,
           customerName: data.customerName,
           itemCount: data.items.length,
-          totalAmount
+          totalAmount,
+          isTakeaway: data.type === 'takeaway',
+          location: data.type === 'takeaway'
+            ? 'takeaway'
+            : data.tableNumber
+              ? `table number ${data.tableNumber}`
+              : data.roomNumber
+                ? `room number ${data.roomNumber}`
+                : 'counter'
         }
       );
     } catch (notificationError) {
@@ -238,16 +265,13 @@ export async function createOrder(data: {
 
     console.log("=== CREATE ORDER ACTION COMPLETED SUCCESSFULLY ===");
 
-    // Log location if provided
-    if (data.location && session.user) {
-      await logActivityWithLocation(
-        session.user.id,
-        "create_order",
-        `Created order ${orderNumber}`,
-        data.location.lat,
-        data.location.lng,
-        { orderId: result.data?.id, businessUnit: data.businessUnit }
-      );
+    try {
+      revalidatePath('/dashboard/cafe');
+      revalidatePath('/dashboard/restaurant');
+      revalidatePath('/dashboard/bar');
+      revalidatePath('/dashboard/kitchen');
+    } catch (e) {
+      console.warn("Error revalidating paths:", e);
     }
 
     return { success: true, orderId: result.data?.id, orderNumber };
@@ -272,10 +296,13 @@ async function createKitchenNotification(orderNumber: string, data: any) {
       orderNumber,
     );
 
+    const isTakeaway = data.type === 'takeaway' || (!data.tableNumber && !data.roomNumber);
     const locationName =
       data.businessUnit === "hotel"
         ? `Room ${data.roomNumber}`
-        : `${data.businessUnit} Table ${data.tableNumber || "N/A"}`;
+        : isTakeaway
+          ? "Takeaway"
+          : `${data.businessUnit} Table ${data.tableNumber || "N/A"}`;
 
     console.log("createKitchenNotification: Location name:", locationName);
     console.log(
@@ -284,16 +311,19 @@ async function createKitchenNotification(orderNumber: string, data: any) {
     );
 
     const result = await createDocument("notifications", {
-      type: "order_placed",
+      type: "order_new",
       businessUnit: data.businessUnit,
       message: `New order ${orderNumber} for ${locationName}`,
-      title: "New Order",
-      recipient: "kitchen",
+      title: "New Order Received",
+      recipient: "all", // Changed from 'kitchen' to 'all' to ensure Managers also see it in Bell Icon
+      priority: "high",
       metadata: {
         orderNumber,
         businessUnit: data.businessUnit,
         tableNumber: data.tableNumber,
         roomNumber: data.roomNumber,
+        isTakeaway,
+        locationName,
       },
       isRead: false,
       createdAt: new Date().toISOString(),
@@ -333,6 +363,7 @@ export async function getOrders(businessUnit?: string, status?: string) {
       status,
     );
     const filters = [];
+
 
     if (businessUnit) {
       if (Array.isArray(businessUnit)) {
@@ -467,7 +498,7 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
     // Add timeline entry
     const { data: orderData, error: orderError } = await supabaseServer
       .from("orders")
-      .select("timeline, orderNumber, businessUnit, tableNumber, roomNumber")
+      .select("status, timeline, orderNumber, businessUnit, tableNumber, roomNumber, type, items")
       .eq("id", orderId)
       .single();
 
@@ -486,6 +517,39 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
     await updateDocument("orders", orderId, updateData);
 
     // Handle status-specific logic
+    if (status === "bill_requested") {
+      try {
+        if (orderData) {
+          const locationName =
+            orderData?.businessUnit === "hotel"
+              ? `Room ${orderData?.roomNumber}`
+              : `${orderData?.businessUnit} Table ${orderData?.tableNumber || "N/A"}`;
+
+          // Create notification for manager
+          await createDocument("notifications", {
+            type: "bill_request",
+            orderId: orderId,
+            businessUnit: orderData?.businessUnit,
+            message: `Bill Requested for ${locationName}`,
+            title: "Bill Request",
+            recipient: "manager",
+            priority: "high",
+            metadata: {
+              orderNumber: orderData?.orderNumber,
+              location: locationName,
+              businessUnit: orderData?.businessUnit,
+              tableNumber: orderData.tableNumber,
+            },
+            isRead: false,
+            createdAt: now,
+            expiresAt: new Date(new Date().getTime() + 1 * 60 * 60 * 1000).toISOString(), // 1 hour
+          });
+        }
+      } catch (billReqError) {
+        console.warn("Failed to create bill request notification:", billReqError);
+      }
+    }
+
     if (status === "ready") {
       try {
         if (orderData) {
@@ -532,12 +596,13 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
 
         if (orderData) {
           const unit = String(orderData.businessUnit || "").toLowerCase();
-          
+
           // Check unit-specific waiterless mode
           const unitWaiterless = settings[`${unit}WaiterlessMode`] ?? waiterless;
 
-          if (unitWaiterless && (unit === "cafe" || unit === "restaurant")) {
-            // Auto-serve in waiterless mode
+          // Auto-serve only dine-in orders in waiterless mode, not takeaway orders
+          if (unitWaiterless && (unit === "cafe" || unit === "restaurant") && orderData.type === "dine-in") {
+            // Auto-serve in waiterless mode (dine-in only)
             await updateDocument("orders", orderId, {
               status: "served",
               servedAt: new Date().toISOString(),
@@ -549,8 +614,8 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
               status: "served",
               timestamp: new Date().toISOString(),
               actor: "system",
-              message: "Auto-served (waiterless mode)",
-              metadata: { waiterlessMode: true }
+              message: "Auto-served (waiterless mode - dine-in)",
+              metadata: { waiterlessMode: true, orderType: orderData.type }
             }];
 
             await updateDocument("orders", orderId, {
@@ -561,7 +626,7 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
             try {
               const { getIntegratedNotificationSystem } = await import("@/lib/integrated-notification-system");
               const notificationSystem = getIntegratedNotificationSystem();
-              
+
               await notificationSystem.handleOrderStatusChange(
                 orderId,
                 orderData.orderNumber,
@@ -572,7 +637,8 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
                   waiterlessMode: true,
                   tableNumber: orderData.tableNumber,
                   roomNumber: orderData.roomNumber,
-                  autoServed: true
+                  autoServed: true,
+                  orderType: orderData.type
                 }
               );
             } catch (integratedNotificationError) {
@@ -589,7 +655,7 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
     try {
       const { getIntegratedNotificationSystem } = await import("@/lib/integrated-notification-system");
       const notificationSystem = getIntegratedNotificationSystem();
-      
+
       if (orderData) {
         await notificationSystem.handleOrderStatusChange(
           orderId,
@@ -609,6 +675,14 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
       console.warn("Failed to send integrated status notification:", integratedNotificationError);
     }
 
+    // If we have order data, sync item statuses
+    if (orderData && Array.isArray(orderData.items)) {
+      updateData.items = orderData.items.map((item: any) => ({
+        ...item,
+        status: ["ready", "served", "completed"].includes(status) ? (status === "ready" ? "prepared" : "served") : (item.status || "pending")
+      }));
+    }
+
     // Handle payment status updates
     if (status === "completed" && metadata?.paymentProcessed) {
       await updateDocument("orders", orderId, {
@@ -624,21 +698,186 @@ export async function updateOrderStatus(orderId: string, status: string, metadat
   }
 }
 
+export async function updateOrderItemStatus(
+  orderId: string,
+  menuItemId: string,
+  newStatus: string,
+  metadata?: any
+) {
+  try {
+    const { data: order, error: fetchError } = await supabaseServer
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .single();
+
+    if (fetchError || !order) return { success: false, error: "Order not found" };
+
+    const items = order.items || [];
+    const updatedItems = items.map((item: any) => {
+      if (item.menuItemId === menuItemId || item.id === menuItemId) {
+        return { ...item, status: newStatus };
+      }
+      return item;
+    });
+
+    const now = new Date().toISOString();
+    const updateData: any = {
+      items: updatedItems,
+      updatedAt: now,
+    };
+
+    const allServed = updatedItems.every((i: any) => i.status === "served");
+    // Only mark ready if ALL items are either prepared or served
+    const allKitchenDone = updatedItems.every((i: any) => i.status === "prepared" || i.status === "served");
+    // Work in progress if ANY item is prepared, preparing, or served (but not all done)
+    const anyWorkStarted = updatedItems.some((i: any) => ["prepared", "preparing", "served"].includes(i.status));
+
+    if (allServed) {
+      updateData.status = "served";
+      updateData.servedAt = now;
+    } else if (allKitchenDone) {
+      updateData.status = "ready";
+      updateData.readyAt = now;
+    } else if (anyWorkStarted) {
+      updateData.status = "preparing";
+      updateData.preparingAt = now;
+    } else {
+      updateData.status = "pending"; // Fallback to pending if all items are reset to pending
+    }
+
+    const timeline = order.timeline || [];
+    const itemName = items.find((i: any) => i.menuItemId === menuItemId || i.id === menuItemId)?.name || 'Item';
+    timeline.push({
+      status: `item_${newStatus}`,
+      timestamp: now,
+      actor: metadata?.actor || "system",
+      message: `${itemName} marked as ${newStatus}`,
+      metadata: { menuItemId, status: newStatus }
+    });
+    updateData.timeline = timeline;
+
+    await updateDocument("orders", orderId, updateData);
+
+    if (newStatus === "prepared") {
+      try {
+        const locationName = order.businessUnit === "hotel" ? `Room ${order.roomNumber}` : `${order.businessUnit} Table ${order.tableNumber || "N/A"}`;
+        await createDocument("notifications", {
+          type: "item_ready",
+          orderId: orderId,
+          businessUnit: order.businessUnit,
+          message: `${itemName} for ${locationName} is Ready!`,
+          title: "Item Prepared",
+          recipient: "waiter",
+          metadata: { orderNumber: order.orderNumber, itemName, menuItemId, locationName },
+          isRead: false,
+          createdAt: now
+        });
+      } catch (e) {
+        console.warn("Notification error:", e);
+      }
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating item status:", error);
+    return { success: false, error };
+  }
+}
+
 export async function updateOrderItems(
   orderId: string,
   items: any[],
   totalAmount: number,
 ) {
   try {
-    await updateDocument("orders", orderId, {
-      items,
+    const { data: currentOrder, error: fetchError } = await supabaseServer
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .single();
+
+    if (fetchError || !currentOrder) {
+      return { success: false, error: "Order not found" };
+    }
+
+    const currentItems = currentOrder.items || [];
+
+    // For existing items, keep their status. For new items, set to pending.
+    const updatedItems = items.map(newItem => {
+      const existingItem = currentItems.find((oldItem: any) => oldItem.menuItemId === newItem.menuItemId);
+      return {
+        ...newItem,
+        status: existingItem ? (existingItem.status || "pending") : (newItem.status || "pending")
+      };
+    });
+
+    const isNewItemAdded = items.length > currentItems.length ||
+      items.some(newItem => !currentItems.some((oldItem: any) => oldItem.menuItemId === newItem.menuItemId));
+
+    const updateData: any = {
+      items: updatedItems,
       totalAmount,
       updatedAt: new Date().toISOString(),
-    });
+    };
+
+    // If new items were added, reset status to pending so kitchen sees it
+    if (isNewItemAdded && ["served", "ready"].includes(currentOrder.status)) {
+      updateData.status = "pending";
+      updateData.pendingAt = new Date().toISOString();
+      updateData.timeline = [
+        ...(currentOrder.timeline || []),
+        {
+          status: "pending",
+          timestamp: new Date().toISOString(),
+          actor: "waiter",
+          message: "Order items added - re-sent to kitchen",
+        },
+      ];
+    } else {
+      updateData.timeline = [
+        ...(currentOrder.timeline || []),
+        {
+          status: currentOrder.status,
+          timestamp: new Date().toISOString(),
+          actor: "waiter",
+          message: "Order updated (quantities/details)",
+        },
+      ];
+    }
+
+    await updateDocument("orders", orderId, updateData);
+
+    // Notify kitchen if new items added
+    if (isNewItemAdded) {
+      await createKitchenNotification(currentOrder.orderNumber, {
+        ...currentOrder,
+        items // Pass updated items
+      });
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Error updating order items:", error);
     return { success: false, error };
+  }
+}
+
+
+export async function getLiveOrders(businessUnit?: string) {
+  try {
+    console.log("getLiveOrders: Fetching live orders for unit:", businessUnit);
+    // Use the existing getOrders but filter for live statuses
+    // This runs on the server with admin privileges, bypassing RLS
+    const orders = await getOrders(businessUnit);
+
+    // Filter for active statuses
+    return orders.filter((o: any) =>
+      ["pending", "preparing", "ready", "served", "bill_requested"].includes(o.status)
+    );
+  } catch (error) {
+    console.error("Error in getLiveOrders:", error);
+    return [];
   }
 }
 
@@ -766,6 +1005,8 @@ export async function linkOrderToBooking(
   roomNumber: string,
 ) {
   try {
+    console.log(`[linkOrderToBooking] Starting: orderId=${orderId}, bookingId=${bookingId}`);
+
     // Get the order
     const { data: orderData, error: orderError } = await supabaseServer
       .from("orders")
@@ -774,17 +1015,21 @@ export async function linkOrderToBooking(
       .single();
 
     if (orderError || !orderData) {
+      console.error("[linkOrderToBooking] Order not found:", orderError);
       return { success: false, error: "Order not found" };
     }
+
+    console.log("[linkOrderToBooking] Order data:", { orderNumber: orderData.orderNumber, total: orderData.totalAmount });
 
     const orderTotal = orderData?.totalAmount || 0;
 
     // Update the order with booking reference
-    await updateDocument("orders", orderId, {
+    const orderUpdateResult = await updateDocument("orders", orderId, {
       bookingId,
       roomNumber,
       linkedToBooking: true,
     });
+    console.log("[linkOrderToBooking] Order update result:", orderUpdateResult);
 
     // Get the booking from the bookings collection
     const { data: bookingData, error: bookingError } = await supabaseServer
@@ -794,8 +1039,16 @@ export async function linkOrderToBooking(
       .single();
 
     if (bookingError || !bookingData) {
+      console.error("[linkOrderToBooking] Booking not found:", bookingError);
       return { success: false, error: "Booking not found" };
     }
+
+    console.log("[linkOrderToBooking] Current booking data:", {
+      id: bookingData.id,
+      roomNumber: bookingData.roomNumber,
+      currentRoomServiceCharges: bookingData.roomServiceCharges,
+      currentRoomServiceTotal: bookingData.roomServiceTotal
+    });
 
     // Add room service charge to booking
     const roomServiceCharges = bookingData?.roomServiceCharges || [];
@@ -807,11 +1060,16 @@ export async function linkOrderToBooking(
       createdAt: new Date().toISOString(),
     };
 
+    console.log("[linkOrderToBooking] New charge to add:", newCharge);
+
     const updatedCharges = [...roomServiceCharges, newCharge];
     const roomServiceTotal = updatedCharges.reduce(
       (sum, charge) => sum + charge.amount,
       0,
     );
+
+    console.log("[linkOrderToBooking] Updated charges array:", updatedCharges);
+    console.log("[linkOrderToBooking] New room service total:", roomServiceTotal);
 
     // Update booking total amount to include room service
     const baseAmount = bookingData?.totalAmount || 0;
@@ -829,18 +1087,30 @@ export async function linkOrderToBooking(
           ? "partial"
           : "pending";
 
-    await updateDocument("bookings", bookingId, {
+    const bookingUpdateData = {
       roomServiceCharges: updatedCharges,
       roomServiceTotal,
       totalAmount: newTotalAmount,
       remainingBalance: newRemainingBalance,
       paymentStatus: newPaymentStatus,
       updatedAt: new Date().toISOString(),
-    });
+    };
 
+    console.log("[linkOrderToBooking] Booking update data:", bookingUpdateData);
+
+    const bookingUpdateResult = await updateDocument("bookings", bookingId, bookingUpdateData);
+
+    console.log("[linkOrderToBooking] Booking update result:", bookingUpdateResult);
+
+    if (!bookingUpdateResult.success) {
+      console.error("[linkOrderToBooking] Failed to update booking:", bookingUpdateResult.error);
+      return { success: false, error: bookingUpdateResult.error };
+    }
+
+    console.log("[linkOrderToBooking] âœ… Successfully linked order to booking");
     return { success: true };
   } catch (error) {
-    console.error("Error linking order to booking:", error);
+    console.error("[linkOrderToBooking] Error:", error);
     return { success: false, error };
   }
 }
@@ -867,18 +1137,46 @@ export async function deleteOrder(orderId: string, password?: string) {
       await deleteDocument("bills", orderData.billId);
     }
 
-    // Update booking total if this was the last order
+    // Update booking if this order was linked to one
     if (bookingId) {
-      const { data: remainingOrders } = await supabaseServer
-        .from("orders")
-        .select("id")
-        .eq("bookingId", bookingId);
+      const { data: bookingData, error: bookingError } = await supabaseServer
+        .from("bookings")
+        .select("*")
+        .eq("id", bookingId)
+        .single();
 
-      // If no more orders, reset booking total
-      if (remainingOrders && remainingOrders.length === 0) {
+      if (!bookingError && bookingData) {
+        // Remove this order from roomServiceCharges array
+        const roomServiceCharges = bookingData.roomServiceCharges || [];
+        const updatedCharges = roomServiceCharges.filter((charge: any) => charge.orderId !== orderId);
+
+        // Recalculate room service total
+        const roomServiceTotal = updatedCharges.reduce(
+          (sum: number, charge: any) => sum + (charge.amount || 0),
+          0
+        );
+
+        // Recalculate total amount
+        const baseAmount = bookingData.basePrice || 0;
+        const newTotalAmount = baseAmount + roomServiceTotal;
+
+        // Recalculate remaining balance
+        const totalPaid = bookingData.totalPaid || 0;
+        const newRemainingBalance = newTotalAmount - totalPaid;
+        const newPaymentStatus =
+          newRemainingBalance <= 0
+            ? "completed"
+            : totalPaid > 0
+              ? "partial"
+              : "pending";
+
         await updateDocument("bookings", bookingId, {
-          totalAmount: 0,
-          orderCount: 0,
+          roomServiceCharges: updatedCharges,
+          roomServiceTotal,
+          totalAmount: newTotalAmount,
+          remainingBalance: newRemainingBalance,
+          paymentStatus: newPaymentStatus,
+          updatedAt: new Date().toISOString(),
         });
       }
     }
@@ -894,6 +1192,56 @@ export async function deleteOrder(orderId: string, password?: string) {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     };
+  }
+}
+
+
+export async function getFreshOrders() {
+  const { unstable_noStore } = require('next/cache');
+  unstable_noStore(); // Opt out of static caching for this request
+
+  try {
+    console.log("getFreshOrders: Fetching fresh orders for live view");
+    const { data: orders, error } = await supabaseServer
+      .from('orders')
+      .select('*')
+      .order('createdAt', { ascending: false });
+
+    if (error) {
+      console.error("getFreshOrders: Error fetching,", error);
+      return [];
+    }
+
+    return orders || [];
+  } catch (error) {
+    console.error("getFreshOrders: Exception:", error);
+    return [];
+  }
+
+}
+
+export async function markOrdersAsCompleted(orderIds: string[]) {
+  try {
+    if (!orderIds || orderIds.length === 0) return { success: true };
+
+    const { data, error } = await supabaseServer
+      .from('orders')
+      .update({
+        status: 'completed',
+        completedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+      .in('id', orderIds);
+
+    if (error) {
+      console.error("Error marking orders as completed:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("markOrdersAsCompleted: Exception:", error);
+    return { success: false, error: "Failed to mark orders as completed" };
   }
 }
 

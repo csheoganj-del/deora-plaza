@@ -11,18 +11,25 @@ interface BusinessSettings {
     gstEnabled?: boolean;
     gstPercentage?: number;
     gstNumber?: string;
-    
+
     // Waiterless mode toggles
     waiterlessMode?: boolean;
     barWaiterlessMode?: boolean;
     cafeWaiterlessMode?: boolean;
     hotelWaiterlessMode?: boolean;
     gardenWaiterlessMode?: boolean;
-    
+
+    // Billing-only mode toggles (skip kitchen, direct billing)
+    billingOnlyMode?: boolean;
+    barBillingOnlyMode?: boolean;
+    cafeBillingOnlyMode?: boolean;
+    hotelBillingOnlyMode?: boolean;
+    gardenBillingOnlyMode?: boolean;
+
     // Security toggles
     enablePasswordProtection?: boolean;
     enableTwoFactorAuth?: boolean;
-    
+
     // Module toggles
     enableBarModule?: boolean;
     enableHotelModule?: boolean;
@@ -47,34 +54,41 @@ interface BusinessSettings {
     enableDailyReportsModule?: boolean;
     enableKitchenDisplayModule?: boolean;
     enableWaiterInterfaceModule?: boolean;
-    
+
     // Payment toggles
     enableCashPayments?: boolean;
     enableCardPayments?: boolean;
     enableUPIPayments?: boolean;
     enableOnlinePayments?: boolean;
     enableCreditPayments?: boolean;
-    
+
     // Order flow toggles
     enableOrderModification?: boolean;
     enableOrderCancellation?: boolean;
     enableSplitBilling?: boolean;
     enableCustomDiscounts?: boolean;
     enableLoyaltyProgram?: boolean;
-    
+
     // Notification toggles
     enableKitchenNotifications?: boolean;
     enableWaiterNotifications?: boolean;
     enableCustomerNotifications?: boolean;
     enableSMSNotifications?: boolean;
     enableEmailNotifications?: boolean;
-    
+
     // Garden-specific settings
     gardenName?: string;
     gardenAddress?: string;
     gardenMobile?: string;
     gardenGstNumber?: string;
-    
+
+    // Hotel-specific settings
+    hotelName?: string;
+    hotelAddress?: string;
+    hotelMobile?: string;
+    hotelEmail?: string;
+    hotelGstNumber?: string;
+
     // Per-unit GST settings
     barGstEnabled?: boolean;
     barGstPercentage?: number;
@@ -84,13 +98,13 @@ interface BusinessSettings {
     hotelGstPercentage?: number;
     gardenGstEnabled?: boolean;
     gardenGstPercentage?: number;
-    
+
     // Advanced settings
     autoBackupEnabled?: boolean;
     dataRetentionDays?: number;
     maxOrdersPerTable?: number;
     orderTimeoutMinutes?: number;
-    
+
     // Timestamps
     createdAt?: string;
     updatedAt?: string;
@@ -99,18 +113,22 @@ interface BusinessSettings {
 const BUSINESS_SETTINGS_COLLECTION = "businessSettings"
 const BUSINESS_SETTINGS_DOC_ID = "default"
 
+import { unstable_noStore as noStore } from "next/cache";
+
 export async function getBusinessSettings(): Promise<BusinessSettings | null> {
+    noStore();
     try {
         console.log("getBusinessSettings: Fetching settings...")
         const settingsDoc = await getDocument(BUSINESS_SETTINGS_COLLECTION, BUSINESS_SETTINGS_DOC_ID)
 
         if (!settingsDoc) {
-            console.log("getBusinessSettings: No settings found")
+            console.log(`getBusinessSettings: No settings found in collection "${BUSINESS_SETTINGS_COLLECTION}" for ID "${BUSINESS_SETTINGS_DOC_ID}"`)
             return null
         }
 
         const { id, ...settings } = settingsDoc
         console.log("getBusinessSettings: Raw settings retrieved:", JSON.stringify(settings, null, 2))
+        console.log("getBusinessSettings: enablePasswordProtection:", settings.enablePasswordProtection);
 
         // Sanitization to ensure serialization compatibility
         return JSON.parse(JSON.stringify(settings as BusinessSettings))
@@ -144,10 +162,12 @@ export async function updateBusinessSettings(settings: BusinessSettings) {
             await createDocument(BUSINESS_SETTINGS_COLLECTION, settingsWithId)
         }
 
-        revalidatePath("/dashboard") // Revalidate paths that might display this info
+        revalidatePath("/dashboard", "layout") // Revalidate all dashboard sub-paths
         revalidatePath("/dashboard/billing")
         revalidatePath("/dashboard/orders")
         revalidatePath("/dashboard/settings")
+        revalidatePath("/dashboard/garden")
+        revalidatePath("/dashboard/hotel")
 
         return { success: true }
     } catch (error) {
@@ -163,7 +183,7 @@ export async function isFeatureEnabled(feature: keyof BusinessSettings): Promise
     try {
         const settings = await getBusinessSettings();
         if (!settings) return false;
-        
+
         return Boolean(settings[feature]);
     } catch (error) {
         console.error(`Error checking feature ${feature}:`, error);
@@ -178,7 +198,7 @@ export async function isPaymentMethodEnabled(method: 'cash' | 'card' | 'upi' | '
     try {
         const settings = await getBusinessSettings();
         if (!settings) return true; // Default to enabled if no settings
-        
+
         const featureMap = {
             cash: 'enableCashPayments',
             card: 'enableCardPayments',
@@ -186,7 +206,7 @@ export async function isPaymentMethodEnabled(method: 'cash' | 'card' | 'upi' | '
             online: 'enableOnlinePayments',
             credit: 'enableCreditPayments'
         };
-        
+
         const feature = featureMap[method] as keyof BusinessSettings;
         return settings[feature] !== false; // Default to enabled
     } catch (error) {
@@ -202,13 +222,13 @@ export async function isWaiterlessModeEnabled(businessUnit: string): Promise<boo
     try {
         const settings = await getBusinessSettings();
         if (!settings) return false;
-        
+
         // Check unit-specific setting first, then fall back to global
         const unitSpecific = settings[`${businessUnit}WaiterlessMode` as keyof BusinessSettings];
         if (unitSpecific !== undefined) {
             return Boolean(unitSpecific);
         }
-        
+
         return Boolean(settings.waiterlessMode);
     } catch (error) {
         console.error(`Error checking waiterless mode for ${businessUnit}:`, error);
@@ -229,11 +249,11 @@ export async function getGSTSettings(businessUnit: string): Promise<{
         if (!settings) {
             return { enabled: true, percentage: 18 }; // Default GST
         }
-        
+
         // Check unit-specific GST settings
         const unitEnabled = settings[`${businessUnit}GstEnabled` as keyof BusinessSettings];
         const unitPercentage = settings[`${businessUnit}GstPercentage` as keyof BusinessSettings];
-        
+
         return {
             enabled: unitEnabled !== undefined ? Boolean(unitEnabled) : Boolean(settings.gstEnabled ?? true),
             percentage: (unitPercentage as number) || settings.gstPercentage || 18,
@@ -242,6 +262,28 @@ export async function getGSTSettings(businessUnit: string): Promise<{
     } catch (error) {
         console.error(`Error getting GST settings for ${businessUnit}:`, error);
         return { enabled: true, percentage: 18 };
+    }
+}
+
+/**
+ * Check if billing-only mode is enabled for a specific business unit
+ * Billing-only mode means bills are created directly without kitchen orders
+ */
+export async function isBillingOnlyModeEnabled(businessUnit: string): Promise<boolean> {
+    try {
+        const settings = await getBusinessSettings();
+        if (!settings) return false;
+
+        // Check unit-specific setting first, then fall back to global
+        const unitSpecific = settings[`${businessUnit}BillingOnlyMode` as keyof BusinessSettings];
+        if (unitSpecific !== undefined) {
+            return Boolean(unitSpecific);
+        }
+
+        return Boolean(settings.billingOnlyMode);
+    } catch (error) {
+        console.error(`Error checking billing-only mode for ${businessUnit}:`, error);
+        return false;
     }
 }
 
@@ -265,7 +307,7 @@ async function checkAndNotifyToggleChanges(oldSettings: any, newSettings: Busine
         for (const toggle of waiterlessToggles) {
             const oldValue = Boolean(oldSettings[toggle.key]);
             const newValue = Boolean(newSettings[toggle.key as keyof BusinessSettings]);
-            
+
             if (oldValue !== newValue) {
                 await notificationSystem.handleToggleChange(
                     'waiterless',
@@ -291,7 +333,7 @@ async function checkAndNotifyToggleChanges(oldSettings: any, newSettings: Busine
         for (const toggle of gstToggles) {
             const oldValue = Boolean(oldSettings[toggle.key]);
             const newValue = Boolean(newSettings[toggle.key as keyof BusinessSettings]);
-            
+
             if (oldValue !== newValue) {
                 await notificationSystem.handleToggleChange(
                     'gst',
@@ -318,7 +360,7 @@ async function checkAndNotifyToggleChanges(oldSettings: any, newSettings: Busine
         for (const toggle of gstPercentageToggles) {
             const oldValue = Number(oldSettings[toggle.key]) || 0;
             const newValue = Number(newSettings[toggle.key as keyof BusinessSettings]) || 0;
-            
+
             if (oldValue !== newValue && newValue > 0) {
                 await notificationSystem.handleToggleChange(
                     'gst',
@@ -349,18 +391,25 @@ export async function getDefaultBusinessSettings(): Promise<BusinessSettings> {
         mobile: "",
         gstEnabled: true,
         gstPercentage: 18,
-        
+
         // Waiterless mode - disabled by default
         waiterlessMode: false,
         barWaiterlessMode: false,
         cafeWaiterlessMode: false,
         hotelWaiterlessMode: false,
         gardenWaiterlessMode: false,
-        
+
+        // Billing-only mode - disabled by default
+        billingOnlyMode: false,
+        barBillingOnlyMode: false,
+        cafeBillingOnlyMode: false,
+        hotelBillingOnlyMode: false,
+        gardenBillingOnlyMode: false,
+
         // Security - enabled by default
         enablePasswordProtection: true,
         enableTwoFactorAuth: false,
-        
+
         // Modules - all enabled by default
         enableBarModule: true,
         enableHotelModule: true,
@@ -385,28 +434,28 @@ export async function getDefaultBusinessSettings(): Promise<BusinessSettings> {
         enableDailyReportsModule: true,
         enableKitchenDisplayModule: true,
         enableWaiterInterfaceModule: true,
-        
+
         // Payments - all enabled by default
         enableCashPayments: true,
         enableCardPayments: true,
         enableUPIPayments: true,
         enableOnlinePayments: true,
         enableCreditPayments: true,
-        
+
         // Order flow - all enabled by default
         enableOrderModification: true,
         enableOrderCancellation: true,
         enableSplitBilling: false, // Disabled until implemented
         enableCustomDiscounts: true,
         enableLoyaltyProgram: true,
-        
+
         // Notifications - all enabled by default
         enableKitchenNotifications: true,
         enableWaiterNotifications: true,
         enableCustomerNotifications: true,
         enableSMSNotifications: false, // Disabled until SMS service integrated
         enableEmailNotifications: false, // Disabled until email service integrated
-        
+
         // Per-unit GST - all enabled with 18% default
         barGstEnabled: true,
         barGstPercentage: 18,
@@ -416,13 +465,13 @@ export async function getDefaultBusinessSettings(): Promise<BusinessSettings> {
         hotelGstPercentage: 12, // Hotel services typically 12%
         gardenGstEnabled: true,
         gardenGstPercentage: 18,
-        
+
         // Advanced settings
         autoBackupEnabled: true,
         dataRetentionDays: 365,
         maxOrdersPerTable: 10,
         orderTimeoutMinutes: 30,
-        
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
     };

@@ -249,7 +249,7 @@ export function Header() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#5F6368]" />
             <Input
               placeholder="Search"
-              className="w-full bg-[#F0F4F9] border-none rounded-full pl-12 h-12 focus-visible:ring-2 focus-visible:ring-[#1A73E8] transition-all text-[16px]"
+              className="w-full bg-white/50 backdrop-blur-md border border-white/30 rounded-full pl-12 h-12 focus-visible:ring-2 focus-visible:ring-[#1A73E8] transition-all text-[16px] hover:bg-white/60"
             />
           </div>
         </div>
@@ -271,7 +271,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-12 w-12 rounded-full text-[#5F6368] hover:bg-[#F1F3F4] active:bg-[#E8EAED]"
+            className="h-12 w-12 rounded-full text-[#5F6368] hover:bg-white/40 backdrop-blur-sm active:bg-white/50 transition-all"
           >
             <Bell className="h-6 w-6" />
             <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#B3261E] rounded-full border-2 border-white" />

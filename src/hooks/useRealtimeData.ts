@@ -63,10 +63,13 @@ export function useRealtimeOrders(options: UseRealtimeDataOptions = {}) {
         }
       }
 
-      // Fetch from server
-      setState(prev => ({ ...prev, loading: true, error: null }))
-      
-      const { queryDocuments } = await import('@/lib/supabase/database')
+      // Fetch from server - Stale-while-revalidate pattern
+      // Only set loading if we don't have data yet
+      if (state.data.length === 0) {
+        setState(prev => ({ ...prev, loading: true, error: null }))
+      }
+
+      const { queryDocuments } = await import('@/lib/supabase/database-client')
       const filters = businessUnit ? [{ field: 'businessUnit', operator: '==', value: businessUnit }] : []
       const orders = await queryDocuments('orders', filters, 'createdAt', 'desc')
 
@@ -140,7 +143,7 @@ export function useRealtimeOrders(options: UseRealtimeDataOptions = {}) {
   // Optimistic order creation
   const createOrderOptimistic = useCallback(async (orderData: any) => {
     if (!enableOptimistic) {
-      const { createDocument } = await import('@/lib/supabase/database')
+      const { createDocument } = await import('@/lib/supabase/database-client')
       return createDocument('orders', orderData)
     }
 
@@ -163,17 +166,17 @@ export function useRealtimeOrders(options: UseRealtimeDataOptions = {}) {
       },
       // Server update
       async () => {
-        const { createDocument } = await import('@/lib/supabase/database')
+        const { createDocument } = await import('@/lib/supabase/database-client')
         const result = await createDocument('orders', orderData)
-        
+
         // Replace temp order with real one
         setState(prev => ({
           ...prev,
-          data: prev.data.map(order => 
+          data: prev.data.map(order =>
             order.id === tempId ? result.data : order
           )
         }))
-        
+
         return result
       },
       // Rollback
@@ -189,12 +192,12 @@ export function useRealtimeOrders(options: UseRealtimeDataOptions = {}) {
   // Optimistic order update
   const updateOrderOptimistic = useCallback(async (orderId: string, updates: any) => {
     if (!enableOptimistic) {
-      const { updateDocument } = await import('@/lib/supabase/database')
+      const { updateDocument } = await import('@/lib/supabase/database-client')
       return updateDocument('orders', orderId, updates)
     }
 
     const originalOrder = state.data.find(order => order.id === orderId)
-    
+
     return withOptimisticUpdate(
       // Optimistic update
       () => {
@@ -208,7 +211,7 @@ export function useRealtimeOrders(options: UseRealtimeDataOptions = {}) {
       },
       // Server update
       async () => {
-        const { updateDocument } = await import('@/lib/supabase/database')
+        const { updateDocument } = await import('@/lib/supabase/database-client')
         return updateDocument('orders', orderId, updates)
       },
       // Rollback
@@ -240,9 +243,13 @@ export function useRealtimeOrders(options: UseRealtimeDataOptions = {}) {
     subscriptionRef.current = subscription.id
 
     // Setup periodic refresh as fallback
+    // Disabled to prevent unwanted background refreshes/flicker
+    // Realtime sync should handle updates. 
+    /*
     if (refreshInterval > 0) {
       refreshTimeoutRef.current = setInterval(loadData, refreshInterval)
     }
+    */
 
     return () => {
       if (subscriptionRef.current) {
@@ -273,7 +280,7 @@ export function useRealtimeKitchenOrders(businessUnit?: string) {
   const handleKitchenUpdate = useCallback((event: SyncEvent) => {
     if (event.table === 'orders') {
       const order = event.record
-      
+
       // Only show orders that need kitchen attention
       if (['pending', 'preparing', 'ready'].includes(order.status)) {
         setOrders(prev => {
@@ -290,11 +297,11 @@ export function useRealtimeKitchenOrders(businessUnit?: string) {
   useEffect(() => {
     const loadKitchenOrders = async () => {
       try {
-        const { queryDocuments } = await import('@/lib/supabase/database')
+        const { queryDocuments } = await import('@/lib/supabase/database-client')
         const filters = [
           { field: 'status', operator: 'in', value: ['pending', 'preparing', 'ready'] }
         ]
-        
+
         if (businessUnit) {
           filters.push({ field: 'businessUnit', operator: '==', value: businessUnit })
         }
@@ -325,14 +332,14 @@ export function useRealtimeKitchenOrders(businessUnit?: string) {
 
   const updateOrderStatus = useCallback(async (orderId: string, status: string) => {
     // Optimistic update
-    setOrders(prev => 
-      prev.map(order => 
+    setOrders(prev =>
+      prev.map(order =>
         order.id === orderId ? { ...order, status } : order
       )
     )
 
     try {
-      const { updateDocument } = await import('@/lib/supabase/database')
+      const { updateDocument } = await import('@/lib/supabase/database-client')
       await updateDocument('orders', orderId, { status })
     } catch (error) {
       // Revert on error
@@ -376,7 +383,7 @@ export function useRealtimeInventory(businessUnit?: string) {
       }
 
       // Update low stock items
-      const lowStock = newInventory.filter(item => 
+      const lowStock = newInventory.filter(item =>
         item.currentStock <= (item.minStock || 0)
       )
       setLowStockItems(lowStock)
@@ -388,15 +395,15 @@ export function useRealtimeInventory(businessUnit?: string) {
   useEffect(() => {
     const loadInventory = async () => {
       try {
-        const { queryDocuments } = await import('@/lib/supabase/database')
+        const { queryDocuments } = await import('@/lib/supabase/database-client')
         const filters = businessUnit ? [{ field: 'businessUnit', operator: '==', value: businessUnit }] : []
-        
+
         const items = await queryDocuments('inventory_items', filters, 'name', 'asc')
         setInventory(items)
-        
+
         const lowStock = items.filter(item => item.currentStock <= (item.minStock || 0))
         setLowStockItems(lowStock)
-        
+
         setLoading(false)
       } catch (error) {
         console.error('Failed to load inventory:', error)
@@ -438,8 +445,8 @@ export function useRealtimeTables(businessUnit?: string) {
         case 'INSERT':
           return [...prev, event.record]
         case 'UPDATE':
-          return prev.map(table => 
-            table.id === event.record.id ? event.record : table
+          return prev.map(table =>
+            table.id === event.record.id ? { ...table, ...event.record } : table
           )
         case 'DELETE':
           return prev.filter(table => table.id !== event.old_record?.id)
@@ -452,9 +459,9 @@ export function useRealtimeTables(businessUnit?: string) {
   useEffect(() => {
     const loadTables = async () => {
       try {
-        const { queryDocuments } = await import('@/lib/supabase/database')
+        const { queryDocuments } = await import('@/lib/supabase/database-client')
         const filters = businessUnit ? [{ field: 'businessUnit', operator: '==', value: businessUnit }] : []
-        
+
         const tableData = await queryDocuments('tables', filters, 'tableNumber', 'asc')
         setTables(tableData)
         setLoading(false)
@@ -478,17 +485,28 @@ export function useRealtimeTables(businessUnit?: string) {
     }
   }, [businessUnit, handleTableUpdate])
 
-  const updateTableStatus = useCallback(async (tableId: string, status: string) => {
+  const updateTableStatus = useCallback(async (tableId: string, status: string, orderId?: string) => {
     // Optimistic update
-    setTables(prev => 
-      prev.map(table => 
-        table.id === tableId ? { ...table, status } : table
+    setTables(prev =>
+      prev.map(table =>
+        table.id === tableId ? {
+          ...table,
+          status,
+          currentOrderId: orderId !== undefined ? orderId : (status === 'available' ? null : table.currentOrderId),
+          customerCount: status === 'available' ? 0 : table.customerCount
+        } : table
       )
     )
 
     try {
-      const { updateDocument } = await import('@/lib/supabase/database')
-      await updateDocument('tables', tableId, { status })
+      const { updateDocument } = await import('@/lib/supabase/database-client')
+      const updates: any = { status }
+      if (orderId !== undefined) updates.currentOrderId = orderId
+      if (status === 'available') {
+        updates.currentOrderId = null
+        updates.customerCount = 0
+      }
+      await updateDocument('tables', tableId, updates)
     } catch (error) {
       console.error('Failed to update table status:', error)
     }

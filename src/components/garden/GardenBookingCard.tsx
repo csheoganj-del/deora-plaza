@@ -26,153 +26,146 @@ export function GardenBookingCard({ booking, onEdit, onDelete, onViewBill }: Gar
 
     const getStatusStyle = (status: string) => {
         switch (status.toLowerCase()) {
-            case 'confirmed': return "bg-[#BBF7D0] text-emerald-800 border-emerald-200"
-            case 'pending': return "bg-[#F59E0B]/10 text-[#F59E0B]800 border-[#F59E0B]/20/20200"
-            case 'completed': return "bg-[#EDEBFF]/30 text-[#6D5DFB] border-[#EDEBFF]/40"
-            case 'cancelled': return "bg-[#FEE2E2] text-red-800 border-red-200"
-            default: return "bg-[#F1F5F9] text-[#111827] border-[#E5E7EB]"
+            case 'confirmed': return "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+            case 'pending': return "text-amber-400 border-amber-500/30 bg-amber-500/10"
+            case 'completed': return "text-indigo-400 border-indigo-500/30 bg-indigo-500/10"
+            case 'cancelled': return "text-red-400 border-red-500/30 bg-red-500/10"
+            default: return "text-zinc-400 border-zinc-700 bg-zinc-800/50"
         }
     }
 
     const getPaymentStatusStyle = (status: string) => {
         switch (status.toLowerCase()) {
-            case 'completed': return "text-[#22C55E] bg-[#DCFCE7] border-[#BBF7D0]"
-            case 'partial': return "text-[#F59E0B] bg-[#F59E0B]/10 border-[#FDE68A]"
-            case 'pending': return "text-[#EF4444] bg-[#FEE2E2] border-[#FECACA]"
-            default: return "text-[#6B7280] bg-[#F8FAFC]"
+            case 'completed': return "text-emerald-400 border-emerald-500/30"
+            case 'partial': return "text-amber-400 border-amber-500/30"
+            case 'pending': return "text-red-400 border-red-500/30"
+            default: return "text-zinc-400 border-zinc-700"
         }
     }
 
     const getEventTypeColor = (eventType: string) => {
         switch (eventType.toLowerCase()) {
-            case 'marriage': return "bg-[#FBCFE8] text-pink-800"
-            case 'reception': return "bg-[#EDEBFF] text-purple-800"
-            case 'birthday': return "bg-[#F59E0B]/10 text-[#F59E0B]800"
-            case 'engagement': return "bg-[#FEE2E2] text-rose-800"
-            case 'corporate': return "bg-[#EDEBFF]/30 text-[#6D5DFB]"
-            default: return "bg-[#F1F5F9] text-[#111827]"
+            case 'marriage': return "text-pink-300 border-pink-500/30 bg-pink-500/10"
+            case 'reception': return "text-purple-300 border-purple-500/30 bg-purple-500/10"
+            case 'birthday': return "text-amber-300 border-amber-500/30 bg-amber-500/10"
+            case 'engagement': return "text-rose-300 border-rose-500/30 bg-rose-500/10"
+            case 'corporate': return "text-blue-300 border-blue-500/30 bg-blue-500/10"
+            default: return "text-zinc-300 border-zinc-700 bg-zinc-800/50"
         }
     }
 
     return (
-        <div className="premium-card">
-            <div className="p-8 border-b border-[#E5E7EB] p-3 sm:p-4 bg-gradient-to-r from-[#DCFCE7] to-teal-50 border-b border-[#F1F5F9] pb-2 sm:pb-3">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-                            <Badge 
-                                variant="outline" 
-                                className={`capitalize text-xs sm:text-sm ${getStatusStyle(booking.status)}`}
-                                aria-label={`Status: ${booking.status}`}
-                            >
-                                {booking.status}
-                            </Badge>
-                            <Badge 
-                                className={`text-xs sm:text-sm ${getEventTypeColor(booking.eventType)}`}
-                                aria-label={`Event type: ${booking.eventType}`}
-                            >
-                                {booking.eventType}
-                            </Badge>
-                        </div>
-                        <h3 className="font-bold text-base sm:text-lg text-[#111827] leading-tight truncate" title={booking.customerName}>
+        <div className="relative bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300 group shadow-lg shadow-black/40">
+            {/* Header Row */}
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex-1 min-w-0 pr-3">
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <h3 className="font-bold text-white text-lg tracking-tight truncate" title={booking.customerName}>
                             {booking.customerName}
                         </h3>
+                        {booking.eventType.toLowerCase() === 'marriage' && <span className="text-base animate-pulse">💍</span>}
                     </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-8 w-8 text-[#9CA3AF] hover:text-[#111827]"
-                                aria-label="More options"
-                            >
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit?.(booking)}>
-                                Edit Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onViewBill?.(booking)}>
-                                View Bill / Payments
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => onDelete?.(booking)}
-                                className="text-[#EF4444] focus:text-[#DC2626] focus:bg-[#FEE2E2]"
-                            >
-                                Delete Booking
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center flex-wrap gap-2 text-xs">
+                        <Badge
+                            variant="outline"
+                            className={`capitalize text-[10px] px-2 h-5 border bg-white/5 ${getStatusStyle(booking.status)}`}
+                        >
+                            {booking.status}
+                        </Badge>
+                        <div className="bg-white/5 px-2 py-0.5 rounded text-zinc-300 border border-white/5 capitalize text-[11px] font-medium">
+                            {booking.eventType}
+                        </div>
+                    </div>
                 </div>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/5 rounded-full"
+                            aria-label="More options"
+                        >
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-zinc-800 text-zinc-200">
+                        <DropdownMenuItem onClick={() => onEdit?.(booking)} className="focus:bg-zinc-900 focus:text-white cursor-pointer py-2.5">
+                            Edit Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onViewBill?.(booking)} className="focus:bg-zinc-900 focus:text-white cursor-pointer py-2.5">
+                            View Bill / Payments
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => onDelete?.(booking)}
+                            className="text-red-400 focus:text-red-300 focus:bg-red-500/10 py-2.5"
+                        >
+                            Delete Booking
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
-            <div className="p-8 p-3 sm:p-4 space-y-2 sm:space-y-3 flex-grow">
+            <div className="space-y-3 pt-2">
                 {/* Customer Info */}
-                <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="h-8 sm:h-10 w-8 sm:w-10 text-xs font-bold rounded-full bg-[#EDEBFF] text-[#5B4EE5] flex items-center justify-center shrink-0" aria-hidden="true">
+                <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 text-xs font-bold rounded-full bg-white/5 text-emerald-400 border border-white/10 flex items-center justify-center shrink-0">
                         {booking.customerName.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                        <p className="font-semibold text-[#111827] truncate text-sm sm:text-base">{booking.customerName}</p>
-                        <div className="flex items-center text-xs sm:text-sm text-[#9CA3AF]">
-                            <Phone className="h-3 w-3 mr-1" aria-hidden="true" />
+                        <div className="flex items-center text-sm text-zinc-300">
+                            <Phone className="h-3.5 w-3.5 mr-2 text-zinc-500" />
                             <span className="truncate">{booking.customerMobile}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-zinc-300 mt-1">
+                            <Calendar className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                            <span className="font-medium">{format(startDate, "MMM d, yyyy")}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Date/Time */}
-                <div className="space-y-1.5 pt-1 sm:pt-2">
-                    <div className="flex items-center text-sm text-[#111827]">
-                        <Calendar className="h-4 w-4 mr-2 text-[#9CA3AF]" aria-hidden="true" />
-                        <span className="font-medium">{format(startDate, "EEE, MMM d, yyyy")}</span>
+                {/* Date/Time Detail & Guest Count */}
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
+                    <div className="flex items-center text-xs text-zinc-400">
+                        <Clock className="h-3.5 w-3.5 mr-1.5 text-zinc-600" />
+                        <span>{format(startDate, "h:mm a")} - {format(endDate, "h:mm a")}</span>
                     </div>
-                    <div className="flex items-center text-xs sm:text-sm text-[#9CA3AF]">
-                        <Clock className="h-4 w-4 mr-2 text-[#9CA3AF]" aria-hidden="true" />
-                        <span>
-                            {format(startDate, "h:mm a")} - {format(endDate, "h:mm a")}
-                        </span>
-                    </div>
+                    {booking.guestCount > 0 && (
+                        <div className="flex items-center justify-end text-xs text-zinc-400">
+                            <Users className="h-3.5 w-3.5 mr-1.5 text-zinc-600" />
+                            <span>{booking.guestCount} guests</span>
+                        </div>
+                    )}
                 </div>
-
-                {/* Guest Count */}
-                {booking.guestCount > 0 && (
-                    <div className="flex items-center text-xs sm:text-sm text-[#6B7280] border-t border-[#F1F5F9] pt-1 sm:pt-2 mt-1 sm:mt-2">
-                        <Users className="h-4 w-4 mr-2 text-[#9CA3AF]" aria-hidden="true" />
-                        <span className="font-medium">{booking.guestCount} guests</span>
-                    </div>
-                )}
 
                 {/* Notes */}
                 {booking.notes && (
-                    <div className="text-xs sm:text-sm text-[#6B7280] border-t border-[#F1F5F9] pt-1 sm:pt-2 mt-1 sm:mt-2">
-                        <p className="truncate" title={booking.notes}>{booking.notes}</p>
+                    <div className="text-xs text-zinc-500 italic truncate pt-1">
+                        "{booking.notes}"
                     </div>
                 )}
             </div>
 
-            <div className="p-8 border-t border-[#E5E7EB] p-3 sm:p-4 pt-0">
-                <div className="w-full bg-[#F8FAFC] rounded-lg p-2 sm:p-3 border border-[#F1F5F9]">
-                    <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-[#9CA3AF] font-medium uppercase">Total Amount</span>
-                        <span className="font-bold text-[#111827] text-sm sm:text-base">₹{booking.totalAmount.toLocaleString()}</span>
+            {/* Finance Footer */}
+            <div className="mt-4 pt-3 border-t border-white/5">
+                <div className="bg-black/40 rounded-xl p-3 border border-white/5">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">Total Amount</span>
+                        <span className="font-bold text-white text-base">₹{booking.totalAmount.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <span className="text-xs text-[#9CA3AF] font-medium uppercase">Payment</span>
-                        <Badge 
-                            variant="outline" 
-                            className={`text-xs px-1.5 sm:px-2 py-0 h-4 sm:h-5 ${getPaymentStatusStyle(booking.paymentStatus)}`}
-                            aria-label={`Payment status: ${booking.paymentStatus}`}
-                        >
-                            {booking.paymentStatus}
-                        </Badge>
-                    </div>
-                    {booking.remainingBalance > 0 && (
-                        <div className="text-xs text-[#EF4444] text-right mt-1 font-medium">
-                            Due: ₹{booking.remainingBalance.toLocaleString()}
+                        <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-zinc-500 uppercase tracking-wider font-medium">Status</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded border ${getPaymentStatusStyle(booking.paymentStatus)} bg-transparent`}>
+                                {booking.paymentStatus}
+                            </span>
                         </div>
-                    )}
+                        {booking.remainingBalance > 0 && (
+                            <div className="text-xs font-medium text-red-400 flex items-center">
+                                Due: ₹{booking.remainingBalance.toLocaleString()}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

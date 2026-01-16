@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import HybridCafeDashboard from '@/components/dashboard/cafe/HybridCafeDashboard'
+import LiquidCafeDashboard from '@/components/dashboard/cafe/LiquidCafeDashboard'
 
 export default function CafeManagePage() {
   return (
@@ -13,7 +13,7 @@ export default function CafeManagePage() {
         </div>
       </div>
     }>
-      <HybridCafeDashboard />
+      <LiquidCafeDashboard />
     </Suspense>
   )
 }

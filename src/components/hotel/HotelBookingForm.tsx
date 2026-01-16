@@ -1,16 +1,16 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Room } from "@/actions/hotel";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  GlassButton,
+  GlassInput,
+  GlassLabel,
+  GlassSelect,
+  GlassTextarea
+} from "@/components/ui/glass/GlassFormComponents";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, IndianRupee, Percent } from "lucide-react";
+import { CalendarIcon, IndianRupee, Percent, CreditCard, User, Users, Calendar } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -35,12 +35,15 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
+import { HotelBooking } from "@/actions/hotel";
+
 type HotelBookingFormProps = {
   rooms: Room[];
   onSubmit: (data: any) => void;
   onCancel: () => void;
   loading?: boolean;
   initialRoomId?: string;
+  existingBooking?: HotelBooking;
 };
 
 export default function HotelBookingForm({
@@ -48,7 +51,8 @@ export default function HotelBookingForm({
   onSubmit,
   onCancel,
   loading = false,
-  initialRoomId
+  initialRoomId,
+  existingBooking
 }: HotelBookingFormProps) {
   const {
     register,
@@ -56,37 +60,26 @@ export default function HotelBookingForm({
     formState: { errors },
     setValue,
     watch,
-    reset
+    reset,
+    getValues
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      adults: 1,
+      guestName: existingBooking?.guestName || "",
+      guestMobile: existingBooking?.customerMobile || "",
+      roomId: existingBooking?.roomId || initialRoomId || "",
+      startDate: existingBooking?.startDate ? format(new Date(existingBooking.startDate), "yyyy-MM-dd'T'HH:mm") : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      endDate: existingBooking?.endDate ? format(new Date(existingBooking.endDate), "yyyy-MM-dd'T'HH:mm") : format(new Date(Date.now() + 24 * 60 * 60 * 1000), "yyyy-MM-dd'T'HH:mm"),
+      adults: existingBooking?.guestCount || 1,
       children: 0,
-      advancePayment: 0,
-      roomId: initialRoomId,
-      discountPercent: 0
+      advancePayment: existingBooking?.advancePayment || 0,
+      advancePaymentMethod: "cash",
+      notes: existingBooking?.notes || "",
+      discountPercent: existingBooking?.discountPercent || 0,
     }
   });
 
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | undefined>(undefined);
-
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
-      );
-    }
-  }, []);
-
   const [discountPercent, setDiscountPercent] = useState(0);
   const [gstEnabled, setGstEnabled] = useState(true);
   const [gstPercentage, setGstPercentage] = useState(18); // Default to 18%
@@ -106,6 +99,22 @@ export default function HotelBookingForm({
   const discountedAmount = basePrice - discountAmount;
   const gstAmount = gstEnabled ? (discountedAmount * gstPercentage) / 100 : 0;
   const finalAmount = discountedAmount + gstAmount;
+
+  // Force set default dates on mount if not present
+  useEffect(() => {
+    if (!existingBooking) {
+      const now = new Date();
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+      // Ensure format matches datetime-local (YYYY-MM-DDTHH:mm)
+      if (!getValues("startDate")) {
+        setValue("startDate", format(now, "yyyy-MM-dd'T'HH:mm"));
+      }
+      if (!getValues("endDate")) {
+        setValue("endDate", format(tomorrow, "yyyy-MM-dd'T'HH:mm"));
+      }
+    }
+  }, [existingBooking, setValue]);
 
   useEffect(() => {
     async function checkConflicts() {
@@ -171,290 +180,240 @@ export default function HotelBookingForm({
       discountPercent: discountPercent,
       gstEnabled: gstEnabled,
       gstPercentage: gstPercentage,
-      location
     };
     onSubmit(formData);
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Guest Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Guest Information</h3>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* LEFT COLUMN: Input Details */}
+          <div className="space-y-6">
 
-          {/* Customer Autocomplete */}
-          <CustomerAutocomplete
-            onCustomerSelect={handleCustomerSelect}
-            onNameChange={(name) => setValue("guestName", name)}
-            onMobileChange={(mobile) => setValue("guestMobile", mobile)}
-          />
+            {/* Guest Information */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <User className="h-4 w-4 text-emerald-500" />
+                Guest Details
+              </h3>
 
-          <div className="space-y-2">
-            <Label htmlFor="guestName">Guest Name *</Label>
-            <Input
-              id="guestName"
-              {...register("guestName")}
-              placeholder="Enter guest name"
-            />
-            {errors.guestName && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.guestName.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="guestMobile">Mobile Number *</Label>
-            <Input
-              id="guestMobile"
-              {...register("guestMobile")}
-              placeholder="Enter mobile number"
-            />
-            {errors.guestMobile && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.guestMobile.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Booking Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Booking Information</h3>
-
-          <div className="space-y-2">
-            <Label htmlFor="roomId">Room *</Label>
-            <Select
-              onValueChange={(value) => setValue("roomId", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a room" />
-              </SelectTrigger>
-              <SelectContent>
-                {rooms
-                  .filter(room => room.status === 'available')
-                  .map((room) => (
-                    <SelectItem key={room.id} value={room.id!}>
-                      Room {room.number} - {room.type} (₹{room.price})
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            {errors.roomId && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.roomId.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Check-in Date *</Label>
-              <Input
-                id="startDate"
-                type="date"
-                {...register("startDate")}
-              />
-              {errors.startDate && (
-                <p className="text-sm text-[#FEE2E2]0">{errors.startDate.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="endDate">Check-out Date *</Label>
-              <Input
-                id="endDate"
-                type="date"
-                {...register("endDate")}
-              />
-              {errors.endDate && (
-                <p className="text-sm text-[#FEE2E2]0">{errors.endDate.message}</p>
-              )}
-            </div>
-          </div>
-          {conflictMessage && (
-            <div className="rounded border border-red-300 bg-[#FEE2E2] text-[#DC2626] p-2 text-sm">
-              {conflictMessage}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="adults">Adults *</Label>
-              <Input
-                id="adults"
-                type="number"
-                min="1"
-                {...register("adults", { valueAsNumber: true })}
-              />
-              {errors.adults && (
-                <p className="text-sm text-[#FEE2E2]0">{errors.adults.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="children">Children</Label>
-              <Input
-                id="children"
-                type="number"
-                min="0"
-                {...register("children", { valueAsNumber: true })}
-              />
-              {errors.children && (
-                <p className="text-sm text-[#FEE2E2]0">{errors.children.message}</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Discount Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Discount Information</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="discountPercent">Discount (%)</Label>
-            <div className="relative">
-              <Input
-                id="discountPercent"
-                type="number"
-                min="0"
-                max="100"
-                step="0.5"
-                value={discountPercent}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  setDiscountPercent(value);
-                  setValue("discountPercent", value);
-                }}
-                className="pr-8"
-              />
-              <Percent className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Discount Amount</Label>
-            <div className="flex items-center gap-2 p-3 bg-[#F8FAFC] rounded-md">
-              <IndianRupee className="h-4 w-4" />
-              <span className="text-lg font-semibold">{discountAmount?.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Final Amount</Label>
-            <div className="flex items-center gap-2 p-3 bg-[#EDEBFF]/30 rounded-md">
-              <IndianRupee className="h-4 w-4" />
-              <span className="text-lg font-semibold">{finalAmount?.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* GST Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">GST Information</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="gstEnabled"
-              checked={gstEnabled}
-              onCheckedChange={(checked) => setGstEnabled(!!checked)}
-            />
-            <Label htmlFor="gstEnabled">Enable GST</Label>
-          </div>
-
-          {gstEnabled && (
-            <div className="space-y-2">
-              <Label htmlFor="gstPercentage">GST Percentage</Label>
-              <div className="relative">
-                <Input
-                  id="gstPercentage"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.5"
-                  value={gstPercentage}
-                  onChange={(e) => setGstPercentage(parseFloat(e.target.value) || 0)}
-                  className="pr-8"
+              <div className="bg-white/5 rounded-xl p-4 space-y-4 border border-white/5">
+                <CustomerAutocomplete
+                  onCustomerSelect={handleCustomerSelect}
+                  onNameChange={(name) => setValue("guestName", name)}
+                  onMobileChange={(mobile) => setValue("guestMobile", mobile)}
                 />
-                <Percent className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-          )}
 
-          {gstEnabled && (
-            <div className="space-y-2">
-              <Label>GST Amount</Label>
-              <div className="flex items-center gap-2 p-3 bg-[#F8FAFC] rounded-md">
-                <IndianRupee className="h-4 w-4" />
-                <span className="text-lg font-semibold">{gstAmount?.toFixed(2)}</span>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <GlassLabel htmlFor="guestName">Guest Name *</GlassLabel>
+                    <GlassInput
+                      id="guestName"
+                      {...register("guestName")}
+                      placeholder="Name"
+                      icon={<User className="w-4 h-4" />}
+                    />
+                    {errors.guestName && <p className="text-xs text-rose-400">{errors.guestName.message}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <GlassLabel htmlFor="guestMobile">Mobile *</GlassLabel>
+                    <GlassInput
+                      id="guestMobile"
+                      {...register("guestMobile")}
+                      placeholder="Number"
+                      icon={<User className="w-4 h-4" />}
+                    />
+                    {errors.guestMobile && <p className="text-xs text-rose-400">{errors.guestMobile.message}</p>}
+                  </div>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* Booking Details */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-emerald-500" />
+                Stay Details
+              </h3>
+
+              <div className="bg-white/5 rounded-xl p-4 space-y-4 border border-white/5">
+                <div className="space-y-1.5">
+                  <GlassLabel htmlFor="roomId">Room Selection *</GlassLabel>
+                  <GlassSelect id="roomId" {...register("roomId")}>
+                    <option value="" className="bg-[#1a1a1a]">Select Room</option>
+                    {rooms
+                      .filter(room => room.status === 'available' || room.id === initialRoomId)
+                      .map((room) => (
+                        <option key={room.id} value={room.id!} className="bg-[#1a1a1a] text-white">
+                          Room {room.number} - {room.type} (₹{room.price})
+                        </option>
+                      ))}
+                  </GlassSelect>
+                  {errors.roomId && <p className="text-xs text-rose-400">{errors.roomId.message}</p>}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <GlassLabel htmlFor="startDate">Check-in *</GlassLabel>
+                    <GlassInput
+                      id="startDate"
+                      type="datetime-local"
+                      {...register("startDate")}
+                    />
+                    {errors.startDate && <p className="text-xs text-rose-400">{errors.startDate.message}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <GlassLabel htmlFor="endDate">Check-out *</GlassLabel>
+                    <GlassInput
+                      id="endDate"
+                      type="datetime-local"
+                      {...register("endDate")}
+                    />
+                    {errors.endDate && <p className="text-xs text-rose-400">{errors.endDate.message}</p>}
+                  </div>
+                </div>
+                {conflictMessage && (
+                  <div className="rounded border border-red-500/50 bg-red-500/10 text-red-200 p-2 text-xs">
+                    {conflictMessage}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <GlassLabel htmlFor="adults">Adults</GlassLabel>
+                    <GlassInput
+                      id="adults"
+                      type="number"
+                      min="1"
+                      {...register("adults", { valueAsNumber: true })}
+                      icon={<Users className="w-4 h-4" />}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <GlassLabel htmlFor="children">Children</GlassLabel>
+                    <GlassInput
+                      id="children"
+                      type="number"
+                      min="0"
+                      {...register("children", { valueAsNumber: true })}
+                      icon={<Users className="w-4 h-4" />}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* RIGHT COLUMN: Financials & Payment */}
+          <div className="space-y-6">
+
+            {/* Financial Summary */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 h-fit">
+              <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <IndianRupee className="h-4 w-4 text-emerald-500" />
+                Payment Breakdown
+              </h3>
+
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between items-center text-white/60">
+                  <span>Room Charges ({nights} nights)</span>
+                  <span>₹{basePrice?.toLocaleString()}</span>
+                </div>
+
+                {/* Discount */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white/60">Discount</span>
+                    <div className="w-20">
+                      <GlassInput
+                        type="number"
+                        min="0" max="100"
+                        className="h-7 text-xs px-2"
+                        value={discountPercent}
+                        onChange={(e: any) => {
+                          const val = parseFloat(e.target.value) || 0;
+                          setDiscountPercent(val);
+                          setValue("discountPercent", val);
+                        }}
+                        placeholder="%"
+                      />
+                    </div>
+                  </div>
+                  <span className="text-emerald-400">- ₹{discountAmount.toFixed(2)}</span>
+                </div>
+
+                {/* GST */}
+                <div className="flex items-start justify-between gap-4 py-2 border-t border-white/5 border-b">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="gstEnabled"
+                        checked={gstEnabled}
+                        onCheckedChange={(c) => setGstEnabled(!!c)}
+                        className="data-[state=checked]:bg-emerald-500 border-white/20 w-4 h-4"
+                      />
+                      <label htmlFor="gstEnabled" className="text-white/80 cursor-pointer select-none">GST ({gstPercentage}%)</label>
+                    </div>
+                  </div>
+                  <span className="text-white/80">+ ₹{gstAmount.toFixed(2)}</span>
+                </div>
+
+                {/* Total */}
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-lg font-bold text-white">Grand Total</span>
+                  <span className="text-2xl font-bold text-emerald-400">₹{finalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Advance Payment */}
+              <div className="mt-6 p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/10 space-y-3">
+                <div className="space-y-1.5">
+                  <GlassLabel htmlFor="advancePayment" className="text-emerald-200">Advance Payment</GlassLabel>
+                  <GlassInput
+                    id="advancePayment"
+                    type="number"
+                    className="border-emerald-500/20 focus:border-emerald-500/50 bg-emerald-500/5"
+                    {...register("advancePayment", { valueAsNumber: true })}
+                    icon={<IndianRupee className="w-4 h-4 text-emerald-500" />}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <GlassLabel className="text-emerald-200">Payment Method</GlassLabel>
+                  <GlassSelect id="advancePaymentMethod" {...register("advancePaymentMethod")} className="border-emerald-500/20 bg-emerald-500/5 text-emerald-100">
+                    <option value="" className="bg-[#0f1f15]">Select Method</option>
+                    <option value="cash" className="bg-[#0f1f15]">Cash</option>
+                    <option value="card" className="bg-[#0f1f15]">Card</option>
+                    <option value="upi" className="bg-[#0f1f15]">UPI</option>
+                    <option value="bank_transfer" className="bg-[#0f1f15]">Bank Transfer</option>
+                  </GlassSelect>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <GlassLabel htmlFor="notes">Additional Notes</GlassLabel>
+              <GlassTextarea
+                id="notes"
+                {...register("notes")}
+                placeholder="Special requests..."
+                className="h-20"
+              />
+            </div>
+
+          </div>
         </div>
       </div>
 
-      {/* Payment Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Payment Information</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label>Total Amount (Room x Nights)</Label>
-            <div className="flex items-center gap-2 p-3 bg-[#F8FAFC] rounded-md">
-              <IndianRupee className="h-4 w-4" />
-              <span className="text-lg font-semibold">{basePrice?.toLocaleString()}</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="advancePayment">Advance Payment</Label>
-            <Input
-              id="advancePayment"
-              type="number"
-              min="0"
-              {...register("advancePayment", { valueAsNumber: true })}
-            />
-            {errors.advancePayment && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.advancePayment.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="advancePaymentMethod">Payment Method</Label>
-            <Select
-              onValueChange={(value) => setValue("advancePaymentMethod", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="card">Card</SelectItem>
-                <SelectItem value="upi">UPI</SelectItem>
-                <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {/* Notes */}
-      <div className="space-y-2">
-        <Label htmlFor="notes">Notes</Label>
-        <Textarea
-          id="notes"
-          {...register("notes")}
-          placeholder="Any special requests or notes"
-        />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+      <div className="flex justify-end gap-3 p-6 border-t border-white/10 bg-[#1a1a1a]/50 backdrop-blur-xl">
+        <GlassButton type="button" variant="secondary" onClick={onCancel} className="w-32">
           Cancel
-        </Button>
-        <Button type="submit" disabled={loading || !!conflictMessage}>
-          {loading ? "Creating..." : "Create Booking"}
-        </Button>
+        </GlassButton>
+        <GlassButton type="submit" variant="primary" disabled={loading || !!conflictMessage} className="w-48">
+          {loading ? "Creating..." : "Confirm Booking"}
+        </GlassButton>
       </div>
     </form>
   );

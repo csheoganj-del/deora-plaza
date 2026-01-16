@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useIntegratedNotifications } from '@/lib/integrated-notification-system';
-import { useToast } from '@/components/ui/notification-toast';
 
 /**
  * React hook for managing the integrated notification system
@@ -10,24 +9,61 @@ import { useToast } from '@/components/ui/notification-toast';
  */
 export function useNotificationSystem() {
   const integratedNotifications = useIntegratedNotifications();
-  const toast = useToast();
   const isInitialized = useRef(false);
+  const [state, setState] = useState({ notifications: [] as any[], unreadCount: 0 });
 
   useEffect(() => {
+    const { getIntegratedNotificationSystem } = require('@/lib/integrated-notification-system');
+    const system = getIntegratedNotificationSystem();
+
     if (!isInitialized.current) {
-      // Set toast system reference for visual notifications
-      const { getIntegratedNotificationSystem } = require('@/lib/integrated-notification-system');
-      const system = getIntegratedNotificationSystem();
-      system.setToastSystem(toast);
+      // Try to get toast system, but don't fail if it's not available
+      try {
+        const { useToast } = require('@/components/ui/feedback/notification-toast');
+        const toast = useToast();
+        system.setToastSystem(toast);
+      } catch (error) {
+        console.warn('Toast system not available yet, will work without visual notifications');
+      }
       
       isInitialized.current = true;
       console.log('🔔 Notification system initialized');
+      system.syncFromDatabase();
     }
-  }, [toast]);
+
+    // Subscribe to state changes
+    const unsubscribe = system.subscribe((newState: any) => {
+      setState(newState);
+    });
+
+    // Fallback polling
+    const pollInterval = setInterval(() => {
+      system.syncFromDatabase();
+    }, 30000); // Every 30 seconds
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollInterval);
+    };
+  }, []);
 
   return {
     ...integratedNotifications,
-    
+    notifications: state.notifications,
+    unreadCount: state.unreadCount,
+    syncFromDatabase: () => {
+      const { getIntegratedNotificationSystem } = require('@/lib/integrated-notification-system');
+      return getIntegratedNotificationSystem().syncFromDatabase();
+    },
+    markAllAsRead: () => {
+      const { getIntegratedNotificationSystem } = require('@/lib/integrated-notification-system');
+      getIntegratedNotificationSystem().markAllAsRead();
+    },
+    clearAll: () => {
+      const { getIntegratedNotificationSystem } = require('@/lib/integrated-notification-system');
+      getIntegratedNotificationSystem().clearAll();
+    },
+
     // Convenience methods for common notifications
     notifyOrderPlaced: (orderId: string, orderNumber: string, businessUnit: string, metadata: any = {}) => {
       return integratedNotifications.handleOrderStatusChange(
@@ -131,7 +167,7 @@ export function useNotificationSettings() {
   const toggleBusinessUnitAudio = (businessUnit: string, enabled: boolean) => {
     const settings = getSettings();
     const unitSettings = settings.businessUnitSettings[businessUnit] || {};
-    
+
     updateSettings({
       businessUnitSettings: {
         ...settings.businessUnitSettings,
@@ -146,7 +182,7 @@ export function useNotificationSettings() {
   const toggleBusinessUnitVisual = (businessUnit: string, enabled: boolean) => {
     const settings = getSettings();
     const unitSettings = settings.businessUnitSettings[businessUnit] || {};
-    
+
     updateSettings({
       businessUnitSettings: {
         ...settings.businessUnitSettings,
@@ -161,7 +197,7 @@ export function useNotificationSettings() {
   const toggleNotificationType = (type: string, enabled: boolean) => {
     const settings = getSettings();
     const typeSettings = settings.typeSettings[type as keyof typeof settings.typeSettings];
-    
+
     if (typeSettings) {
       updateSettings({
         typeSettings: {

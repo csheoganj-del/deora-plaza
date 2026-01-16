@@ -84,6 +84,8 @@ export async function getDashboardStats() {
         let bookingsRevenue = 0
         let pendingRevenue = 0
         let activeBookingsCount = 0
+        let gardenAdvancePayments = 0
+        let gardenSubsequentPayments = 0
 
         if (!gardenBookingsData.error && gardenBookingsData.data) {
             gardenBookingsData.data.forEach((booking: any) => {
@@ -93,14 +95,26 @@ export async function getDashboardStats() {
                     paid = booking.payments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0)
                 }
 
+                // Calculate advance vs subsequent payments
+                if (booking.payments && Array.isArray(booking.payments) && booking.payments.length > 0) {
+                    // First payment is advance
+                    const firstPayment = booking.payments[0]
+                    gardenAdvancePayments += firstPayment.amount || 0
+
+                    // All other payments are subsequent
+                    for (let i = 1; i < booking.payments.length; i++) {
+                        gardenSubsequentPayments += booking.payments[i].amount || 0
+                    }
+                }
+
                 const total = booking.totalAmount || paid // fallback to paid if totalAmount missing
                 bookingsRevenue += paid
                 const pending = Math.max(0, total - paid)
                 pendingRevenue += pending
                 revenueByUnit.garden += paid
 
-                // Count as active if pending balance > 0 or status implies active service
-                if (booking.status !== 'cancelled' && (pending > 0 || ['confirmed', 'checked_in', 'pending'].includes(booking.status))) {
+                // Count as total bookings if not cancelled
+                if (booking.status !== 'cancelled') {
                     activeBookingsCount++
                 }
             })
@@ -120,8 +134,8 @@ export async function getDashboardStats() {
                 pendingRevenue += pending
                 revenueByUnit.hotel += paid
 
-                // Count as active if pending balance > 0 or status implies active service
-                if (booking.status !== 'cancelled' && (pending > 0 || ['confirmed', 'checked_in', 'pending'].includes(booking.status))) {
+                // Count as total bookings if not cancelled
+                if (booking.status !== 'cancelled') {
                     activeBookingsCount++
                 }
             })
@@ -214,6 +228,8 @@ export async function getDashboardStats() {
             cafeBarRevenue,
             bookingsRevenue,
             revenueByUnit,
+            gardenAdvancePayments,
+            gardenSubsequentPayments,
             transactionCounts: {
                 cafe: cafeOrdersCount,
                 bar: barOrdersCount,

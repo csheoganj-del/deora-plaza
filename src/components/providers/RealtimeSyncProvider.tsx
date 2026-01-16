@@ -46,10 +46,10 @@ interface RealtimeSyncProviderProps {
   enablePerformanceMonitoring?: boolean
 }
 
-export function RealtimeSyncProvider({ 
-  children, 
-  enableNotifications = true,
-  enablePerformanceMonitoring = true 
+export function RealtimeSyncProvider({
+  children,
+  enableNotifications = false,
+  enablePerformanceMonitoring = true
 }: RealtimeSyncProviderProps) {
   const [status, setStatus] = useState<SyncStatus>({
     connected: false,
@@ -115,9 +115,11 @@ export function RealtimeSyncProvider({
   useEffect(() => {
     updateStatus()
 
-    const interval = setInterval(updateStatus, 2000) // Update every 2 seconds
-
+    // Auto-polling and connection monitoring disabled to prevent flickering
+    /*
+    const interval = setInterval(updateStatus, 10000)
     return () => clearInterval(interval)
+    */
   }, [updateStatus])
 
   // Performance monitoring
@@ -126,7 +128,7 @@ export function RealtimeSyncProvider({
 
     const monitorPerformance = () => {
       const perf = getCachePerformance()
-      
+
       // Only log in development
       if (process.env.NODE_ENV === 'development') {
         console.log('[RealtimeSync] Performance:', {
@@ -135,52 +137,32 @@ export function RealtimeSyncProvider({
           subscriptions: Object.keys(status.subscriptions).length
         })
       }
-
-      // Alert on poor performance in development only
-      if (perf.stats.hitRate < 50 && perf.stats.hits + perf.stats.misses > 100) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('[RealtimeSync] Low cache hit rate:', perf.stats.hitRate + '%')
-        }
-      }
     }
 
-    const perfInterval = setInterval(monitorPerformance, 30000) // Every 30 seconds
+    const perfInterval = setInterval(monitorPerformance, 60000) // Every 1 minute
 
     return () => clearInterval(perfInterval)
   }, [enablePerformanceMonitoring, status.subscriptions])
 
-  // Connection monitoring and auto-reconnect
+  // Connection monitoring disabled to stop noisy notifications
   useEffect(() => {
-    const checkConnection = () => {
-      const hasActiveSubscriptions = Object.values(status.subscriptions).some(s => s === 'SUBSCRIBED')
-      
-      if (!hasActiveSubscriptions && isOnline) {
-        // Only log in development
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('[RealtimeSync] No active subscriptions detected')
-        }
-        
-        if (enableNotifications) {
-          toast.warning('Real-time sync disconnected - Attempting reconnect...')
-        }
-      }
-    }
-
-    const connectionInterval = setInterval(checkConnection, 10000) // Check every 10 seconds
-
-    return () => clearInterval(connectionInterval)
-  }, [status.subscriptions, isOnline, enableNotifications])
+    // Silenced
+  }, [])
 
   const reconnect = useCallback(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('[RealtimeSync] Manual reconnect triggered')
     }
-    
+
     // Clear existing subscriptions
     realtimeSync.cleanup()
-    
-    // Force page refresh to reinitialize subscriptions
-    window.location.reload()
+
+    // Soft reconnect - re-initialize status and let components re-subscribe
+    updateStatus()
+
+    if (enableNotifications) {
+      toast.success('Real-time connection reset')
+    }
   }, [])
 
   const clearCache = useCallback(() => {
@@ -202,24 +184,27 @@ export function RealtimeSyncProvider({
     }
   }, [isOnline])
 
-  const contextValue: RealtimeSyncContextType = {
+  const contextValue: RealtimeSyncContextType = React.useMemo(() => ({
     status,
     isOnline,
     reconnect,
     clearCache,
     getPerformanceStats
-  }
+  }), [status, isOnline, reconnect, clearCache, getPerformanceStats])
 
   return (
     <RealtimeSyncContext.Provider value={contextValue}>
       {children}
-      
-      {/* Connection Status Indicator */}
-      <ConnectionStatusIndicator 
-        connected={status.connected} 
-        isOnline={isOnline}
-        subscriptionCount={Object.keys(status.subscriptions).length}
-      />
+
+      {/* Real-time Status Indicator - Removed animate-pulse to prevent full-screen repaints on blurs */}
+      {status.connected && (
+        <div className="fixed bottom-4 right-4 z-50 pointer-events-none">
+          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-full shadow-2xl">
+            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+            <span className="text-white text-xs font-medium">Real-time Sync Active</span>
+          </div>
+        </div>
+      )}
     </RealtimeSyncContext.Provider>
   )
 }
@@ -227,18 +212,18 @@ export function RealtimeSyncProvider({
 /**
  * Connection Status Indicator Component
  */
-function ConnectionStatusIndicator({ 
-  connected, 
-  isOnline, 
-  subscriptionCount 
-}: { 
+function ConnectionStatusIndicator({
+  connected,
+  isOnline,
+  subscriptionCount
+}: {
   connected: boolean
   isOnline: boolean
   subscriptionCount: number
 }) {
   // Don't show indicator in production - only for critical connection issues
   if (process.env.NODE_ENV === 'production') return null
-  
+
   const [showIndicator, setShowIndicator] = useState(false)
 
   useEffect(() => {
@@ -288,7 +273,7 @@ export function RealtimePerformanceMonitor() {
       >
         Sync: {status.connected ? 'ON' : 'OFF'}
       </button>
-      
+
       {expanded && stats && (
         <div className="absolute top-8 right-0 bg-black text-green-400 p-3 rounded text-xs font-mono w-80 max-h-96 overflow-auto">
           <div className="space-y-2">
@@ -298,7 +283,7 @@ export function RealtimePerformanceMonitor() {
             <div>Processing: {stats.sync.isProcessing ? 'YES' : 'NO'}</div>
             <div>Network: {stats.network.online ? 'ONLINE' : 'OFFLINE'}</div>
             <div>Connection: {stats.network.connectionType}</div>
-            
+
             <div className="border-t border-green-400 pt-2">
               <div>Subscriptions:</div>
               {Object.entries(stats.sync.subscriptions).map(([id, status]) => (

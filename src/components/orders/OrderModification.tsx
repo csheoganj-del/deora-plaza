@@ -6,20 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Edit3, 
-  Trash2, 
-  Plus, 
-  Minus, 
-  Save, 
-  X, 
-  Clock, 
+import {
+  Edit3,
+  Trash2,
+  Plus,
+  Minus,
+  Save,
+  X,
+  Clock,
   AlertTriangle,
   CheckCircle,
   Search
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
+import { getMenuItems } from '@/actions/menu';
+
 
 interface Order {
   id: string;
@@ -67,7 +69,7 @@ export default function OrderModification() {
   const fetchOrders = async () => {
     try {
       const supabase = createClient();
-      
+
       // First, try to get basic orders data
       const { data: ordersData, error } = await supabase
         .from('orders')
@@ -111,30 +113,22 @@ export default function OrderModification() {
 
   const fetchMenuItems = async () => {
     try {
-      const supabase = createClient();
-      const { data: menuData, error } = await supabase
-        .from('menu_items')
-        .select('*')
-        .eq('available', true)
-        .order('category', { ascending: true });
+      const menuData = await getMenuItems();
 
-      if (error && (error as any)?.code !== 'PGRST116') {
-        throw error;
-      }
-
-      const formattedItems: MenuItem[] = (menuData || []).map(item => ({
-        id: item.id,
-        name: item.name || 'Unknown Item',
-        price: item.price || 0,
-        category: item.category || 'Other',
-        available: item.available !== false
-      }));
+      const formattedItems: MenuItem[] = (menuData || [])
+        .filter(item => item.isAvailable)
+        .map(item => ({
+          id: item.id,
+          name: item.name || 'Unknown Item',
+          price: item.price || 0,
+          category: item.category || 'Other',
+          available: item.isAvailable !== false
+        }));
 
       setAvailableItems(formattedItems);
     } catch (error) {
       console.error('Error fetching menu items:', error);
       setAvailableItems([]);
-      // Don't show error for empty menu - that's normal for new setups
     }
   };
 
@@ -143,7 +137,7 @@ export default function OrderModification() {
       toast.error('Cannot modify completed or cancelled orders');
       return;
     }
-    
+
     setEditingOrder({ ...order });
     setSelectedOrder(order);
   };
@@ -158,7 +152,7 @@ export default function OrderModification() {
 
     setEditingOrder(prev => {
       if (!prev) return prev;
-      
+
       return {
         ...prev,
         items: prev.items.map(item => {
@@ -177,7 +171,7 @@ export default function OrderModification() {
 
     setEditingOrder(prev => {
       if (!prev) return prev;
-      
+
       return {
         ...prev,
         items: prev.items.map(item =>
@@ -200,7 +194,7 @@ export default function OrderModification() {
 
     setEditingOrder(prev => {
       if (!prev) return prev;
-      
+
       return {
         ...prev,
         items: prev.items.filter(item => item.id !== itemId)
@@ -224,7 +218,7 @@ export default function OrderModification() {
 
     setEditingOrder(prev => {
       if (!prev) return prev;
-      
+
       return {
         ...prev,
         items: [...prev.items, newItem]
@@ -331,7 +325,7 @@ export default function OrderModification() {
           <h2 className="text-2xl font-bold">Order Modification</h2>
           <p className="text-gray-600">Modify or cancel existing orders</p>
         </div>
-        
+
         <div className="w-64">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -358,11 +352,10 @@ export default function OrderModification() {
                 {filteredOrders.map(order => (
                   <div
                     key={order.id}
-                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedOrder?.id === order.id
+                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${selectedOrder?.id === order.id
                         ? 'border-blue-500 bg-blue-50'
                         : 'hover:bg-gray-50'
-                    }`}
+                      }`}
                     onClick={() => setSelectedOrder(order)}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -375,7 +368,7 @@ export default function OrderModification() {
                           {order.businessUnit} • {new Date(order.createdAt).toLocaleTimeString()}
                         </p>
                       </div>
-                      
+
                       <div className="text-right">
                         <Badge variant={getStatusColor(order.status)}>
                           {order.status}
@@ -385,12 +378,12 @@ export default function OrderModification() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">
                         {order.items.length} items
                       </span>
-                      
+
                       <div className="flex gap-2">
                         {canModifyOrder(order) && (
                           <Button
@@ -405,7 +398,7 @@ export default function OrderModification() {
                             Edit
                           </Button>
                         )}
-                        
+
                         {order.status === 'pending' && (
                           <Button
                             size="sm"
@@ -423,7 +416,7 @@ export default function OrderModification() {
                     </div>
                   </div>
                 ))}
-                
+
                 {filteredOrders.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -458,7 +451,7 @@ export default function OrderModification() {
                   {editingOrder.customerName} • {editingOrder.tableNumber}
                 </CardDescription>
               </CardHeader>
-              
+
               <CardContent className="space-y-4">
                 {/* Current Items */}
                 <div>
@@ -474,7 +467,7 @@ export default function OrderModification() {
                               {item.status}
                             </Badge>
                           </div>
-                          
+
                           {item.status === 'pending' && (
                             <Button
                               size="sm"
@@ -485,7 +478,7 @@ export default function OrderModification() {
                             </Button>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Button
                             size="sm"
@@ -508,7 +501,7 @@ export default function OrderModification() {
                             ₹{item.price * item.quantity}
                           </span>
                         </div>
-                        
+
                         <Input
                           placeholder="Special instructions..."
                           value={item.specialInstructions || ''}
@@ -564,7 +557,7 @@ export default function OrderModification() {
                   {selectedOrder.customerName} • {selectedOrder.tableNumber} • {selectedOrder.businessUnit}
                 </CardDescription>
               </CardHeader>
-              
+
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Badge variant={getStatusColor(selectedOrder.status)}>

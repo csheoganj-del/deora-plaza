@@ -1,8 +1,36 @@
-"use client";
-
 import { useState, useEffect } from "react";
-import { BusinessUnitType } from "@/lib/business-units";
-
+import { getGardenBookings, deleteGardenBooking, cancelGardenBooking } from "@/actions/garden";
+import { GardenBookingDialog } from "@/components/garden/GardenBookingDialog";
+import { RecordPaymentDialog } from "@/components/garden/RecordPaymentDialog";
+import EventCalendar from "@/components/garden/EventCalendar";
+import { printGardenReceipt } from "@/lib/print-utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Loader2,
+  Plus,
+  RefreshCw,
+  Printer,
+  IndianRupee,
+  Calendar as CalendarIcon,
+  Users,
+  MoreVertical,
+  Pencil,
+  Ban,
+  Trash2,
+  Clock
+} from "lucide-react";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import { getBusinessSettings } from "@/actions/businessSettings";
 
 interface MarriageGardenMetrics {
   dailyRevenue: number;
@@ -12,256 +40,402 @@ interface MarriageGardenMetrics {
   averageBookingValue: number;
   staffOnDuty: number;
   maintenanceRequests: number;
-  popularPackages: Array<{ name: string; count: number; revenue: number }>;
-  todayEvents: Array<{ name: string; time: string; guests: number; status: string }>;
+  bookings: any[];
 }
 
 export function MarriageGardenDashboard() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isNewBookingOpen, setIsNewBookingOpen] = useState(false);
+
+  // Edit State
+  const [selectedBookingForEdit, setSelectedBookingForEdit] = useState<any>(null);
+
+  // Payment Dialog State
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [selectedBookingForPayment, setSelectedBookingForPayment] = useState<any>(null);
+
   const [metrics, setMetrics] = useState<MarriageGardenMetrics>({
     dailyRevenue: 0,
     activeEvents: 0,
     upcomingEvents: 0,
     totalBookings: 0,
     averageBookingValue: 0,
-    staffOnDuty: 0,
+    staffOnDuty: 4, // Placeholder
     maintenanceRequests: 0,
-    popularPackages: [],
-    todayEvents: []
+    bookings: []
   });
+  const [businessSettings, setBusinessSettings] = useState<any>(null);
+
+  const loadData = async () => {
+    setRefreshing(true);
+    try {
+      const result = await getGardenBookings();
+      if ('error' in result) {
+        console.error("Failed to load bookings:", result.error);
+        return;
+      }
+
+      const { bookings } = result;
+
+      const now = new Date();
+      const upcoming = bookings?.filter((b: any) => new Date(b.startDate) > now).length || 0;
+      const active = bookings?.filter((b: any) => {
+        const start = new Date(b.startDate);
+        const end = new Date(b.endDate);
+        return now >= start && now <= end;
+      }).length || 0;
+
+      // Calculate Revenue (Total Paid across all bookings)
+      const totalRevenue = bookings?.reduce((sum: number, b: any) => sum + (b.totalPaid || 0), 0) || 0;
+
+      // Calculate Average Booking Value (based on total Amount)
+      const totalBookingValue = bookings?.reduce((sum: number, b: any) => sum + (b.totalAmount || 0), 0) || 0;
+      const avgValue = bookings?.length ? totalBookingValue / bookings.length : 0;
+
+      setMetrics(prev => ({
+        ...prev,
+        bookings: bookings || [],
+        activeEvents: active,
+        upcomingEvents: upcoming,
+        totalBookings: bookings?.length || 0,
+        dailyRevenue: totalRevenue, // Using total collected for now as daily specific action needs param
+        averageBookingValue: avgValue
+      }));
+
+    } catch (error) {
+      console.error("Failed to load garden data", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const loadSettings = async () => {
+    try {
+      const settings = await getBusinessSettings();
+      if (settings) {
+        setBusinessSettings(settings);
+      }
+    } catch (error) {
+      console.error("Failed to load business settings", error);
+    }
+  };
 
   useEffect(() => {
-    loadMarriageGardenMetrics();
+    loadData();
+    loadSettings();
   }, []);
 
-  const loadMarriageGardenMetrics = () => {
-    setLoading(true);
-    
-    // TODO: Fetch real marriage garden metrics from database
-    const emptyMetrics: MarriageGardenMetrics = {
-      dailyRevenue: 0,
-      activeEvents: 0,
-      upcomingEvents: 0,
-      totalBookings: 0,
-      averageBookingValue: 0,
-      staffOnDuty: 0,
-      maintenanceRequests: 0,
-      popularPackages: [],
-      todayEvents: []
-    };
+  const handleRecordPayment = (booking: any) => {
+    setSelectedBookingForPayment(booking);
+    setIsPaymentOpen(true);
+  };
 
-    setMetrics(emptyMetrics);
-    setLoading(false);
+  const handlePrintReceipt = async (booking: any) => {
+    try {
+      const settings = await getBusinessSettings();
+      printGardenReceipt(booking as any, settings);
+    } catch (error) {
+      console.error("Failed to fetch settings for print:", error);
+      // Fallback to state if fetch fails
+      printGardenReceipt(booking as any, businessSettings);
+    }
+  };
+
+  const handleEditBooking = (booking: any) => {
+    setSelectedBookingForEdit(booking);
+    setIsNewBookingOpen(true);
+  };
+
+  const handleCancelBooking = async (booking: any) => {
+    if (!confirm(`Are you sure you want to cancel the booking for ${booking.customerName}?`)) return;
+
+    const result = await cancelGardenBooking(booking.id);
+    if (result.success) {
+      toast({ title: "Booking Cancelled", description: "Status updated successfully." });
+      loadData();
+    } else {
+      toast({ title: "Error", description: result.error || "Failed to cancel booking", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteBooking = async (booking: any) => {
+    const password = prompt("Enter Admin Password to delete this booking:");
+    if (!password) return;
+
+    const result = await deleteGardenBooking(booking.id, password);
+    if (result.success) {
+      toast({ title: "Booking Deleted", description: "Record removed successfully." });
+      loadData();
+    } else {
+      // If error is generic, specific error alert from prompt might be better, but toast is standard
+      toast({ title: "Deletion Failed", description: "Incorrect password or permission denied.", variant: "destructive" });
+    }
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR',
+      maximumFractionDigits: 0
     }).format(value);
   };
 
-  const getEventStatusColor = (status: string) => {
-    switch (status) {
-      case 'setup': return 'text-[#F59E0B] bg-[#F59E0B]/10';
-      case 'confirmed': return 'text-[#22C55E] bg-[#BBF7D0]';
-      case 'in-progress': return 'text-[#6D5DFB] bg-[#6D5DFB]/10';
-      case 'completed': return 'text-[#6B7280] bg-[#F1F5F9]';
-      default: return 'text-[#6B7280] bg-[#F1F5F9]';
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'confirmed': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+      case 'completed': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'cancelled': return 'bg-red-500/20 text-red-300 border-red-500/30';
+      default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
     }
   };
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6D5DFB] mx-auto mb-4"></div>
-        <p className="text-center text-[#6B7280]">Loading marriage garden data...</p>
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#111827]">Marriage Garden Dashboard</h1>
-          <p className="text-[#6B7280]">Real-time event management and performance</p>
+          <h1 className="text-3xl font-black text-white tracking-tight">Marriage Garden</h1>
+          <p className="text-white/60">Event Management & Bookings</p>
         </div>
-        
-        <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-[#6D5DFB] text-white rounded-md hover:bg-[#6D5DFB]/90">
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={loadData}
+            disabled={refreshing}
+            className="border-white/10 text-white hover:bg-white/5 bg-transparent"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
-          </button>
+          </Button>
+          <Button
+            onClick={() => {
+              setSelectedBookingForEdit(null);
+              setIsNewBookingOpen(true);
+            }}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 shadow-lg shadow-emerald-500/20 font-bold"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Booking
+          </Button>
         </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="premium-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#6B7280]">Daily Revenue</p>
-              <p className="text-2xl font-bold text-[#111827]">{formatCurrency(metrics.dailyRevenue)}</p>
-              <p className="text-xs text-[#22C55E]">↑ 22% from last week</p>
-            </div>
-            <div className="p-3 bg-[#BBF7D0] rounded-lg">
-              <svg className="w-6 h-6 text-[#22C55E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
+        {/* Revenue */}
+        <div className="premium-glass p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+          <div className="relative">
+            <p className="text-emerald-400/80 font-medium text-sm uppercase tracking-wider mb-1">Total Revenue</p>
+            <h3 className="text-3xl font-bold text-white">{formatCurrency(metrics.dailyRevenue)}</h3>
+            <div className="mt-4 flex items-center text-xs text-emerald-300/60 bg-emerald-500/10 w-fit px-2 py-1 rounded-full">
+              <IndianRupee className="w-3 h-3 mr-1" />
+              Calculated from {metrics.totalBookings} bookings
             </div>
           </div>
         </div>
 
-        <div className="premium-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#6B7280]">Active Events</p>
-              <p className="text-2xl font-bold text-[#111827]">{metrics.activeEvents}</p>
-              <p className="text-xs text-[#9CA3AF]">{metrics.upcomingEvents} upcoming</p>
-            </div>
-            <div className="p-3 bg-[#EDEBFF]/30 rounded-lg">
-              <svg className="w-6 h-6 text-[#6D5DFB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+        {/* Active Events */}
+        <div className="premium-glass p-6 rounded-2xl border border-blue-500/20 bg-blue-500/5 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+          <div className="relative">
+            <p className="text-blue-400/80 font-medium text-sm uppercase tracking-wider mb-1">Active Events</p>
+            <h3 className="text-3xl font-bold text-white">{metrics.activeEvents}</h3>
+            <div className="mt-4 flex items-center text-xs text-blue-300/60 bg-blue-500/10 w-fit px-2 py-1 rounded-full">
+              <CalendarIcon className="w-3 h-3 mr-1" />
+              {metrics.upcomingEvents} Upcoming
             </div>
           </div>
         </div>
 
-        <div className="premium-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#6B7280]">Total Bookings</p>
-              <p className="text-2xl font-bold text-[#111827]">{metrics.totalBookings}</p>
-              <p className="text-xs text-[#9CA3AF]">This month</p>
-            </div>
-            <div className="p-3 bg-[#EDEBFF] rounded-lg">
-              <svg className="w-6 h-6 text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+        {/* Total Bookings */}
+        <div className="premium-glass p-6 rounded-2xl border border-purple-500/20 bg-purple-500/5 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+          <div className="relative">
+            <p className="text-purple-400/80 font-medium text-sm uppercase tracking-wider mb-1">Total Bookings</p>
+            <h3 className="text-3xl font-bold text-white">{metrics.totalBookings}</h3>
+            <div className="mt-4 flex items-center text-xs text-purple-300/60 bg-purple-500/10 w-fit px-2 py-1 rounded-full">
+              <Users className="w-3 h-3 mr-1" />
+              Avg: {formatCurrency(metrics.averageBookingValue)}
             </div>
           </div>
         </div>
 
-        <div className="premium-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#6B7280]">Staff on Duty</p>
-              <p className="text-2xl font-bold text-[#111827]">{metrics.staffOnDuty}</p>
-              <p className="text-xs text-orange-600">{metrics.maintenanceRequests} maintenance</p>
-            </div>
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+        {/* Staff/Maintenance */}
+        <div className="premium-glass p-6 rounded-2xl border border-orange-500/20 bg-orange-500/5 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-all"></div>
+          <div className="relative">
+            <p className="text-orange-400/80 font-medium text-sm uppercase tracking-wider mb-1">Operations</p>
+            <h3 className="text-3xl font-bold text-white">{metrics.staffOnDuty}</h3>
+            <p className="text-xs text-orange-300/50 mt-1">Staff On Duty</p>
+            <div className="mt-3 flex items-center text-xs text-orange-300/60 bg-orange-500/10 w-fit px-2 py-1 rounded-full">
+              Maintenance OK
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Today's Events */}
-        <div className="premium-card">
-          <div className="p-4 border-b">
-            <h3 className="text-lg font-semibold text-[#111827]">Today's Events</h3>
-            <p className="text-sm text-[#6B7280]">Current and upcoming events</p>
+      {/* Main Content Area: Calendar & Recents */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Calendar Section */}
+        <div className="xl:col-span-2 space-y-6">
+          <div className="premium-glass p-6 rounded-2xl border border-white/10">
+            <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+              <CalendarIcon className="w-5 h-5 mr-2 text-emerald-400" />
+              Event Calendar
+            </h3>
+            <EventCalendar
+              bookings={metrics.bookings}
+              onSelectDate={(date) => console.log(date)}
+            />
           </div>
-          <div className="p-4">
-            <div className="space-y-3">
-              {metrics.todayEvents.map((event, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-[#F8FAFC] rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-[#EDEBFF]/30 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-[#6D5DFB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+        </div>
+
+        {/* Recent Bookings List */}
+        <div className="premium-glass p-6 rounded-2xl border border-white/10 xl:h-full overflow-hidden flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold text-white">Recent Bookings</h3>
+            <Button variant="ghost" size="sm" className="text-xs text-white/50 h-auto p-0 hover:text-white">View All</Button>
+          </div>
+
+          <div className="overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent flex-1">
+            {metrics.bookings.length === 0 ? (
+              <div className="text-center text-white/30 py-10 text-sm">No bookings found</div>
+            ) : (
+              [...metrics.bookings].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((booking: any) => (
+                <div key={booking.id} className="relative bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300 group shadow-lg shadow-black/40">
+
+                  {/* Header Row */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1 min-w-0 pr-3">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <h4 className="font-bold text-white text-lg tracking-tight truncate">{booking.customerName}</h4>
+                        {booking.eventType === 'marriage' && <span className="text-base animate-pulse">💍</span>}
+                      </div>
+                      <div className="flex items-center text-xs text-zinc-400 gap-2">
+                        <div className="bg-white/5 px-2 py-0.5 rounded text-white/80 border border-white/5 capitalize text-[11px] font-medium">
+                          {booking.eventType}
+                        </div>
+                        <span className="flex items-center">
+                          <Clock className="w-3 h-3 mr-1 text-zinc-500" />
+                          {format(new Date(booking.startDate), "MMM d, yyyy")}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-[#111827]">{event.name}</p>
-                      <p className="text-xs text-[#9CA3AF]">{event.guests} guests</p>
+
+                    <div className="flex items-center gap-2">
+                      {/* Status Badge */}
+                      <Badge variant="outline" className={`${getStatusColor(booking.status)} uppercase text-[10px] px-2.5 h-6 border tracking-wide font-semibold`}>
+                        {booking.status}
+                      </Badge>
+
+                      {/* Actions Dropdown */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-zinc-400 hover:text-white hover:bg-white/5 rounded-full">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-zinc-800 text-zinc-200">
+                          <DropdownMenuLabel className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Manage Booking</DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-zinc-800" />
+                          <DropdownMenuItem onClick={() => handleEditBooking(booking)} className="focus:bg-zinc-900 focus:text-white cursor-pointer py-2.5">
+                            <Pencil className="w-4 h-4 mr-3 text-blue-500" />
+                            Edit Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handlePrintReceipt(booking)} className="focus:bg-zinc-900 focus:text-white cursor-pointer py-2.5">
+                            <Printer className="w-4 h-4 mr-3 text-emerald-500" />
+                            Reprint Invoice
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-zinc-800" />
+                          <DropdownMenuItem onClick={() => handleCancelBooking(booking)} className="focus:bg-zinc-900 focus:text-white cursor-pointer text-orange-400 hover:text-orange-400 py-2.5">
+                            <Ban className="w-4 h-4 mr-3" />
+                            Cancel Booking
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteBooking(booking)} className="focus:bg-zinc-900 focus:text-white cursor-pointer text-red-500 hover:text-red-500 py-2.5">
+                            <Trash2 className="w-4 h-4 mr-3" />
+                            Delete Record
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-[#111827]">{event.time}</p>
-                    <span className={`text-xs px-2 py-1 rounded-full ${getEventStatusColor(event.status)}`}>
-                      {event.status}
-                    </span>
+
+                  {/* Finance Grid */}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-black/40 rounded-xl p-3 flex flex-col justify-center border border-white/5">
+                      <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium mb-0.5">Total Bill</span>
+                      <span className="text-base font-bold text-white tracking-tight">{formatCurrency(booking.totalAmount)}</span>
+                    </div>
+                    <div className={`rounded-xl p-3 flex flex-col justify-center border ${booking.remainingBalance > 0 ? "bg-red-500/5 border-red-500/10" : "bg-emerald-500/5 border-emerald-500/10"}`}>
+                      <span className={`text-[10px] uppercase tracking-wider font-medium mb-0.5 ${booking.remainingBalance > 0 ? "text-red-400/80" : "text-emerald-400/80"}`}>
+                        {booking.remainingBalance > 0 ? "Balance Due" : "Payment Status"}
+                      </span>
+                      <span className={`text-base font-bold tracking-tight ${booking.remainingBalance > 0 ? "text-red-400" : "text-emerald-400"}`}>
+                        {booking.remainingBalance > 0 ? formatCurrency(booking.remainingBalance) : "PAID"}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Quick Action Button */}
+                  <Button
+                    size="sm"
+                    className={`w-full h-9 text-xs font-semibold tracking-wide border-0 transition-all ${booking.remainingBalance > 0 ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-900/20 hover:shadow-emerald-900/40" : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"}`}
+                    onClick={() => handleRecordPayment(booking)}
+                    disabled={booking.status === 'cancelled'}
+                  >
+                    {booking.remainingBalance > 0 ? (
+                      <>
+                        <IndianRupee className="w-3.5 h-3.5 mr-2" />
+                        RECORD PAYMENT
+                      </>
+                    ) : (
+                      "VIEW PAYMENT HISTORY"
+                    )}
+                  </Button>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Popular Packages */}
-        <div className="premium-card">
-          <div className="p-4 border-b">
-            <h3 className="text-lg font-semibold text-[#111827]">Popular Packages</h3>
-            <p className="text-sm text-[#6B7280]">Top selling packages this month</p>
-          </div>
-          <div className="p-4">
-            <div className="space-y-3">
-              {metrics.popularPackages.map((pkg, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-[#EDEBFF]/30 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-[#6D5DFB]">{index + 1}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-[#111827]">{pkg.name}</p>
-                      <p className="text-xs text-[#9CA3AF]">{pkg.count} bookings</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-[#111827]">{formatCurrency(pkg.revenue)}</p>
-                    <p className="text-xs text-[#9CA3AF]">{formatCurrency(pkg.revenue / pkg.count)} avg</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+              ))
+            )}
           </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="premium-card">
-        <div className="p-4 border-b">
-          <h3 className="text-lg font-semibold text-[#111827]">Quick Actions</h3>
-          <p className="text-sm text-[#6B7280]">Common event operations</p>
-        </div>
-        <div className="p-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="p-4 border rounded-lg hover:bg-[#F8FAFC] text-center">
-              <svg className="w-8 h-8 text-[#6D5DFB] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              <p className="text-sm font-medium text-[#111827]">New Booking</p>
-            </button>
-            
-            <button className="p-4 border rounded-lg hover:bg-[#F8FAFC] text-center">
-              <svg className="w-8 h-8 text-[#22C55E] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <p className="text-sm font-medium text-[#111827]">View Events</p>
-            </button>
-            
-            <button className="p-4 border rounded-lg hover:bg-[#F8FAFC] text-center">
-              <svg className="w-8 h-8 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <p className="text-sm font-medium text-[#111827]">Guest Management</p>
-            </button>
-            
-            <button className="p-4 border rounded-lg hover:bg-[#F8FAFC] text-center">
-              <svg className="w-8 h-8 text-[#C084FC] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              </svg>
-              <p className="text-sm font-medium text-[#111827]">Facility Setup</p>
-            </button>
-          </div>
-        </div>
-      </div>
+      <GardenBookingDialog
+        isOpen={isNewBookingOpen}
+        onClose={() => {
+          setIsNewBookingOpen(false);
+          setSelectedBookingForEdit(null);
+        }}
+        onSuccess={loadData}
+        booking={selectedBookingForEdit}
+      />
+
+      {selectedBookingForPayment && (
+        <RecordPaymentDialog
+          booking={selectedBookingForPayment}
+          isOpen={isPaymentOpen}
+          onClose={() => {
+            setIsPaymentOpen(false);
+            setSelectedBookingForPayment(null);
+          }}
+          onSuccess={() => {
+            loadData();
+          }}
+        />
+      )}
+
     </div>
   );
 }
-

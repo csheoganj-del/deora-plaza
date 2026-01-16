@@ -29,6 +29,10 @@ export type AuditAction =
     | 'PAYMENT_PROCESSED'
     | 'DISCOUNT_APPLIED'
     | 'ACCESS_DENIED'
+    | 'DELETE_RECORD'
+    | 'UPDATE_RECORD'
+    | 'ORDER_CANCELLED'
+    | 'ORDER_CANCELLATION_FAILED'
     | 'ROLE_CREATED'
     | 'ROLE_UPDATED'
     | 'ROLE_DELETED'
@@ -132,7 +136,7 @@ export async function auditLogin(username: string, success: boolean, errorMessag
  * Log financial operations
  */
 export async function auditBillOperation(
-    operation: 'CREATE_BILL' | 'DELETE_BILL' | 'UPDATE_BILL',
+    operation: 'CREATE_BILL' | 'DELETE_BILL' | 'UPDATE_BILL' | 'DELETE_RECORD' | 'UPDATE_RECORD' | 'ORDER_CANCELLED' | 'ORDER_CANCELLATION_FAILED',
     billId: string,
     billNumber?: string,
     amount?: number,

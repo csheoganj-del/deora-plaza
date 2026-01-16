@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { getCustomerDiscountInfo } from "@/actions/customers";
 import { getDiscountHistory } from "@/actions/discounts";
 import { getTierColor, getTierDisplayName, getDefaultDiscount } from "@/lib/discount-utils";
-import { Percent, History, TrendingDown } from "lucide-react";
+import { Percent, History, TrendingDown, DollarSign } from "lucide-react";
 
 type DiscountHistoryItem = {
   id: string;
@@ -26,6 +26,11 @@ type DiscountPanelProps = {
   onDiscountChange: (percent: number) => void;
   subtotal: number;
   compact?: boolean; // Add compact prop
+  // New props for fixed amount support
+  discountType?: 'percentage' | 'fixed';
+  discountAmount?: number;
+  onDiscountTypeChange?: (type: 'percentage' | 'fixed') => void;
+  onDiscountAmountChange?: (amount: number) => void;
 };
 
 export default function DiscountPanel({
@@ -34,11 +39,16 @@ export default function DiscountPanel({
   onDiscountChange,
   subtotal,
   compact = false, // Default to false for backward compatibility
+  discountType = 'percentage',
+  discountAmount = 0,
+  onDiscountTypeChange,
+  onDiscountAmountChange,
 }: DiscountPanelProps) {
   const [tier, setTier] = useState<string>("regular");
   const [suggestedDiscount, setSuggestedDiscount] = useState<number>(0);
   const [history, setHistory] = useState<DiscountHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showManual, setShowManual] = useState(false);
 
   useEffect(() => {
     if (customerId) {
@@ -72,7 +82,10 @@ export default function DiscountPanel({
     setHistory(historyData);
   };
 
-  const calculatedDiscount = (subtotal * discountPercent) / 100;
+  // Calculate discount based on type
+  const calculatedDiscount = discountType === 'percentage'
+    ? (subtotal * discountPercent) / 100
+    : discountAmount;
 
   return compact ? (
     // Compact version
@@ -87,36 +100,109 @@ export default function DiscountPanel({
         </div>
       )}
 
-      {/* Discount Input */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-1">
-          <Input
-            id="discount-percent"
-            type="number"
-            min="0"
-            max="100"
-            step="0.5"
-            value={discountPercent}
-            onChange={(e) => onDiscountChange(parseFloat(e.target.value) || 0)}
-            className="text-right py-1 h-8 text-xs"
+      {/* Inline Discount Control */}
+      <div className="space-y-2">
+        {/* Discount Toggle */}
+        <label className="flex items-center gap-2 text-[10px] text-white/40 hover:text-white/70 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={showManual || discountPercent > 0 || discountAmount > 0}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setShowManual(true);
+              } else {
+                setShowManual(false);
+                onDiscountChange(0);
+                onDiscountAmountChange?.(0);
+              }
+            }}
+            className="h-3 w-3 rounded border-white/20 bg-white/10 text-[#2fd180] focus:ring-0 focus:ring-offset-0"
           />
-          <span className="text-muted-foreground text-xs">%</span>
-        </div>
+          <span className="font-bold uppercase tracking-widest">Apply Discount</span>
+        </label>
 
-        {/* Discount Preview */}
-        {discountPercent > 0 && (
-          <div className="bg-[#DCFCE7] dark:bg-green-950 p-1.5 rounded text-[10px] space-y-0.5">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Save:</span>
-              <span className="font-medium">₹{calculatedDiscount.toFixed(0)}</span>
+        {/* Discount Type Toggle & Input */}
+        {(showManual || discountPercent > 0 || discountAmount > 0) && (
+          <div className="space-y-2 animate-in slide-in-from-right-2 fade-in duration-200">
+            {/* Type Selector */}
+            <div className="flex gap-1 p-0.5 bg-white/[0.05] rounded-md">
+              <button
+                onClick={() => {
+                  onDiscountTypeChange?.('percentage');
+                  onDiscountAmountChange?.(0);
+                }}
+                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[9px] font-bold transition-all ${discountType === 'percentage'
+                    ? 'bg-[#2fd180] text-[#0a0a0a] shadow-sm'
+                    : 'text-white/40 hover:text-white/60'
+                  }`}
+              >
+                <Percent className="h-3 w-3" />
+                %
+              </button>
+              <button
+                onClick={() => {
+                  onDiscountTypeChange?.('fixed');
+                  onDiscountChange(0);
+                }}
+                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[9px] font-bold transition-all ${discountType === 'fixed'
+                    ? 'bg-[#2fd180] text-[#0a0a0a] shadow-sm'
+                    : 'text-white/40 hover:text-white/60'
+                  }`}
+              >
+                <DollarSign className="h-3 w-3" />
+                ₹
+              </button>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Total:</span>
-              <span className="font-medium">₹{(subtotal - calculatedDiscount).toFixed(0)}</span>
+
+            {/* Input based on type */}
+            <div className="flex items-center justify-between">
+              {discountType === 'percentage' ? (
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    id="discount-percent"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.5"
+                    autoFocus={showManual}
+                    value={discountPercent}
+                    onChange={(e) => onDiscountChange(parseFloat(e.target.value) || 0)}
+                    className="w-14 h-6 text-right pr-1 py-0 text-[11px] bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-md focus:outline-none focus:ring-1 focus:ring-[#2fd180]/50 focus-visible:bg-white/[0.08] placeholder-white/20 text-white font-bold"
+                    placeholder="0"
+                  />
+                  <span className="text-white/40 text-[10px] font-bold">%</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/40 text-[10px] font-bold">₹</span>
+                  <Input
+                    id="discount-amount"
+                    type="number"
+                    min="0"
+                    max={subtotal}
+                    step="1"
+                    autoFocus={showManual}
+                    value={discountAmount}
+                    onChange={(e) => onDiscountAmountChange?.(parseFloat(e.target.value) || 0)}
+                    className="w-16 h-6 text-right pr-1 py-0 text-[11px] bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-md focus:outline-none focus:ring-1 focus:ring-[#2fd180]/50 focus-visible:bg-white/[0.08] placeholder-white/20 text-white font-bold"
+                    placeholder="0"
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Discount Preview (only show calculated amount if > 0) */}
+      {calculatedDiscount > 0 && (
+        <div className="flex justify-between items-center px-2 py-1 bg-[#2fd180]/10 rounded border border-[#2fd180]/20 text-[9px] animate-in fade-in slide-in-from-top-1">
+          <span className="text-[#2fd180]/80 font-medium">
+            Saving {discountType === 'percentage' && `(${discountPercent}%)`}
+          </span>
+          <span className="text-[#2fd180] font-bold">₹{calculatedDiscount.toFixed(0)}</span>
+        </div>
+      )}
     </div>
   ) : (
     // Original version

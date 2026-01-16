@@ -3,40 +3,40 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Room, HotelBooking, getRooms, getHotelBookings, deleteRoom, createRoom, updateRoom, getHotelDailyRevenue, createHotelBooking, updateHotelBooking, deleteHotelBooking, checkInGuest, checkOutGuest, markRoomCleaned } from "@/actions/hotel";
+import { Room, HotelBooking, getRooms, getHotelBookings, deleteRoom, createRoom, updateRoom, deleteHotelBooking, checkInGuest, checkOutGuest, markRoomCleaned, createHotelBooking, updateHotelBooking } from "@/actions/hotel"; // Added missing imports
+import { createClient } from "@/lib/supabase/client";
+import { DateRange } from "react-day-picker";
 import { getBusinessSettings } from "@/actions/businessSettings";
-import { Button } from "@/components/ui/button";
 import {
   Bed,
   Calendar,
   CheckCircle,
   Clock,
-  Filter,
-  MoreVertical,
   Plus,
-  Search,
   Users,
-  X,
   IndianRupee,
   TrendingUp,
   BarChart3,
+  Search,
+  Filter,
+  MoreVertical,
+  X,
   Utensils,
   GlassWater
 } from "lucide-react";
-;
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { ResponsiveContainer, LineChart, Line } from "recharts";
 import RoomGrid from "@/components/hotel/RoomGrid";
-import HotelSearchBar from "@/components/hotel/HotelSearchBar";
+// import HotelSearchBar from "@/components/hotel/HotelSearchBar"; // Replaced by GlassInput
 import { useToast } from "@/hooks/use-toast";
-import HotelStatsCard from "@/components/hotel/HotelStatsCard";
 import HotelBookingsSection from "@/components/hotel/HotelBookingsSection";
 import { HotelBookingDetails } from "@/components/hotel/HotelBookingDetails";
 import HotelBookingForm from "@/components/hotel/HotelBookingForm";
 import RoomForm from "@/components/hotel/RoomForm";
 import { HotelBookingCard } from "@/components/hotel/HotelBookingCard";
+import { LiveRoomServiceOrders } from "@/components/hotel/LiveRoomServiceOrders";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +49,12 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { PasswordDialog } from "@/components/ui/PasswordDialog";
+
+// NEW LIQUID GLASS IMPORTS
+import { PremiumLiquidGlass, PremiumStatsCard, PremiumContainer } from "@/components/ui/glass/premium-liquid-glass";
+import { GlassButton, GlassInput } from "@/components/ui/glass/GlassFormComponents";
+import { GlassDateRangePicker } from "@/components/ui/glass/GlassDatePicker";
+import { motion } from "framer-motion";
 
 export default function HotelPage() {
   const router = useRouter();
@@ -69,11 +75,12 @@ export default function HotelPage() {
   const [selectedBooking, setSelectedBooking] = useState<HotelBooking | null>(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
   const [editingBooking, setEditingBooking] = useState<HotelBooking | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'cards'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'cards'>('list'); // Default to list for better data density
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "upcoming" | "completed">("all");
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState<HotelBooking | null>(null);
   const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
 
 
   // Stats
@@ -82,10 +89,13 @@ export default function HotelPage() {
     activeBookings: 0,
     upcomingBookings: 0,
     revenue: 0,
+    totalCollected: 0,
+    totalDue: 0,
     occupiedRooms: 0
   });
 
   const { toast } = useToast();
+  const supabase = createClient();
 
   const filteredRooms = rooms.filter(room =>
     room.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -93,29 +103,23 @@ export default function HotelPage() {
   );
 
   const loadData = async () => {
-    console.log("=== LOADING HOTEL DATA ===");
+    // console.log("=== LOADING HOTEL DATA ===");
     try {
       setLoading(true);
-      console.log("Fetching rooms...");
       const roomsResult = await getRooms();
-      console.log("Rooms fetched:", roomsResult?.length || 0);
-      console.log("Fetching bookings...");
       const bookingsResult = await getHotelBookings();
-      console.log("Bookings fetched:", bookingsResult?.length || 0);
-
-      console.log("Fetching settings...");
       const settings = await getBusinessSettings();
       if (settings) {
+        setSettings(settings);
         setPasswordProtection(settings.enablePasswordProtection ?? true);
       }
 
-      console.log("Rooms result:", roomsResult);
-      console.log("Bookings result:", bookingsResult);
-      console.log("Bookings result type:", typeof bookingsResult);
-      console.log("Bookings result is array:", Array.isArray(bookingsResult));
-
       setRooms(roomsResult || []);
       setBookings(bookingsResult || []);
+
+      console.log("DEBUG: Raw Bookings Result:", bookingsResult);
+      console.log("DEBUG: Rooms Result:", roomsResult);
+      console.log("[Hotel] 📊 Data loaded - Rooms:", roomsResult?.length, "Bookings:", bookingsResult?.length);
 
       // Calculate stats
       if (bookingsResult && Array.isArray(bookingsResult)) {
@@ -130,25 +134,32 @@ export default function HotelPage() {
           new Date(b.startDate) > now && b.status === 'confirmed'
         ).length;
 
-        const revenue = bookingsResult.reduce((sum: number, b: any) =>
-          sum + (b.totalPaid || 0), 0
-        );
+        // Calculate Financials
+        let totalCollected = 0;
+        let totalDue = 0;
+
+        bookingsResult.forEach((b: any) => {
+          const paid = Number(b.paidAmount) || Number(b.totalPaid) || Number(b.advancePayment) || 0;
+          const total = Number(b.totalAmount) || 0;
+          const due = Math.max(0, total - paid);
+
+          totalCollected += paid;
+          totalDue += due;
+        });
 
         const occupiedRooms = roomsResult ? roomsResult.filter((r: any) =>
           r.status === 'occupied'
         ).length : 0;
 
-        console.log("Calculated stats:", { totalBookings, activeBookings, upcomingBookings, revenue, occupiedRooms });
-
         setStats({
           totalBookings,
           activeBookings,
           upcomingBookings,
-          revenue,
+          revenue: totalCollected, // Keep revenue as collected for backward compact
+          totalCollected,
+          totalDue,
           occupiedRooms
         });
-      } else {
-        console.log("BookingsResult is not an array or is null");
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -159,12 +170,52 @@ export default function HotelPage() {
       });
     } finally {
       setLoading(false);
-      console.log("=== LOADING HOTEL DATA END ===");
+      // console.log("=== LOADING HOTEL DATA END ===");
     }
   };
 
   useEffect(() => {
     loadData();
+  }, []);
+
+  // Real-time subscription for bookings
+  useEffect(() => {
+    console.log("[Hotel] Setting up real-time subscription for bookings...");
+    const channel = supabase
+      .channel("hotel-dashboard-bookings")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        (payload: any) => {
+          console.log("[Hotel] Booking change detected:", payload.eventType, payload.new?.id || payload.old?.id);
+
+          if (payload.eventType === "INSERT") {
+            // New booking created - reload to get fresh data
+            console.log("[Hotel] New booking created, refreshing...");
+            loadData();
+            toast({
+              title: "New Booking",
+              description: `Booking for ${payload.new?.guestName || 'guest'} added`,
+            });
+          } else if (payload.eventType === "UPDATE") {
+            // Booking updated - reload to get fresh data
+            console.log("[Hotel] Booking updated, refreshing...");
+            loadData();
+          } else if (payload.eventType === "DELETE") {
+            // Booking deleted - remove from state immediately
+            console.log("[Hotel] Booking deleted, removing from list...");
+            setBookings(prev => prev.filter(b => b.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log(`[Hotel] Real-time subscription status: ${status}`);
+      });
+
+    return () => {
+      console.log("[Hotel] Cleaning up real-time subscription");
+      channel.unsubscribe();
+    };
   }, []);
 
   const handleBookingClick = (booking: HotelBooking) => {
@@ -182,57 +233,20 @@ export default function HotelPage() {
     if (passwordProtection) {
       setIsPasswordDialogOpen(true);
     } else {
-      try {
-        const result = await deleteHotelBooking(booking.id!, "");
-        if (result.success) {
-          toast({
-            title: "Success",
-            description: "Booking deleted successfully",
-          });
-          // Update local state
-          setBookings(prevBookings => prevBookings.filter(b => b.id !== booking.id));
-          loadData();
-          router.refresh();
-        } else {
-          toast({
-            title: "Error",
-            description: (result.error as string) || "Failed to delete booking",
-            variant: "destructive"
-          });
-        }
-      } catch (error: any) {
-        toast({
-          title: "Error",
-          description: error.message || "Failed to delete booking",
-          variant: "destructive"
-        });
-      } finally {
-        setBookingToDelete(null);
-      }
+      await executeDeleteBooking(booking.id!);
     }
   };
 
-  const handlePasswordSuccess = async (password: string) => {
-    if (!bookingToDelete?.id) return;
-
+  const executeDeleteBooking = async (bookingId: string, password = "") => {
     try {
-      const result = await deleteHotelBooking(bookingToDelete.id, password);
+      const result = await deleteHotelBooking(bookingId, password);
       if (result.success) {
         toast({
           title: "Success",
           description: "Booking deleted successfully",
         });
-        console.log("Booking deleted, updating UI...");
-        // Manually remove the deleted booking from state to ensure immediate UI update
-        setBookings(prevBookings => {
-          const filtered = prevBookings.filter(booking => booking.id !== bookingToDelete.id);
-          console.log(`Filtered out ${prevBookings.length - filtered.length} bookings, ${filtered.length} remaining`);
-          return filtered;
-        });
-        // Also reload data to ensure consistency
-        await loadData();
-        console.log("UI updated and data reloaded");
-        // Force a router refresh to ensure everything is consistent
+        setBookings(prevBookings => prevBookings.filter(b => b.id !== bookingId));
+        loadData();
         router.refresh();
       } else {
         toast({
@@ -248,14 +262,35 @@ export default function HotelPage() {
         variant: "destructive"
       });
     } finally {
-      setIsPasswordDialogOpen(false);
       setBookingToDelete(null);
     }
+  }
+
+  const handlePasswordSuccess = async (password: string) => {
+    if (!bookingToDelete?.id) return;
+    await executeDeleteBooking(bookingToDelete.id, password);
+    setIsPasswordDialogOpen(false);
   };
 
-  const handleBookingUpdated = () => {
-    loadData();
-    setShowBookingDetails(false);
+  const handleBookingUpdated = async (updatedBooking?: any) => {
+    const currentBookingId = selectedBooking?.id;
+
+    if (updatedBooking) {
+      if (selectedBooking && selectedBooking.id === updatedBooking.id) {
+        setSelectedBooking(updatedBooking);
+      }
+      setBookings(prev => prev.map(b => b.id === updatedBooking.id ? updatedBooking : b));
+    }
+    await loadData();
+
+    // After loading fresh data, fetch and update selectedBooking if it's still open
+    if (currentBookingId) {
+      const freshBookings = await getHotelBookings();
+      const freshBooking = freshBookings?.find((b: any) => b.id === currentBookingId);
+      if (freshBooking) {
+        setSelectedBooking(freshBooking);
+      }
+    }
   };
 
   const handleCheckIn = async (bookingId: string) => {
@@ -286,10 +321,24 @@ export default function HotelPage() {
       toast({ title: "Error", description: "Booking or room not found", variant: "destructive" });
       return;
     }
+
+    // Check for remaining balance and warn user
+    const balance = booking.remainingBalance || (booking.totalAmount - (booking.paidAmount || booking.advancePayment || 0));
+    if (balance > 0) {
+      toast({
+        title: "Unpaid Balance",
+        description: `Guest has a pending balance of ₹${balance.toLocaleString()}. Room will be marked for cleaning.`,
+        variant: "default"
+      });
+    }
+
     try {
       const result = await checkOutGuest(bookingId, roomId);
       if (result.success) {
-        toast({ title: "Guest checked out", description: `Room ${booking.roomNumber}` });
+        const statusMsg = balance > 0
+          ? `Room ${booking.roomNumber} checked out - marked for cleaning`
+          : `Room ${booking.roomNumber} checked out - now available`;
+        toast({ title: "Guest checked out", description: statusMsg });
         await loadData();
         router.refresh();
       } else {
@@ -301,15 +350,22 @@ export default function HotelPage() {
   };
 
   const handleSelectRoom = (room: Room) => {
+    console.log("[Hotel] Room clicked:", room.number, "Status:", room.status, "ID:", room.id);
+
     if (room.status === 'available') {
       setSelectedRoomForBooking(room);
       setShowAddBooking(true);
     } else if (room.status === 'occupied' || room.status === 'cleaning' || room.status === 'maintenance') {
+      console.log("[Hotel] Room is occupied/unavailable, searching for booking...");
+      console.log("[Hotel] Total bookings:", bookings.length);
+
       // Find active booking for this room
       const activeBooking = bookings.find(b =>
         (b.status === 'confirmed' || b.status === 'checked-in') &&
         b.roomId === room.id
       );
+
+      console.log("[Hotel] Booking found by roomId:", activeBooking?.id);
 
       // Note: bookings usually have roomId. 
       // If we can't find by ID, try number (but ID is safer)
@@ -318,12 +374,16 @@ export default function HotelPage() {
         b.roomNumber === room.number
       );
 
+      console.log("[Hotel] Final booking:", booking?.id, "Guest:", booking?.guestName);
+
       if (booking) {
+        console.log("[Hotel] Opening booking details for:", booking.guestName);
         handleBookingClick(booking);
       } else {
+        console.warn("[Hotel] No booking found for occupied room!", room.number);
         toast({
           title: "Room Unavailable",
-          description: `Room is currently ${room.status}`,
+          description: `Room is currently ${room.status}. Booking details not found.`,
         });
       }
     }
@@ -334,10 +394,9 @@ export default function HotelPage() {
     setShowEditRoom(true);
   };
 
-  const handleDeleteRoom = async (room: Room) => {
+  const handleDeleteRoom = async (room: Room, password?: string) => {
     try {
-      // Using a placeholder password for now - in a real app this would come from user input
-      const result = await deleteRoom(room.id!, "placeholder_password");
+      const result = await deleteRoom(room.id!, password || "");
       if (result.success) {
         toast({ title: "Success", description: "Room deleted successfully" });
         loadData();
@@ -415,13 +474,31 @@ export default function HotelPage() {
   const handleCreateBooking = async (data: any) => {
     setCreatingBooking(true);
     try {
+      console.log("[Hotel] Creating booking...", data);
       const result = await createHotelBooking(data);
+
       if (result.success) {
+        console.log("[Hotel] ✅ Booking created successfully:", result.id);
         toast({ title: "Success", description: "Booking created successfully" });
         setShowAddBooking(false);
         setSelectedRoomForBooking(null);
-        loadData();
+
+        // AUTO-PRINT ADVANCE RECEIPT
+        if (data.advancePayment > 0 && result.data) {
+          const { printHotelReceipt } = await import("@/lib/print-utils");
+          printHotelReceipt(result.data, settings, 'advance');
+        }
+
+        // Force immediate refresh to show new booking
+        console.log("[Hotel] 🔄 Force refreshing data...");
+        await loadData();
+
+        // Also trigger router refresh
+        router.refresh();
+
+        console.log("[Hotel] ✅ Data refreshed");
       } else {
+        console.error("[Hotel] ❌ Booking creation failed:", result.error);
         toast({
           title: "Error",
           description: (result.error as string) || "Failed to create booking",
@@ -429,6 +506,7 @@ export default function HotelPage() {
         });
       }
     } catch (error) {
+      console.error("[Hotel] ❌ Exception during booking creation:", error);
       toast({
         title: "Error",
         description: "Failed to create booking",
@@ -439,12 +517,29 @@ export default function HotelPage() {
     }
   };
 
-  const handleRoomService = (room: Room) => {
-    // Placeholder for now
-    toast({
-      title: "Room Service",
-      description: "To add food billing, use the POS system and select this room.",
-    });
+  const handleUpdateBooking = async (data: any) => {
+    if (!editingBooking?.id) return;
+    setCreatingBooking(true);
+    try {
+      const result = await updateHotelBooking(editingBooking.id, data);
+      if (result.success) {
+        toast({ title: "Success", description: "Booking updated successfully" });
+        setShowAddBooking(false);
+        setEditingBooking(null);
+        await loadData();
+        router.refresh();
+      } else {
+        toast({
+          title: "Error",
+          description: (result.error as string) || "Failed to update booking",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update booking", variant: "destructive" });
+    } finally {
+      setCreatingBooking(false);
+    }
   };
 
   const handleMarkCleaned = async (room: Room) => {
@@ -465,14 +560,21 @@ export default function HotelPage() {
 
   // Filter bookings based on search and status
   const filteredBookings = bookings.filter(booking => {
-    const matchesSearch =
-      (booking.guestName && booking.guestName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (booking.customerMobile && booking.customerMobile.includes(searchQuery)) ||
-      (booking.roomNumber && booking.roomNumber.includes(searchQuery));
+    // 1. Search Filter (if query exists)
+    let matchesSearch = true;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      matchesSearch =
+        (booking.guestName?.toLowerCase().includes(q) || false) ||
+        (booking.customerMobile?.includes(q) || false) ||
+        (booking.roomNumber?.includes(q) || false);
+    }
 
+    // 2. Status Filter
     let matchesFilter = true;
     const now = new Date();
-    const startDate = new Date(booking.startDate);
+    // Safely parse dates
+    const startDate = booking.startDate ? new Date(booking.startDate) : new Date();
 
     if (filterStatus === 'active') {
       matchesFilter = booking.status === 'confirmed' || booking.status === 'checked-in';
@@ -482,429 +584,329 @@ export default function HotelPage() {
       matchesFilter = booking.status === 'checked-out' || booking.status === 'cancelled';
     }
 
+    // 3. Date Range Filter
     let matchesRange = true;
     if (dateFrom && dateTo) {
       const from = new Date(dateFrom);
       const to = new Date(dateTo);
+      // Reset times for date comparison
+      from.setHours(0, 0, 0, 0);
+      to.setHours(23, 59, 59, 999);
+
       const bStart = new Date(booking.startDate);
       const bEnd = new Date(booking.endDate);
+
+      // Check for overlap or containment depending on requirement. 
+      // Usually "show bookings within this range" means if they overlap the range.
+      // But simple "start date within range" is often easier.
+      // Let's use: start OR end falls within range, OR range falls within booking.
+      // Simple Overlap Logic: Start(A) <= End(B) AND End(A) >= Start(B)
       matchesRange = bStart <= to && bEnd >= from;
     }
 
-    return matchesSearch && matchesFilter && matchesRange;
-  });
+    const passes = matchesSearch && matchesFilter && matchesRange;
 
-  const rangeFromDate = dateFrom ? new Date(dateFrom) : null;
-  const rangeToDate = dateTo ? new Date(dateTo) : null;
-  const rangeDays = rangeFromDate && rangeToDate ? Math.max(1, Math.ceil((rangeToDate.getTime() - rangeFromDate.getTime()) / (1000 * 60 * 60 * 24)) + 1) : 1;
-  const totalRooms = rooms.length || 0;
-  let occupiedRoomNights = 0;
-  let totalRoomRevenue = 0;
-  filteredBookings.forEach((b: any) => {
-    const bStart = new Date(b.startDate);
-    const bEnd = new Date(b.endDate);
-    const ovStart = rangeFromDate ? new Date(Math.max(bStart.getTime(), rangeFromDate.getTime())) : bStart;
-    const ovEnd = rangeToDate ? new Date(Math.min(bEnd.getTime(), rangeToDate.getTime())) : bEnd;
-    const overlapMs = Math.max(0, ovEnd.getTime() - ovStart.getTime());
-    const overlapNights = overlapMs > 0 ? Math.ceil(overlapMs / (1000 * 60 * 60 * 24)) : 0;
-    const bookingNights = Math.max(1, Math.ceil((bEnd.getTime() - bStart.getTime()) / (1000 * 60 * 60 * 24)));
-    occupiedRoomNights += overlapNights;
-    let base = Number(b.basePrice || 0);
-    if (!base || base <= 0) {
-      const room = rooms.find(r => r.id === b.roomId) || rooms.find(r => r.number === b.roomNumber);
-      const nightly = room ? Number((room as any).price || 0) : 0;
-      base = nightly * bookingNights;
-    }
-    const proportion = bookingNights > 0 ? overlapNights / bookingNights : 0;
-    totalRoomRevenue += base * proportion;
-  });
-  const totalAvailableRoomNights = totalRooms * rangeDays;
-  const occupancyRate = totalAvailableRoomNights > 0 ? occupiedRoomNights / totalAvailableRoomNights : 0;
-  const adr = occupiedRoomNights > 0 ? totalRoomRevenue / occupiedRoomNights : 0;
-  const revpar = totalAvailableRoomNights > 0 ? totalRoomRevenue / totalAvailableRoomNights : 0;
-
-  const buildRevenueSeries = () => {
-    const series: { day: number; value: number }[] = [];
-    if (!rangeFromDate || !rangeToDate) return series;
-    for (let i = 0; i < rangeDays; i++) {
-      const dayStart = new Date(rangeFromDate.getTime());
-      dayStart.setDate(dayStart.getDate() + i);
-      const dayEnd = new Date(dayStart.getTime());
-      dayEnd.setDate(dayEnd.getDate() + 1);
-      let dayRevenue = 0;
-      filteredBookings.forEach((b: any) => {
-        const bStart = new Date(b.startDate);
-        const bEnd = new Date(b.endDate);
-        const bookingNights = Math.max(1, Math.ceil((bEnd.getTime() - bStart.getTime()) / (1000 * 60 * 60 * 24)));
-        let base = Number(b.basePrice || 0);
-        if (!base || base <= 0) {
-          const room = rooms.find(r => r.id === b.roomId) || rooms.find(r => r.number === b.roomNumber);
-          const nightly = room ? Number((room as any).price || 0) : 0;
-          base = nightly * bookingNights;
-        }
-        const overlaps = bStart < dayEnd && bEnd > dayStart;
-        if (overlaps) {
-          dayRevenue += base / bookingNights;
-        }
+    // Debug logging for first booking
+    if (booking.id && bookings.indexOf(booking) === 0) {
+      console.log("[Hotel] Filter Debug - First Booking:", {
+        id: booking.id,
+        guestName: booking.guestName,
+        status: booking.status,
+        filterStatus: filterStatus,
+        matchesSearch,
+        matchesFilter,
+        matchesRange,
+        passes
       });
-      series.push({ day: i + 1, value: Math.round(dayRevenue) });
     }
-    return series;
+
+    return passes;
+  });
+
+  console.log(`[Hotel] Total bookings: ${bookings.length}, Filtered: ${filteredBookings.length}, Filter: ${filterStatus}, Search: "${searchQuery}", DateRange: ${dateFrom ? 'YES' : 'NO'}`);
+
+  const handleRoomService = (room: Room) => {
+    toast({
+      title: "Room Service",
+      description: "To add food billing, use the POS system and select this room.",
+    });
   };
-  const revenueSeries = buildRevenueSeries();
+
+  const handleDeleteBookingDirect = async (bookingId: string, password?: string) => {
+    await executeDeleteBooking(bookingId, password || "");
+  };
+
+  const handleResetStatus = async (room: Room) => {
+    if (!room.id) return;
+    try {
+      // Force status to available
+      // @ts-ignore - explicitly enabling status override
+      const result = await updateRoom(room.id, { status: 'available' });
+      if (result.success) {
+        toast({ title: "Room Reset", description: `Room ${room.number} forced to available status` });
+        await loadData();
+        router.refresh();
+      } else {
+        toast({ title: "Failed", description: String(result.error || "Unable to reset status"), variant: "destructive" });
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to update room", variant: "destructive" });
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full bg-[#F8FAFC] relative overflow-hidden">
-      <div className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 relative z-10 overflow-y-auto">
+    <div className="space-y-8 pb-32">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70"
+          >
+            Hotel Dashboard
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-white/50 mt-1"
+          >
+            Guest Management & Operations
+          </motion.p>
+        </div>
 
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-bold tracking-tight text-[#111827]">
-                Hotel Dashboard
-              </h2>
-            </div>
-            <p className="text-[#6B7280] font-medium italic mt-2">
-              Guest Management & Bookings
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-[#F1F5F9] p-1 rounded-lg border border-[#E5E7EB] flex">
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className={viewMode === 'list' ? 'shadow-sm' : ''}
-              >
-                List View
-              </Button>
-              <Button
-                variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('cards')}
-                className={viewMode === 'cards' ? 'shadow-sm' : ''}
-              >
-                Card View
-              </Button>
-            </div>
-            <Button
-              className="shadow-lg"
-              onClick={() => setIsAddRoomOpen(true)}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Room
-            </Button>
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'cards' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'}`}
+            >
+              Cards
+            </button>
           </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
-          <div className="premium-card">
-            <div className="p-8 p-4 flex items-center">
-              <div className="p-2 rounded-xl bg-[#EDEBFF]/20 text-[#6D5DFB] shadow-sm border border-[#EDEBFF]/30">
-                <Bed className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">Total Bookings</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">{stats.totalBookings}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card">
-            <div className="p-8 p-4 flex items-center">
-              <div className="p-2 rounded-xl bg-[#BBF7D0]/50 text-[#22C55E] shadow-sm border border-emerald-200">
-                <CheckCircle className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">Active Bookings</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">{stats.activeBookings}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card">
-            <div className="p-8 p-4 flex items-center">
-              <div className="p-2 rounded-xl bg-[#F59E0B]/10/50 text-[#F59E0B] shadow-sm border border-[#F59E0B]/20/20200">
-                <Calendar className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">Upcoming</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">{stats.upcomingBookings}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card">
-            <div className="p-8 p-4 flex items-center">
-              <div className="p-2 rounded-xl bg-[#FEE2E2]/50 text-[#DC2626] shadow-sm border border-rose-200">
-                <IndianRupee className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">Revenue</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">₹{stats.revenue.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card">
-            <div className="p-8 p-4 flex items-center">
-              <div className="p-2 rounded-xl bg-[#FEE2E2]/50 text-[#EF4444] shadow-sm border border-red-200">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">Occupied</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">{stats.occupiedRooms}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          <div className="premium-card">
-            <div className="p-8 p-4 h-full flex items-center">
-              <div className="p-2 rounded-xl bg-fuchsia-100/50 text-fuchsia-600 shadow-sm">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">Occupancy Rate</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">{Math.round(occupancyRate * 100)}%</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card">
-            <div className="p-8 p-4 h-full">
-              <div className="flex items-center">
-                <div className="p-2 rounded-xl bg-[#BBF7D0]/50 text-[#22C55E] shadow-sm">
-                  <IndianRupee className="h-5 w-5" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-xs sm:text-sm text-[#9CA3AF] font-medium">ADR</p>
-                  <p className="text-lg sm:text-xl font-bold text-[#111827]">₹{Math.round(adr).toLocaleString()}</p>
-                </div>
-              </div>
-              {revenueSeries.length > 0 && (
-                <div className="h-16 mt-2">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={revenueSeries}>
-                      <Line type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} dot={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="premium-card">
-            <div className="p-8 p-4 h-full flex items-center">
-              <div className="p-2 rounded-lg bg-[#EDEBFF]/30 text-[#6D5DFB]">
-                <BarChart3 className="h-5 w-5" />
-              </div>
-              <div className="ml-3">
-                <p className="text-xs sm:text-sm text-[#9CA3AF]">RevPAR</p>
-                <p className="text-lg sm:text-xl font-bold text-[#111827]">₹{Math.round(revpar).toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <HotelSearchBar onSearch={setSearchQuery} />
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <Calendar className="mr-2 h-4 w-4" />
-                {dateFrom && dateTo ? `${new Date(dateFrom).toLocaleDateString()} - ${new Date(dateTo).toLocaleDateString()}` : "Select date range"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="range"
-                selected={dateFrom && dateTo ? { from: new Date(dateFrom), to: new Date(dateTo) } : undefined}
-                onSelect={(range: any) => {
-                  if (range?.from && range?.to) {
-                    setDateFrom(range.from.toISOString().slice(0, 10));
-                    setDateTo(range.to.toISOString().slice(0, 10));
-                  }
-                }}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-          <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-full sm:w-auto">
-            <TabsList className="bg-white border">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Bookings Section */}
-        {viewMode === 'list' ? (
-          <div className="mb-6">
-            <HotelBookingsSection
-              bookings={filteredBookings}
-              onCheckIn={handleCheckIn}
-              onCheckOut={handleCheckOut}
-              onViewDetails={handleBookingClick}
-            />
-          </div>
-        ) : (
-          <div className="mb-6">
-            {loading ? (
-              <div className="flex items-center justify-center h-64">Loading...</div>
-            ) : filteredBookings.length === 0 ? (
-              <div className="text-center py-8 text-[#9CA3AF]">
-                No bookings found
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredBookings.map((booking) => (
-                  <HotelBookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onViewBill={handleBookingClick}
-                    onEdit={handleEditBooking}
-                    onDelete={handleDeleteBooking}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Rooms Section */}
-        <div className="premium-card">
-          <div className="p-8 border-b border-[#E5E7EB] flex flex-row items-center justify-between pb-2 border-b">
-            <h2 className="text-3xl font-bold text-[#111827] text-xl font-bold">Rooms & Suites</h2>
-            <div className="flex gap-2">
-              <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-[#DCFCE7]0" /> <span className="text-xs">Avail</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded-full bg-[#FEE2E2]0" /> <span className="text-xs">Booked</span>
-              </div>
-            </div>
-          </div>
-          <div className="p-8 pt-6">
-            {loading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin h-8 w-8 border-4 border-[#111827] border-t-transparent rounded-full" />
-              </div>
-            ) : (
-              <RoomGrid
-                rooms={filteredRooms}
-                onSelect={handleSelectRoom}
-                onEdit={handleEditRoom}
-                onDelete={handleDeleteRoom}
-                onRoomService={handleRoomService}
-                onMarkCleaned={handleMarkCleaned as any}
-                bookings={bookings as any}
-                enablePasswordProtection={passwordProtection}
-              />
-            )}
-          </div>
+          <GlassButton
+            onClick={() => setIsAddRoomOpen(true)}
+            icon={<Plus className="w-4 h-4" />}
+          >
+            Add Room
+          </GlassButton>
         </div>
       </div>
 
-      {/* Booking Details Dialog */}
-      {selectedBooking && (
-        <HotelBookingDetails
-          booking={selectedBooking}
-          isOpen={showBookingDetails}
-          onClose={() => setShowBookingDetails(false)}
-          onEdit={handleEditBooking}
-          onDelete={handleDeleteBooking}
-          onUpdate={handleBookingUpdated}
-        />
-      )}
+      {/* Liquid Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <PremiumStatsCard title="Total Bookings" value={stats.totalBookings.toString()} icon={Bed} delay={0.1} />
+        <PremiumStatsCard title="Active" value={stats.activeBookings.toString()} icon={CheckCircle} delay={0.2} trend="+5%" trendUp={true} />
+        <PremiumStatsCard title="Upcoming" value={stats.upcomingBookings.toString()} icon={Calendar} delay={0.3} />
+        <PremiumStatsCard delay={0.4} className="min-w-[200px]">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-inner">
+              <IndianRupee className="w-6 h-6 text-white/90" />
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                Collected
+              </span>
+              <span className="text-xs font-medium text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+                Due
+              </span>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm text-white/50">Rec.</span>
+              <span className="text-xl font-bold text-emerald-400">₹{stats.totalCollected.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm text-white/50">Pend.</span>
+              <span className="text-xl font-bold text-rose-400">₹{stats.totalDue.toLocaleString()}</span>
+            </div>
+          </div>
+        </PremiumStatsCard>
+        <PremiumStatsCard title="Check-ins" value={stats.occupiedRooms.toString()} icon={Users} delay={0.5} />
+      </div>
 
-      {/* Add Booking Dialog */}
-      <Dialog open={showAddBooking} onOpenChange={(open) => {
-        setShowAddBooking(open);
-        if (!open) setSelectedRoomForBooking(null);
-      }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      {/* Controls & Filters */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1">
+          <GlassInput
+            placeholder="Search guests, rooms..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            icon={<Search className="w-4 h-4" />}
+          />
+        </div>
+
+        <div className="flex gap-3">
+          {/* Premium Glass Date Range Picker */}
+          <GlassDateRangePicker
+            date={dateFrom && dateTo ? { from: new Date(dateFrom), to: new Date(dateTo) } : undefined}
+            setDate={(range: DateRange | undefined) => {
+              if (range?.from) {
+                setDateFrom(range.from.toISOString().slice(0, 10));
+              } else {
+                setDateFrom("");
+              }
+
+              if (range?.to) {
+                setDateTo(range.to.toISOString().slice(0, 10));
+              } else {
+                setDateTo("");
+              }
+            }}
+            className="w-[280px]"
+          />
+
+
+        </div>
+      </div>
+
+      {/* Content Section - Reverted to ~66/33 split but keeping single column for rooms to fit */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Main Bookings List/Cards - Takes ~66% width */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Live Room Service Orders */}
+          <LiveRoomServiceOrders />
+
+          <PremiumLiquidGlass title="Recent Bookings">
+            {viewMode === 'list' ? (
+              <div className="rounded-xl overflow-hidden border border-white/5">
+                <HotelBookingsSection
+                  bookings={filteredBookings}
+                  onCheckIn={handleCheckIn}
+                  onCheckOut={handleCheckOut}
+                  onViewDetails={handleBookingClick}
+                  onDelete={handleDeleteBookingDirect}
+                  isSuperAdmin={false}
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {loading ? (
+                  <div className="col-span-2 text-center py-10 text-white/50">Loading bookings...</div>
+                ) : filteredBookings.length === 0 ? (
+                  <div className="col-span-2 text-center py-10 text-white/50">No bookings found matching filters</div>
+                ) : (
+                  filteredBookings.map((booking) => (
+                    <HotelBookingCard
+                      key={booking.id}
+                      booking={booking}
+                      settings={settings}
+                      onViewBill={handleBookingClick}
+                      onEdit={handleEditBooking}
+                      onDelete={handleDeleteBooking}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </PremiumLiquidGlass>
+        </div>
+
+        {/* Room Status / Quick Actions - Takes ~33% width */}
+        <div className="space-y-6">
+          {/* Room Grid Preview */}
+          <PremiumLiquidGlass title="Rooms Status" className="min-h-[400px]">
+            {loading ? (
+              <div className="text-center py-12 text-white/30">Loading rooms...</div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex gap-4 text-xs text-white/50 mb-4 px-2">
+                  <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Available</span>
+                  <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-rose-500" /> Occupied</span>
+                  <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500" /> Maintenance</span>
+                </div>
+                <RoomGrid
+                  rooms={rooms}
+                  bookings={bookings}
+                  onSelect={handleSelectRoom}
+                  onEdit={handleEditRoom}
+                  onDelete={handleDeleteRoom}
+                  onMarkCleaned={handleMarkCleaned}
+                  onRoomService={handleRoomService}
+                  onResetStatus={handleResetStatus}
+                  className="grid-cols-1 xl:grid-cols-1 gap-4"
+                />
+              </div>
+            )}
+          </PremiumLiquidGlass>
+        </div>
+
+      </div>
+
+      {/* Dialogs - Kept functionality, wrapped or styled where possible. 
+            Ideally these dialogs should also be updated to Glass Dialogs eventually. 
+        */}
+      <Dialog open={showAddBooking} onOpenChange={setShowAddBooking}>
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 bg-[#1a1a1a]/95 backdrop-blur-xl border-white/10 text-white overflow-hidden">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>Create New Booking</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowAddBooking(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
+            <DialogTitle>{editingBooking ? "Edit Booking" : "New Booking"}</DialogTitle>
           </DialogHeader>
           <HotelBookingForm
             rooms={rooms}
-            onSubmit={handleCreateBooking}
-            onCancel={() => setShowAddBooking(false)}
-            loading={creatingBooking}
+            existingBooking={editingBooking || undefined}
             initialRoomId={selectedRoomForBooking?.id}
+            onSubmit={editingBooking ? handleUpdateBooking : handleCreateBooking}
+            onCancel={() => {
+              setShowAddBooking(false);
+              setEditingBooking(null);
+            }}
           />
         </DialogContent>
       </Dialog>
 
-      {/* Add Room Dialog */}
-      <Dialog open={showAddRoom} onOpenChange={setShowAddRoom}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Dialog open={isAddRoomOpen} onOpenChange={setIsAddRoomOpen}>
+        <DialogContent className="sm:max-w-[500px] bg-[#1a1a1a]/95 backdrop-blur-xl border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>Add New Room</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowAddRoom(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
+            <DialogTitle>Add New Room</DialogTitle>
           </DialogHeader>
           <RoomForm
             onSubmit={handleCreateRoom}
-            onCancel={() => setShowAddRoom(false)}
+            onCancel={() => setIsAddRoomOpen(false)}
             loading={creatingRoom}
           />
         </DialogContent>
       </Dialog>
 
-      {/* Edit Room Dialog */}
-      <Dialog open={showEditRoom} onOpenChange={(open) => {
-        setShowEditRoom(open);
-        if (!open) setEditingRoom(null);
-      }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Dialog open={showEditRoom} onOpenChange={setShowEditRoom}>
+        <DialogContent className="sm:max-w-[500px] bg-[#1a1a1a]/95 backdrop-blur-xl border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>Edit Room</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowEditRoom(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
+            <DialogTitle>Edit Room</DialogTitle>
           </DialogHeader>
-          {editingRoom && (
-            <RoomForm
-              initialData={editingRoom}
-              onSubmit={handleUpdateRoom}
-              onCancel={() => setShowEditRoom(false)}
-              loading={creatingRoom}
-            />
-          )}
+          <RoomForm
+            initialData={editingRoom || undefined}
+            onSubmit={handleUpdateRoom}
+            onCancel={() => {
+              setShowEditRoom(false);
+              setEditingRoom(null);
+            }}
+            loading={creatingRoom}
+          />
         </DialogContent>
       </Dialog>
+
+      <HotelBookingDetails
+        booking={selectedBooking}
+        isOpen={showBookingDetails}
+        onClose={() => setShowBookingDetails(false)}
+        onUpdate={handleBookingUpdated}
+        onEdit={(booking) => {
+          setEditingBooking(booking)
+          setShowAddBooking(true)
+        }}
+        onDelete={(booking) => {
+          setBookingToDelete(booking)
+          setIsPasswordDialogOpen(true)
+        }}
+      />
 
       <PasswordDialog
         isOpen={isPasswordDialogOpen}
@@ -913,10 +915,10 @@ export default function HotelPage() {
           setBookingToDelete(null);
         }}
         onConfirm={handlePasswordSuccess}
-        title="Delete Booking"
-        description={`Are you sure you want to delete the booking for ${(bookingToDelete?.guestName as string) || 'guest'}?`}
+        title="Confirm Deletion"
+        description="Please enter admin password to delete this booking."
       />
+
     </div>
   );
 }
-

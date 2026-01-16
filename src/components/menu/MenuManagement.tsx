@@ -5,25 +5,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { PlusCircle, MoreHorizontal, Edit, Trash2, Search } from "lucide-react"
+import { PlusCircle, MoreHorizontal, Edit, Trash2, Search, Utensils, Tag, IndianRupee } from "lucide-react"
 import { MenuItemDialog } from "./MenuItemDialog"
 import { PasswordDialog } from "@/components/ui/PasswordDialog"
-import { deleteMenuItem, getMenuItems } from "@/actions/menu"
+import { deleteMenuItem } from "@/actions/menu"
+import { getBusinessSettings } from "@/actions/businessSettings"
 import { useRouter } from "next/navigation"
-import { toast } from "@/hooks/use-toast"
+import { PremiumLiquidGlass, PremiumContainer, PremiumStatsCard } from "@/components/ui/glass/premium-liquid-glass"
+import { Badge } from "@/components/ui/badge"
 
 interface MenuManagementProps {
     initialItems: any[]
@@ -41,6 +35,15 @@ export default function MenuManagement({ initialItems }: MenuManagementProps) {
     const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
     const [passwordAction, setPasswordAction] = useState<'single' | 'bulk'>('single')
     const [itemToDelete, setItemToDelete] = useState<{ id: string, name: string } | null>(null)
+    const [passwordProtectionEnabled, setPasswordProtectionEnabled] = useState(true)
+
+    useEffect(() => {
+        getBusinessSettings().then(settings => {
+            if (settings) {
+                setPasswordProtectionEnabled(settings.enablePasswordProtection ?? true)
+            }
+        })
+    }, [])
 
     // Get unique categories from items
     const categories = ["All", ...Array.from(new Set(items.map(item => item.category))).sort()]
@@ -61,29 +64,60 @@ export default function MenuManagement({ initialItems }: MenuManagementProps) {
         setDialogOpen(true)
     }
 
-    const handleDelete = (itemId: string, itemName: string) => {
+    const handleDelete = async (itemId: string, itemName: string) => {
+        if (!passwordProtectionEnabled) {
+            if (confirm(`Are you sure you want to delete ${itemName}?`)) {
+                const result = await deleteMenuItem(itemId)
+                if (result.success) {
+                    setItems(prevItems => prevItems.filter(item => item.id !== itemId))
+                    router.refresh()
+                } else {
+                    alert(`Failed to delete item: ${result.error || 'Unknown error'}`)
+                }
+            }
+            return
+        }
         setItemToDelete({ id: itemId, name: itemName })
         setPasswordAction('single')
         setIsPasswordDialogOpen(true)
     }
 
-    const handleBulkDelete = () => {
+    const handleBulkDelete = async () => {
         if (selectedItems.size === 0) return
+
+        if (!passwordProtectionEnabled) {
+            if (confirm(`Are you sure you want to delete ${selectedItems.size} items?`)) {
+                const deletePromises = Array.from(selectedItems).map(id => deleteMenuItem(id))
+                const results = await Promise.all(deletePromises)
+
+                const successCount = results.filter(r => r.success).length
+
+                if (successCount > 0) {
+                    setItems(prevItems => prevItems.filter(item => !selectedItems.has(item.id)))
+                    setSelectedItems(new Set())
+                    router.refresh()
+                }
+
+                if (results.some(r => !r.success)) {
+                    const errors = results.filter(r => !r.success).map(r => r.error).join(', ')
+                    alert(`Some items failed to delete: ${errors}`)
+                }
+            }
+            return
+        }
+
         setPasswordAction('bulk')
         setIsPasswordDialogOpen(true)
     }
 
     const handlePasswordSuccess = async (password: string) => {
         if (passwordAction === 'single' && itemToDelete) {
-            console.log("Deleting menu item:", itemToDelete.id, itemToDelete.name)
             const result = await deleteMenuItem(itemToDelete.id)
-            console.log("Delete result:", result)
 
             if (result.success) {
                 setItems(prevItems => prevItems.filter(item => item.id !== itemToDelete.id))
                 router.refresh()
             } else {
-                console.error("Delete failed:", result.error)
                 alert(`Failed to delete item: ${result.error || 'Unknown error'}`)
             }
         } else if (passwordAction === 'bulk') {
@@ -127,136 +161,165 @@ export default function MenuManagement({ initialItems }: MenuManagementProps) {
         setSelectedItems(newSelected)
     }
 
+    // Stats
+    const totalItems = items.length;
+    const totalCategories = new Set(items.map(i => i.category)).size;
+    const averagePrice = items.length > 0 ? (items.reduce((acc, curr) => acc + curr.price, 0) / items.length).toFixed(1) : "0";
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div className="flex gap-2">
+        <div className="space-y-6 pb-20">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 text-primary">
+                            <Utensils className="w-6 h-6" />
+                        </div>
+                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70">
+                            Menu
+                        </h1>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
                     {selectedItems.size > 0 && (
                         <Button
                             onClick={handleBulkDelete}
                             variant="destructive"
+                            className="bg-red-500 hover:bg-red-600 text-white"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete {selectedItems.size} Selected
+                            Delete {selectedItems.size}
                         </Button>
                     )}
-                    <Button onClick={handleAdd}>
+                    <Button onClick={handleAdd} className="bg-primary hover:bg-primary/90 text-white">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Item
                     </Button>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-                <div className="flex gap-4 items-center w-full">
-                    <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#9CA3AF]" />
-                        <Input
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <PremiumStatsCard
+                    title="Total Items"
+                    value={totalItems.toString()}
+                    icon={<Utensils className="h-4 w-4 text-blue-400" />}
+                />
+                <PremiumStatsCard
+                    title="Categories"
+                    value={totalCategories.toString()}
+                    icon={<Tag className="h-4 w-4 text-purple-400" />}
+                />
+                <PremiumStatsCard
+                    title="Avg Price"
+                    value={`₹${averagePrice}`}
+                    icon={<IndianRupee className="h-4 w-4 text-green-400" />}
+                />
+            </div>
+
+            <PremiumLiquidGlass className="flex flex-col" title="Menu Items">
+                <div className="space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                        <input
                             placeholder="Search items..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-9 h-9"
+                            className="w-full md:w-96 pl-10 h-10 bg-black/20 border border-white/10 rounded-xl text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
                         />
                     </div>
-                </div>
 
-                {/* Category tabs with proper filtering */}
-                <div className="w-full border-b border-[#F1F5F9] pb-1">
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
-                        {categories.map((category) => (
-                            <button
-                                key={category}
-                                onClick={() => setActiveCategory(category)}
-                                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                                    activeCategory === category
-                                        ? "bg-[#111827] text-white shadow-md"
-                                        : "bg-[#F8FAFC] text-[#6B7280] hover:bg-[#E5E7EB] hover:text-[#374151]"
-                                }`}
-                            >
-                                {category}
-                                {category !== "All" && (
-                                    <span className="ml-1 text-xs opacity-75">
-                                        ({items.filter(item => item.category === category).length})
+                    <div className="border-b border-white/5 pb-1 w-full overflow-hidden">
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                            {categories.map((category) => (
+                                <button
+                                    key={category}
+                                    onClick={() => setActiveCategory(category)}
+                                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-all ${activeCategory === category
+                                        ? "bg-white/10 text-white border border-white/20 shadow-lg"
+                                        : "bg-transparent text-white/40 hover:bg-white/5"
+                                        }`}
+                                >
+                                    {category}
+                                    <span className="ml-1 opacity-50">
+                                        ({category === "All" ? items.length : items.filter(i => i.category === category).length})
                                     </span>
-                                )}
-                                {category === "All" && (
-                                    <span className="ml-1 text-xs opacity-75">
-                                        ({items.length})
-                                    </span>
-                                )}
-                            </button>
-                        ))}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="overflow-x-auto custom-scrollbar rounded-lg border border-white/5 bg-black/20">
+                        {filteredItems.length === 0 ? (
+                            <div className="text-center py-12 text-white/30">
+                                <Utensils className="mx-auto h-12 w-12 opacity-50 mb-3" />
+                                <p>No items found</p>
+                            </div>
+                        ) : (
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-white/5 text-white/60 font-medium border-b border-white/5">
+                                    <tr>
+                                        <th className="p-3 w-[50px]">
+                                            <Checkbox
+                                                checked={filteredItems.length > 0 && selectedItems.size === filteredItems.length}
+                                                onCheckedChange={toggleSelectAll}
+                                                className="border-white/20 data-[state=checked]:bg-primary"
+                                            />
+                                        </th>
+                                        <th className="p-3">Name</th>
+                                        <th className="p-3">Category</th>
+                                        <th className="p-3">Price</th>
+                                        <th className="p-3">Description</th>
+                                        <th className="p-3 w-[50px]"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {filteredItems.map((item) => (
+                                        <tr key={item.id} className="hover:bg-white/5 transition-colors group">
+                                            <td className="p-3">
+                                                <Checkbox
+                                                    checked={selectedItems.has(item.id)}
+                                                    onCheckedChange={() => toggleSelectItem(item.id)}
+                                                    className="border-white/20 data-[state=checked]:bg-primary"
+                                                />
+                                            </td>
+                                            <td className="p-3 font-medium text-white">{item.name}</td>
+                                            <td className="p-3">
+                                                <Badge variant="outline" className="bg-white/5 border-white/10 text-white/60 text-[10px]">
+                                                    {item.category}
+                                                </Badge>
+                                            </td>
+                                            <td className="p-3 font-bold text-white">₹{item.price}</td>
+                                            <td className="p-3 text-white/40 max-w-xs truncate" title={item.description}>{item.description || '-'}</td>
+                                            <td className="p-3">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="bg-[#1a1a20] border-white/10 text-white">
+                                                        <DropdownMenuItem onClick={() => handleEdit(item)} className="hover:bg-white/10 cursor-pointer">
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleDelete(item.id, item.name)}
+                                                            className="text-red-400 hover:bg-white/10 hover:text-red-300 cursor-pointer"
+                                                        >
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </div>
-            </div>
-
-            <div className="premium-card">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[50px]">
-                                <Checkbox
-                                    checked={filteredItems.length > 0 && selectedItems.size === filteredItems.length}
-                                    onCheckedChange={toggleSelectAll}
-                                />
-                            </TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="w-[50px]"></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredItems.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={6} className="text-center text-[#9CA3AF] py-8">
-                                    No menu items found. Click "Add Item" to create one.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            filteredItems.map((item) => (
-                                <TableRow key={item.id} className="hover:bg-[#F8FAFC]/80 group transition-colors">
-                                    <TableCell>
-                                        <Checkbox
-                                            checked={selectedItems.has(item.id)}
-                                            onCheckedChange={() => toggleSelectItem(item.id)}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="font-medium text-[#111827]">{item.name}</TableCell>
-                                    <TableCell className="text-[#9CA3AF]">{item.category}</TableCell>
-                                    <TableCell className="font-bold font-mono text-[#111827]">₹{item.price}</TableCell>
-                                    <TableCell className="max-w-xs truncate text-[#9CA3AF]" title={item.description || ""}>
-                                        {item.description || "-"}
-                                    </TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => handleEdit(item)}>
-                                                    <Edit className="mr-2 h-4 w-4" />
-                                                    Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => handleDelete(item.id, item.name)}
-                                                    className="text-[#EF4444]"
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+            </PremiumLiquidGlass>
 
             <MenuItemDialog
                 isOpen={dialogOpen}
@@ -269,9 +332,7 @@ export default function MenuManagement({ initialItems }: MenuManagementProps) {
                 onClose={() => setIsPasswordDialogOpen(false)}
                 onConfirm={handlePasswordSuccess}
                 title={passwordAction === 'bulk' ? "Delete Selected Items" : "Delete Item"}
-                description={passwordAction === 'bulk'
-                    ? `Are you sure you want to delete ${selectedItems.size} items?`
-                    : `Are you sure you want to delete "${itemToDelete?.name}"?`}
+                description={"Action cannot be undone."}
             />
         </div>
     )

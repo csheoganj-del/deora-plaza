@@ -17,7 +17,7 @@ export const ALLOWED_FIELDS = {
         'createdBy', 'createdAt', 'updatedAt', 'pendingAt', 'preparingAt', 'readyAt', 'servedAt', 'completedAt'
     ],
     order_items: [
-        'id', 'order_id', 'menu_item_id', 'name', 'price', 'quantity', 'total', 'notes', 
+        'id', 'order_id', 'menu_item_id', 'name', 'price', 'quantity', 'total', 'notes',
         'status', 'business_unit', 'created_at', 'updated_at'
     ],
     customers: [
@@ -37,11 +37,11 @@ export const ALLOWED_FIELDS = {
         'isAvailable', 'isDrink', 'measurement', 'measurementUnit', 'baseMeasurement', 'createdAt', 'updatedAt'
     ],
     bookings: [
-        'id', 'bookingNumber', 'customerMobile', 'customerName', 'startDate', 'endDate', 'roomId', 'roomNumber',
+        'id', 'bookingNumber', 'customerMobile', 'customerName', 'guestName', 'guestEmail', 'startDate', 'endDate', 'roomId', 'roomNumber',
         'basePrice', 'roomServiceTotal', 'roomServiceCharges', 'gstEnabled', 'gstPercentage', 'gstAmount',
         'discountPercent', 'discountAmount', 'totalAmount', 'advancePayment', 'payments', 'totalPaid',
         'remainingBalance', 'paymentStatus', 'status', 'type', 'eventType', 'guestCount', 'notes', 'receiptNumber',
-        'createdAt', 'updatedAt'
+        'checkIn', 'checkOut', 'createdAt', 'updatedAt'
     ],
     rooms: [
         'id', 'number', 'type', 'capacity', 'status', 'pricePerNight',
@@ -75,6 +75,9 @@ export const ALLOWED_FIELDS = {
     ],
     user_roles: [
         'id', 'name', 'description', 'permissions', 'is_active', 'created_at', 'updated_at'
+    ],
+    notifications: [
+        'id', 'userId', 'title', 'message', 'type', 'isRead', 'businessUnit', 'createdAt', 'updatedAt'
     ]
 } as const;
 
@@ -126,4 +129,3 @@ export function validateQueryFilters(
 
     return { valid: true };
 }
-

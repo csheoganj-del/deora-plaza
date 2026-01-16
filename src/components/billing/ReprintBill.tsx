@@ -11,19 +11,26 @@ import { getOrderById } from "@/actions/orders"
 interface ReprintBillProps {
     bill: any
     onClose?: () => void
+    businessSettings?: any
 }
 
-export default function ReprintBill({ bill, onClose }: ReprintBillProps) {
+export default function ReprintBill({ bill, onClose, businessSettings: propSettings }: ReprintBillProps) {
     const printRef = useRef<HTMLDivElement>(null)
-    const [businessSettings, setBusinessSettings] = useState<any>(null)
+    const [businessSettings, setBusinessSettings] = useState<any>(propSettings || null)
     const [orderData, setOrderData] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true)
-            const settings = await getBusinessSettings()
-            setBusinessSettings(settings)
+
+            // Only fetch if not provided via props
+            if (!propSettings) {
+                const settings = await getBusinessSettings()
+                setBusinessSettings(settings)
+            } else {
+                setBusinessSettings(propSettings)
+            }
 
             // If bill doesn't have items, fetch from order
             if ((!bill.items || bill.items.length === 0) && bill.orderId) {
@@ -62,14 +69,14 @@ export default function ReprintBill({ bill, onClose }: ReprintBillProps) {
     // Use items from bill if available, otherwise from fetched order
     let items = [];
     try {
-      if (bill.items) {
-        items = Array.isArray(bill.items) ? bill.items : JSON.parse(bill.items);
-      } else if (orderData?.items) {
-        items = Array.isArray(orderData.items) ? orderData.items : JSON.parse(orderData.items);
-      }
+        if (bill.items) {
+            items = Array.isArray(bill.items) ? bill.items : JSON.parse(bill.items);
+        } else if (orderData?.items) {
+            items = Array.isArray(orderData.items) ? orderData.items : JSON.parse(orderData.items);
+        }
     } catch (e) {
-      console.warn('Failed to parse items in ReprintBill:', e);
-      items = [];
+        console.warn('Failed to parse items in ReprintBill:', e);
+        items = [];
     }
 
     // Construct order object with items
@@ -85,8 +92,8 @@ export default function ReprintBill({ bill, onClose }: ReprintBillProps) {
                 <Button onClick={() => handlePrint()}>
                     <Printer className="mr-2 h-4 w-4" /> Print Invoice
                 </Button>
-                <Button 
-                    variant="ghost" 
+                <Button
+                    variant="ghost"
                     size="icon"
                     onClick={onClose}
                     className="h-8 w-8 p-0 text-[#9CA3AF] hover:text-[#111827]"

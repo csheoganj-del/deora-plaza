@@ -21,7 +21,8 @@ export async function getTables(businessUnit?: string): Promise<any[]> {
             businessUnit: t.businessUnit,
             capacity: t.capacity,
             status: t.status,
-            customerCount: t.customerCount
+            customerCount: t.customerCount,
+            currentOrderId: t.currentOrderId
         }))
     } catch (error) {
         console.error('Error fetching tables:', error)
@@ -29,14 +30,27 @@ export async function getTables(businessUnit?: string): Promise<any[]> {
     }
 }
 
-export async function updateTableStatus(tableId: string, status: string, customerCount?: number) {
+export async function updateTableStatus(tableId: string, status: string, customerCount?: number, orderId?: string) {
     try {
         const updateData: any = { status }
         if (customerCount !== undefined) {
             updateData.customerCount = customerCount
         }
+        if (orderId !== undefined) {
+            updateData.currentOrderId = orderId
+        }
+
+        // Auto-clear data when table becomes available
+        if (status === 'available') {
+            updateData.currentOrderId = null
+            updateData.customerCount = 0
+        }
 
         await updateDocument('tables', tableId, updateData)
+        revalidatePath('/dashboard/tables')
+        revalidatePath('/dashboard/cafe')
+        revalidatePath('/dashboard/restaurant')
+        revalidatePath('/dashboard/bar')
         return { success: true }
     } catch (error) {
         console.error('Error updating table status:', error)
@@ -67,12 +81,12 @@ export async function createTable(data: {
             if (result.error.includes('unique constraint') || result.error.includes('duplicate key')) {
                 return { success: false, error: `A table with number "${data.tableNumber}" already exists in the ${data.businessUnit} unit. Please choose a different table number.` }
             }
-            
+
             // Check for other common database errors
             if (result.error.includes('null value')) {
                 return { success: false, error: 'Required field is missing. Please check all fields are filled correctly.' }
             }
-            
+
             // Return the original error if we can't provide a more specific message
             return { success: false, error: result.error }
         }

@@ -1,4 +1,5 @@
 import { supabaseServer } from "./server";
+import { validateQueryFilters, isFieldAllowed } from "@/lib/database-validation";
 
 // Generic CRUD operations for Supabase
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -55,6 +56,7 @@ export async function createDocument(collectionName: string, data: any) {
       return { success: false, error: errorMessage };
     }
 
+    console.log(`[DB] Document created in ${collectionName}:`, result);
     return { success: true, data: result };
   } catch (error) {
     console.error(`Error creating document in ${collectionName}: `, error);
@@ -193,19 +195,10 @@ export async function queryDocuments(
   limit?: number,
 ) {
   try {
-    console.log(`queryDocuments called with:`, { collectionName, filters, orderByField, orderByDirection, limit });
-    
-    // SECURITY: Validate filters to prevent column enumeration
-    let validateQueryFilters, isFieldAllowed;
-    try {
-      const validationModule = await import('@/lib/database-validation');
-      validateQueryFilters = validationModule.validateQueryFilters;
-      isFieldAllowed = validationModule.isFieldAllowed;
-    } catch (importError) {
-      console.error('Failed to import database validation module:', importError);
-      return [];
-    }
+    const startTime = Date.now();
+    console.log(`[PERF] queryDocuments started:`, { collectionName, filters, orderByField, orderByDirection, limit });
 
+    // SECURITY: Validate filters to prevent column enumeration
     const validation = validateQueryFilters(collectionName, filters);
     if (!validation.valid) {
       console.error(`Query validation failed: ${validation.error}`);
@@ -267,10 +260,15 @@ export async function queryDocuments(
       return r as any;
     }, { retries: 2 });
 
+    const duration = Date.now() - startTime;
+    console.log(`[PERF] queryDocuments completed in ${duration}ms for ${collectionName}`);
+
     return (res as any)?.data || [];
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(`Error querying documents from ${collectionName}: `, error);
-    console.error(`Error stack:`, error.stack);
+    if (error instanceof Error) {
+      console.error(`Error stack:`, error.stack);
+    }
     return [];
   }
 }

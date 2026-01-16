@@ -16,7 +16,9 @@ export interface BillTotals {
   discountAmount: number
   gstAmount: number
   total: number
+  grandTotal: number
   discountPercentage: number
+  gstPercentage: number
 }
 
 // Tier thresholds based on total spending
@@ -108,20 +110,28 @@ export function getCustomerTierInfo(totalSpent: number, visitsCount: number): Cu
 export function calculateBillTotals(
   subtotal: number,
   discountPercentage: number = 0,
-  gstPercentage: number = 18
+  gstPercentage: number = 18,
+  discountType: 'percentage' | 'fixed' = 'percentage',
+  fixedDiscountAmount: number = 0
 ): BillTotals {
-  const discountAmount = (subtotal * discountPercentage) / 100
-  const discountedSubtotal = subtotal - discountAmount
-  const gstAmount = (discountedSubtotal * gstPercentage) / 100
-  const total = discountedSubtotal + gstAmount
+  // Calculate discount based on type
+  const discountAmount = discountType === 'percentage'
+    ? (subtotal * discountPercentage) / 100
+    : fixedDiscountAmount;
+
+  const discountedSubtotal = subtotal - discountAmount;
+  const gstAmount = (discountedSubtotal * gstPercentage) / 100;
+  const total = discountedSubtotal + gstAmount;
 
   return {
     subtotal,
     discountAmount,
     gstAmount,
     total,
-    discountPercentage
-  }
+    grandTotal: total,
+    discountPercentage: discountType === 'percentage' ? discountPercentage : 0,
+    gstPercentage
+  };
 }
 
 /**
@@ -134,7 +144,7 @@ export function getNextTierRequirement(currentTier: DiscountTier, totalSpent: nu
 } {
   const tiers: DiscountTier[] = ['bronze', 'silver', 'gold', 'platinum', 'diamond']
   const currentIndex = tiers.indexOf(currentTier)
-  
+
   if (currentIndex === -1 || currentIndex === tiers.length - 1) {
     return {
       nextTier: null,

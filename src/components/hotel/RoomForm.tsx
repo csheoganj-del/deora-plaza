@@ -1,12 +1,12 @@
-"use client";
-
 import { useState } from "react";
 import { Room } from "@/actions/hotel";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  GlassButton,
+  GlassInput,
+  GlassLabel,
+  GlassSelect,
+  GlassTextarea
+} from "@/components/ui/glass/GlassFormComponents";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -38,14 +38,12 @@ export default function RoomForm({
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    setValue,
-    watch
+    formState: { errors }
   } = useForm<RoomFormData>({
     resolver: zodResolver(roomSchema),
     defaultValues: {
       number: initialData?.number || "",
-      type: initialData?.type || "",
+      type: initialData?.type || "Standard",
       capacity: initialData?.capacity || 2,
       price: initialData?.price || 0,
       floor: initialData?.floor || 0,
@@ -55,7 +53,6 @@ export default function RoomForm({
 
   const handleFormSubmit = (data: RoomFormData) => {
     onSubmit({
-      ...data,
       ...data,
       status: initialData?.status || "available", // Preserve status if editing, else default
       amenities: initialData?.amenities || [] // Preserve amenities if editing, else default
@@ -67,81 +64,77 @@ export default function RoomForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Room Information */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Room Information</h3>
+          <h3 className="text-lg font-semibold text-white/90">Room Information</h3>
 
           <div className="space-y-2">
-            <Label htmlFor="number">Room Number *</Label>
-            <Input
+            <GlassLabel htmlFor="number">Room Number *</GlassLabel>
+            <GlassInput
               id="number"
               {...register("number")}
               placeholder="Enter room number"
             />
             {errors.number && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.number.message}</p>
+              <p className="text-sm text-rose-400">{errors.number.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="type">Room Type *</Label>
-            <Select
-              onValueChange={(value) => setValue("type", value)}
+            <GlassLabel htmlFor="type">Room Type *</GlassLabel>
+            <GlassSelect
+              id="type"
+              {...register("type")}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select room type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Standard">Standard</SelectItem>
-                <SelectItem value="Deluxe">Deluxe</SelectItem>
-                <SelectItem value="Suite">Suite</SelectItem>
-                <SelectItem value="Executive">Executive</SelectItem>
-              </SelectContent>
-            </Select>
+              <option value="Standard" className="bg-[#1a1a1a] text-white">Standard</option>
+              <option value="Deluxe" className="bg-[#1a1a1a] text-white">Deluxe</option>
+              <option value="Suite" className="bg-[#1a1a1a] text-white">Suite</option>
+              <option value="Executive" className="bg-[#1a1a1a] text-white">Executive</option>
+            </GlassSelect>
             {errors.type && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.type.message}</p>
+              <p className="text-sm text-rose-400">{errors.type.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="floor">Floor</Label>
-            <Input
+            <GlassLabel htmlFor="floor">Floor</GlassLabel>
+            <GlassInput
               id="floor"
               type="number"
               min="0"
               {...register("floor", { valueAsNumber: true })}
             />
             {errors.floor && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.floor.message}</p>
+              <p className="text-sm text-rose-400">{errors.floor.message}</p>
             )}
           </div>
         </div>
 
         {/* Pricing & Capacity */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Pricing & Capacity</h3>
+          <h3 className="text-lg font-semibold text-white/90">Pricing & Capacity</h3>
 
           <div className="space-y-2">
-            <Label htmlFor="price">Price per Night (₹) *</Label>
-            <Input
+            <GlassLabel htmlFor="price">Price per Night (₹) *</GlassLabel>
+            <GlassInput
               id="price"
               type="number"
               min="0"
               {...register("price", { valueAsNumber: true })}
             />
             {errors.price && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.price.message}</p>
+              <p className="text-sm text-rose-400">{errors.price.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="capacity">Capacity *</Label>
-            <Input
+            <GlassLabel htmlFor="capacity">Capacity *</GlassLabel>
+            <GlassInput
               id="capacity"
               type="number"
               min="1"
               {...register("capacity", { valueAsNumber: true })}
             />
             {errors.capacity && (
-              <p className="text-sm text-[#FEE2E2]0">{errors.capacity.message}</p>
+              <p className="text-sm text-rose-400">{errors.capacity.message}</p>
             )}
           </div>
         </div>
@@ -149,8 +142,8 @@ export default function RoomForm({
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
+        <GlassLabel htmlFor="description">Description</GlassLabel>
+        <GlassTextarea
           id="description"
           {...register("description")}
           placeholder="Enter room description"
@@ -159,12 +152,12 @@ export default function RoomForm({
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <GlassButton type="button" variant="secondary" onClick={onCancel}>
           Cancel
-        </Button>
-        <Button type="submit" disabled={loading}>
+        </GlassButton>
+        <GlassButton type="submit" variant="primary" disabled={loading}>
           {loading ? (initialData ? "Updating..." : "Creating...") : (initialData ? "Update Room" : "Create Room")}
-        </Button>
+        </GlassButton>
       </div>
     </form>
   );

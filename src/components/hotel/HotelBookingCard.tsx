@@ -16,13 +16,14 @@ import { printHotelReceipt } from "@/lib/print-utils"
 
 interface HotelBookingCardProps {
     booking: any
+    settings?: any
     onEdit?: (booking: any) => void
     onDelete?: (booking: any) => void
     onViewBill?: (booking: any) => void
     onPrintBill?: (booking: any) => void
 }
 
-export function HotelBookingCard({ booking, onEdit, onDelete, onViewBill, onPrintBill }: HotelBookingCardProps) {
+export function HotelBookingCard({ booking, settings, onEdit, onDelete, onViewBill, onPrintBill }: HotelBookingCardProps) {
     const startDate = new Date(booking.startDate)
     const endDate = new Date(booking.endDate)
 
@@ -48,7 +49,7 @@ export function HotelBookingCard({ booking, onEdit, onDelete, onViewBill, onPrin
     const handlePrintBill = () => {
         // Determine payment type based on payment status
         const paymentType = booking.paymentStatus === 'completed' ? 'full' : 'advance'
-        printHotelReceipt(booking, paymentType)
+        printHotelReceipt(booking, settings, paymentType)
     }
 
     return (
@@ -57,8 +58,8 @@ export function HotelBookingCard({ booking, onEdit, onDelete, onViewBill, onPrin
                 <div className="flex justify-between items-start">
                     <div>
                         <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-                            <Badge 
-                                variant="outline" 
+                            <Badge
+                                variant="outline"
                                 className={`capitalize text-xs sm:text-sm ${getStatusStyle(booking.status)}`}
                                 aria-label={`Status: ${booking.status}`}
                             >
@@ -71,9 +72,9 @@ export function HotelBookingCard({ booking, onEdit, onDelete, onViewBill, onPrin
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
+                            <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-8 w-8 text-[#9CA3AF] hover:text-[#111827]"
                                 aria-label="More options"
                             >
@@ -158,8 +159,8 @@ export function HotelBookingCard({ booking, onEdit, onDelete, onViewBill, onPrin
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-xs text-[#9CA3AF] font-medium uppercase">Payment</span>
-                        <Badge 
-                            variant="outline" 
+                        <Badge
+                            variant="outline"
                             className={`text-xs px-1.5 sm:px-2 py-0 h-4 sm:h-5 ${getPaymentStatusStyle(booking.paymentStatus)}`}
                             aria-label={`Payment status: ${booking.paymentStatus}`}
                         >

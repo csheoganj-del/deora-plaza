@@ -5,8 +5,10 @@ import React, { useState, useEffect } from "react"
 
 
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Clock, Loader2, ChefHat, Utensils, DollarSign, CheckCircle } from "lucide-react"
+import { CheckCircle2, Clock, Loader2, ChefHat, Utensils, DollarSign, CheckCircle, FileText } from "lucide-react"
 import { getOrderTimeline } from "@/actions/orders"
+import Link from "next/link"
+
 import { updateOrderStatus } from "@/actions/kitchen"
 import { cn } from "@/lib/utils"
 import { useServerAuth } from "@/hooks/useServerAuth"
@@ -157,6 +159,15 @@ export default function OrderFlowTracker({ orderId, compact = false }: OrderFlow
                                 <CheckCircle className="h-3.5 w-3.5" />
                                 Mark Served
                             </button>
+                        )}
+                        {timeline.status === 'served' && !timeline.isPaid && (
+                            <Link
+                                href={`/dashboard/billing?orderId=${timeline.orderId}`}
+                                className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md font-medium text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                            >
+                                <FileText className="h-3.5 w-3.5" />
+                                Generate Bill
+                            </Link>
                         )}
                         <Badge variant={timeline.isPaid ? "default" : "secondary"} className="flex items-center gap-1">
                             <DollarSign className="h-3 w-3" />

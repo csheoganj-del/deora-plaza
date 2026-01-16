@@ -3,7 +3,12 @@
 import { useState } from "react"
 import { ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { TakeawayOrderDialog } from "./TakeawayOrderDialog"
+import dynamic from "next/dynamic"
+
+const TakeawayOrderDialog = dynamic(
+    () => import("./TakeawayOrderDialog").then((mod) => mod.TakeawayOrderDialog),
+    { ssr: false }
+)
 
 interface TakeawayOrderButtonProps {
     businessUnit: string

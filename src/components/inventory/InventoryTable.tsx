@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ import { Trash2 } from "lucide-react"
 import { StockUpdateDialog } from "./StockUpdateDialog"
 import { PasswordDialog } from "@/components/ui/PasswordDialog"
 import { deleteInventoryItem } from "@/actions/inventory"
+import { getBusinessSettings } from "@/actions/businessSettings"
 import { useRouter } from "next/navigation"
 
 type InventoryTableProps = {
@@ -22,16 +23,49 @@ export default function InventoryTable({ items, onUpdate }: InventoryTableProps)
     const [passwordAction, setPasswordAction] = useState<'single' | 'bulk'>('single')
     const [itemToDelete, setItemToDelete] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const [passwordProtectionEnabled, setPasswordProtectionEnabled] = useState(true)
     const router = useRouter()
 
-    const handleSingleDelete = (itemId: string) => {
+    useEffect(() => {
+        getBusinessSettings().then(settings => {
+            if (settings) {
+                setPasswordProtectionEnabled(settings.enablePasswordProtection ?? true)
+            }
+        })
+    }, [])
+
+    const handleSingleDelete = async (itemId: string) => {
+        if (!passwordProtectionEnabled) {
+            if (confirm("Are you sure you want to delete this item?")) {
+                setLoading(true)
+                await deleteInventoryItem(itemId)
+                if (selectedItems.includes(itemId)) {
+                    setSelectedItems(prev => prev.filter(id => id !== itemId))
+                }
+                onUpdate()
+                setLoading(false)
+            }
+            return
+        }
         setItemToDelete(itemId)
         setPasswordAction('single')
         setIsPasswordDialogOpen(true)
     }
 
-    const handleBulkDelete = () => {
+    const handleBulkDelete = async () => {
         if (selectedItems.length === 0) return
+
+        if (!passwordProtectionEnabled) {
+            if (confirm(`Are you sure you want to delete ${selectedItems.length} items?`)) {
+                setLoading(true)
+                await Promise.all(selectedItems.map(id => deleteInventoryItem(id)))
+                setSelectedItems([])
+                onUpdate()
+                setLoading(false)
+            }
+            return
+        }
+
         setPasswordAction('bulk')
         setIsPasswordDialogOpen(true)
     }

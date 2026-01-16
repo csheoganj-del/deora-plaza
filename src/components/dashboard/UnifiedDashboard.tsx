@@ -232,6 +232,42 @@ export function UnifiedDashboard() {
           </div>
           <p className="apple-text-caption dashboard-stat-description">Orders in progress</p>
         </button>
+
+        {/* Garden Advance Payments */}
+        <button
+          className="apple-glass-card dashboard-stat-card apple-interactive dashboard-stat-clickable"
+          onClick={() => handleNavigation('/dashboard/garden', 'Garden Bookings')}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="dashboard-stat-content">
+            <div>
+              <p className="apple-text-caption dashboard-stat-label">Garden Advances</p>
+              <p className="apple-text-heading dashboard-stat-value">
+                ₹{stats?.gardenAdvancePayments?.toLocaleString() || '0'}
+              </p>
+            </div>
+            <Flower2 className="dashboard-stat-icon dashboard-stat-icon-green" />
+          </div>
+          <p className="apple-text-caption dashboard-stat-description">Initial booking payments</p>
+        </button>
+
+        {/* Garden Subsequent Payments */}
+        <button
+          className="apple-glass-card dashboard-stat-card apple-interactive dashboard-stat-clickable"
+          onClick={() => handleNavigation('/dashboard/garden', 'Garden Bookings')}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="dashboard-stat-content">
+            <div>
+              <p className="apple-text-caption dashboard-stat-label">Garden Payments</p>
+              <p className="apple-text-heading dashboard-stat-value">
+                ₹{stats?.gardenSubsequentPayments?.toLocaleString() || '0'}
+              </p>
+            </div>
+            <IndianRupee className="dashboard-stat-icon dashboard-stat-icon-blue" />
+          </div>
+          <p className="apple-text-caption dashboard-stat-description">Partial & final payments</p>
+        </button>
       </div>
 
       {/* Quick Actions */}
@@ -347,8 +383,8 @@ export function UnifiedDashboard() {
                       <td className="apple-text-body dashboard-table-td dashboard-table-td-capitalize">{order.type || 'Dine-in'}</td>
                       <td className="dashboard-table-td">
                         <span className={`apple-text-caption dashboard-status-badge ${order.status === 'completed' ? 'dashboard-status-success' :
-                            order.status === 'cancelled' ? 'dashboard-status-error' :
-                              'dashboard-status-info'
+                          order.status === 'cancelled' ? 'dashboard-status-error' :
+                            'dashboard-status-info'
                           }`}>
                           {order.status}
                         </span>

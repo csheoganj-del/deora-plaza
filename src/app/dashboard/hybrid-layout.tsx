@@ -10,7 +10,6 @@ import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary"
 import { ProgressIndicator } from "@/components/ui/progress-indicator"
 import { SkipToMain } from "@/components/ui/accessibility"
 import { useServerAuth } from "@/hooks/useServerAuth"
-import { LocationPermissionDialog } from "@/components/location/LocationPermissionDialog"
 import { RealtimeSyncProvider } from "@/components/providers/RealtimeSyncProvider"
 import { PerformanceProvider } from "@/components/providers/PerformanceProvider"
 
@@ -21,7 +20,6 @@ export default function HybridDashboardLayout({
 }) {
     const { data: session, status } = useServerAuth()
     const router = useRouter()
-    const [showLocationDialog, setShowLocationDialog] = useState(false)
 
     // Clean up any loading states when dashboard loads
     useEffect(() => {
@@ -37,63 +35,6 @@ export default function HybridDashboardLayout({
         }
     }, [status])
 
-    // Check if location is required for this user role
-    const isLocationRequired = () => {
-        if (!session?.user?.role) return false;
-        const locationRequiredRoles = ['waiter', 'kitchen', 'bartender', 'reception', 'hotel_reception'];
-        return locationRequiredRoles.includes(session.user.role);
-    };
-
-    useEffect(() => {
-        // Skip location tracking for admin users
-        const userRole = session?.user?.role;
-        const adminRoles = ['super_admin', 'owner', 'manager', 'admin'];
-        
-        if (adminRoles.includes(userRole)) {
-            return;
-        }
-
-        // Location tracking implementation (same as before)
-        const trackLocationInBackground = async () => {
-            if (!session?.user?.id) return;
-
-            try {
-                const { locationService } = await import("@/lib/location/service");
-                const permissions = await locationService.checkLocationPermissions(session.user.id);
-
-                if (!permissions.consentGiven && isLocationRequired()) {
-                    setShowLocationDialog(true);
-                    return;
-                }
-
-                if (permissions.canTrack) {
-                    const location = await locationService.getCurrentLocation({
-                        enableHighAccuracy: false,
-                        timeout: 5000,
-                        maximumAge: 300000,
-                        fallbackToIP: true,
-                        required: false
-                    });
-
-                    if (location) {
-                        await locationService.saveUserLocation(session.user.id, location, {
-                            source: 'dashboard_background',
-                            userAgent: navigator.userAgent
-                        });
-                        console.log('✅ Location tracked successfully');
-                    }
-                }
-            } catch (error) {
-                console.warn('Background location tracking failed:', error);
-            }
-        };
-
-        trackLocationInBackground();
-    }, [session?.user?.id]);
-
-    const handleLocationPermissionsUpdated = () => {
-        setShowLocationDialog(false);
-    };
 
     // Show minimal loading only for the initial render
     if (status === "loading") {
@@ -122,7 +63,7 @@ export default function HybridDashboardLayout({
                         <p className="ga-text-body-secondary mb-6">
                             Please sign in to access the dashboard
                         </p>
-                        
+
                         <div className="ga-flex ga-flex-col ga-gap-3">
                             <button
                                 onClick={() => window.location.reload()}
@@ -150,11 +91,11 @@ export default function HybridDashboardLayout({
                     {/* ACCESSIBILITY: Skip to main content link */}
                     <SkipToMain />
 
-                    <EnhancedErrorBoundary fallback={({ error, retry }) => (
+                    <EnhancedErrorBoundary fallback={({ error, resetError }) => (
                         <div className="ga-p-4 text-[var(--color-error)] bg-[var(--color-error-light)] border border-[var(--color-error)] rounded-lg ga-m-4">
                             <p className="ga-text-body font-medium">Sidebar error: {error?.message}</p>
-                            <button 
-                                onClick={retry} 
+                            <button
+                                onClick={resetError}
                                 className="ga-button ga-button-secondary ga-button-sm mt-2"
                             >
                                 Retry
@@ -165,11 +106,11 @@ export default function HybridDashboardLayout({
                     </EnhancedErrorBoundary>
 
                     <div className="flex-1 ga-flex ga-flex-col min-w-0">
-                        <EnhancedErrorBoundary fallback={({ error, retry }) => (
+                        <EnhancedErrorBoundary fallback={({ error, resetError }) => (
                             <div className="ga-p-4 text-[var(--color-error)] bg-[var(--color-error-light)] border border-[var(--color-error)] rounded-lg ga-m-4">
                                 <p className="ga-text-body font-medium">Header error: {error?.message}</p>
-                                <button 
-                                    onClick={retry} 
+                                <button
+                                    onClick={resetError}
                                     className="ga-button ga-button-secondary ga-button-sm mt-2"
                                 >
                                     Retry
@@ -185,15 +126,15 @@ export default function HybridDashboardLayout({
                             role="main"
                             aria-label="Dashboard main content"
                         >
-                            <EnhancedErrorBoundary fallback={({ error, retry }) => (
+                            <EnhancedErrorBoundary fallback={({ error, resetError }) => (
                                 <div className="ga-p-6">
                                     <div className="ga-card">
                                         <div className="ga-card-content">
                                             <p className="ga-text-body font-medium text-[var(--color-error)] mb-2">
                                                 Dashboard content error: {error?.message}
                                             </p>
-                                            <button 
-                                                onClick={retry} 
+                                            <button
+                                                onClick={resetError}
                                                 className="ga-button ga-button-primary"
                                             >
                                                 Retry
@@ -214,15 +155,6 @@ export default function HybridDashboardLayout({
                     <Toaster />
                     <ProgressIndicator value={0} />
 
-                    {/* Location Permission Dialog - Only for non-admin roles */}
-                    {session?.user?.id && !['super_admin', 'owner', 'manager', 'admin'].includes(session.user.role) && (
-                        <LocationPermissionDialog
-                            isOpen={showLocationDialog}
-                            onClose={() => setShowLocationDialog(false)}
-                            userId={session.user.id}
-                            onPermissionsUpdated={handleLocationPermissionsUpdated}
-                        />
-                    )}
                 </div>
             </RealtimeSyncProvider>
         </PerformanceProvider>

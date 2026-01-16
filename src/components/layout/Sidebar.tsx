@@ -73,10 +73,10 @@ function NavItem({
       <div className="relative h-8 w-14 flex items-center justify-center">
         <div
           className={cn(
-            "absolute inset-0 rounded-full transition-all duration-300",
+            "absolute inset-0 rounded-full transition-all duration-300 backdrop-blur-sm",
             isActive
-              ? "bg-[#D3E3FD]"
-              : "bg-transparent group-hover:bg-[#F1F3F4]"
+              ? "bg-blue-400/30 backdrop-blur-md"
+              : "bg-transparent group-hover:bg-white/20 backdrop-blur-sm"
           )}
         />
         <Icon className={cn(
@@ -96,7 +96,7 @@ function NavItem({
 
       {/* Tooltip for collapsed state */}
       {isCollapsed && isHovered && (
-        <div className="absolute left-full ml-4 px-3 py-1.5 bg-[#202124] text-white text-[11px] rounded-[4px] whitespace-nowrap z-50 shadow-md">
+        <div className="absolute left-full ml-4 px-3 py-1.5 bg-black/80 backdrop-blur-xl text-white text-[11px] rounded-lg whitespace-nowrap z-50 shadow-lg border border-white/10">
           {name}
         </div>
       )}
@@ -118,88 +118,18 @@ export default function Sidebar() {
   // Memoize links array to prevent infinite render loop
   const links = useMemo(() => [
     {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      roles: ["super_admin", "owner"],
-      moduleKey: "enableAnalyticsModule" as const
-    },
-    {
-      name: "Real-Time",
-      href: "/dashboard/realtime",
-      icon: BarChart3,
-      roles: ["super_admin", "owner", "manager"],
-      moduleKey: "enableRealtimeModule" as const
-    },
-    {
-      name: "Analytics",
-      href: "/dashboard/analytics",
-      icon: BarChart3,
-      roles: ["super_admin", "owner", "manager"],
-      moduleKey: "enableAnalyticsModule" as const
-    },
-    {
-      name: "Automation",
-      href: "/dashboard/automation",
-      icon: Zap,
-      roles: ["super_admin", "owner", "manager"],
-      moduleKey: "enableAutomationModule" as const
-    },
-    {
-      name: "Staff Performance",
-      href: "/dashboard/staff-performance",
-      icon: Trophy,
-      roles: ["super_admin", "owner", "manager"],
-      moduleKey: "enableStaffPerformanceModule" as const
-    },
-    {
-      name: "Daily Reports",
-      href: "/dashboard/daily-reports",
-      icon: Calendar,
-      roles: ["super_admin", "owner", "manager", "cafe_manager"],
-      moduleKey: "enableDailyReportsModule" as const
-    },
-    {
-      name: "Cafe Management",
-      href: "/dashboard/cafe",
-      icon: Coffee,
-      roles: ["super_admin", "owner", "manager", "cafe_manager"],
-      moduleKey: "enableCafeModule" as const
-    },
-    {
-      name: "Inventory",
-      href: "/dashboard/inventory",
-      icon: Package,
-      roles: ["super_admin", "owner", "manager", "cafe_manager"],
-      moduleKey: "enableInventoryModule" as const
-    },
-    {
-      name: "Kitchen Display",
-      href: "/dashboard/kitchen-display",
-      icon: Monitor,
-      roles: ["kitchen", "super_admin", "owner"],
-      moduleKey: "enableKitchenDisplayModule" as const
-    },
-    {
-      name: "Waiter Interface",
-      href: "/dashboard/waiter",
-      icon: Smartphone,
-      roles: ["waiter", "super_admin", "owner"],
-      moduleKey: "enableWaiterInterfaceModule" as const
-    },
-    {
-      name: "Order Management",
-      href: "/dashboard/order-management",
-      icon: Edit3,
-      roles: ["super_admin", "owner"],
-      moduleKey: "enableOrderManagementModule" as const
-    },
-    {
       name: "Tables",
       href: "/dashboard/tables",
       icon: Armchair,
       roles: ["cafe_manager", "waiter", "super_admin", "owner"],
       moduleKey: "enableTablesModule" as const
+    },
+    {
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      roles: ["super_admin", "owner"],
+      moduleKey: "enableAnalyticsModule" as const
     },
     {
       name: "Bar",
@@ -249,13 +179,6 @@ export default function Sidebar() {
       icon: BarChart3,
       roles: ["bar_manager", "hotel_manager", "manager", "super_admin", "owner"],
       moduleKey: "enableStatisticsModule" as const
-    },
-    {
-      name: "Locations",
-      href: "/dashboard/admin/locations",
-      icon: MapPin,
-      roles: ["super_admin", "owner"],
-      moduleKey: "enableLocationsModule" as const
     },
     {
       name: "GST Report",
@@ -323,7 +246,7 @@ export default function Sidebar() {
   return (
     <div
       className={cn(
-        "h-full bg-white border-r border-[#e0e0e0] flex flex-col transition-all duration-200",
+        "h-full bg-white/80 backdrop-blur-xl backdrop-saturate-150 border-r border-white/20 flex flex-col transition-all duration-200",
         isCollapsed ? "w-16" : "w-64"
       )}
       onMouseEnter={() => setIsCollapsed(false)}
@@ -331,7 +254,7 @@ export default function Sidebar() {
     >
       <div className="flex-1 flex flex-col">
         {/* Logo Section */}
-        <div className="p-4 border-b border-[#e0e0e0]">
+        <div className="p-4 border-b border-white/20">
           <div className={cn(
             "flex items-center gap-3",
             isCollapsed && "justify-center"
@@ -372,13 +295,13 @@ export default function Sidebar() {
         </div>
 
         {/* User Section */}
-        <div className="p-4 border-t border-[#e0e0e0]">
+        <div className="p-4 border-t border-white/20">
           {/* User Info */}
           <div className={cn(
             "flex items-center gap-3 mb-3",
             isCollapsed && "justify-center"
           )}>
-            <div className="w-8 h-8 bg-[#f8f9fa] rounded-full flex items-center justify-center border border-[#e0e0e0]">
+            <div className="w-8 h-8 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
               <span className="text-[12px] font-medium text-[#5f6368]">
                 {session?.user?.username?.[0]?.toUpperCase() || session?.user?.email?.[0]?.toUpperCase() || "U"}
               </span>

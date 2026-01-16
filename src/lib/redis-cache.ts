@@ -5,6 +5,7 @@ import Redis from 'redis';
 
 // Cache configuration
 interface CacheConfig {
+  enabled: boolean;
   host: string;
   port: number;
   password?: string;
@@ -42,6 +43,7 @@ class RedisCacheManager {
 
   constructor(config?: Partial<CacheConfig>) {
     this.config = {
+      enabled: process.env.REDIS_ENABLED === 'true',
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
@@ -66,6 +68,13 @@ class RedisCacheManager {
   }
 
   private async initializeClient(): Promise<void> {
+    // Skip Redis initialization if disabled
+    if (!this.config.enabled) {
+      console.log('Redis is disabled, using in-memory cache only');
+      this.isHealthy = false;
+      return;
+    }
+
     try {
       this.client = Redis.createClient({
         socket: {
@@ -73,7 +82,9 @@ class RedisCacheManager {
           port: this.config.port,
           reconnectStrategy: (retries) => {
             if (retries > this.config.maxRetries) {
-              console.error('Redis max retries reached, falling back to memory cache');
+              if (this.config.enabled) {
+                console.warn('Redis max retries reached, falling back to memory cache');
+              }
               this.isHealthy = false;
               return false;
             }
@@ -85,7 +96,9 @@ class RedisCacheManager {
       });
 
       this.client.on('error', (error) => {
-        console.error('Redis error:', error);
+        if (this.config.enabled) {
+          console.error('Redis error:', error);
+        }
         this.isHealthy = false;
         this.stats.errors++;
       });
@@ -96,24 +109,34 @@ class RedisCacheManager {
       });
 
       this.client.on('disconnect', () => {
-        console.warn('Redis disconnected, using fallback cache');
+        if (this.config.enabled) {
+          console.warn('Redis disconnected, using fallback cache');
+        }
         this.isHealthy = false;
       });
 
       await this.client.connect();
       await this.testConnection();
     } catch (error) {
-      console.error('Failed to initialize Redis client:', error);
+      if (this.config.enabled) {
+        console.error('Failed to initialize Redis client:', error);
+      }
       this.isHealthy = false;
     }
   }
 
   private async testConnection(): Promise<void> {
+    if (!this.config.enabled) {
+      return;
+    }
+
     try {
       await this.client.ping();
       this.isHealthy = true;
     } catch (error) {
-      console.error('Redis connection test failed:', error);
+      if (this.config.enabled) {
+        console.error('Redis connection test failed:', error);
+      }
       this.isHealthy = false;
     }
   }
@@ -134,12 +157,12 @@ class RedisCacheManager {
   private deserialize<T>(serialized: string): T | null {
     try {
       const entry: CacheEntry<T> = JSON.parse(serialized);
-      
+
       // Check if expired
       if (Date.now() > entry.ttl) {
         return null;
       }
-      
+
       return entry.data;
     } catch (error) {
       console.error('Cache deserialization error:', error);
@@ -381,7 +404,7 @@ class RedisCacheManager {
       redisHealthy = this.isHealthy;
     }
     const fallbackHealthy = this.fallbackCache.size > 0;
-    
+
     return {
       healthy: redisHealthy || fallbackHealthy,
       redis: redisHealthy,

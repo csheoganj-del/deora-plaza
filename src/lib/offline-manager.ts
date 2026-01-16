@@ -4,7 +4,7 @@ export class OfflineManager {
   private db: IDBDatabase | null = null;
   private isOnline: boolean = navigator.onLine;
   private syncQueue: Array<{
-    type: 'order' | 'inventory' | 'feedback';
+    type: 'order' | 'inventory' | 'feedback' | 'bill';
     data: any;
     timestamp: number;
   }> = [];
@@ -38,10 +38,13 @@ export class OfflineManager {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         // Create object stores for different data types
         if (!db.objectStoreNames.contains('orders')) {
           db.createObjectStore('orders', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('bills')) {
+          db.createObjectStore('bills', { keyPath: 'id' });
         }
         if (!db.objectStoreNames.contains('inventory')) {
           db.createObjectStore('inventory', { keyPath: 'id' });
@@ -115,7 +118,7 @@ export class OfflineManager {
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(storeName, 'readonly');
       const store = transaction.objectStore(storeName);
-      
+
       let request: IDBRequest;
       if (key) {
         request = store.get(key);
@@ -158,7 +161,7 @@ export class OfflineManager {
     });
   }
 
-  public async queueForSync(type: 'order' | 'inventory' | 'feedback', data: any): Promise<void> {
+  public async queueForSync(type: 'order' | 'inventory' | 'feedback' | 'bill', data: any): Promise<void> {
     const syncItem = {
       type,
       data,
@@ -203,7 +206,7 @@ export class OfflineManager {
 
     try {
       const syncItems = await this.getOfflineData<any>('syncQueue');
-      
+
       for (const item of syncItems) {
         try {
           await this.syncItem(item);
@@ -234,6 +237,9 @@ export class OfflineManager {
     switch (type) {
       case 'order':
         await this.syncOrder(data);
+        break;
+      case 'bill':
+        await this.syncBill(data);
         break;
       case 'inventory':
         await this.syncInventory(data);
@@ -295,6 +301,22 @@ export class OfflineManager {
 
     const result = await response.json();
     console.log('Offline Manager: Feedback synced successfully', result);
+  }
+
+  private async syncBill(billData: any): Promise<void> {
+    // Import the createDirectBill action
+    const { createDirectBill } = await import('@/actions/billing');
+
+    const result = await createDirectBill({
+      ...billData,
+      offlineId: billData.id, // Include offline ID for tracking
+    });
+
+    if (!result.success) {
+      throw new Error(`Failed to sync bill: ${result.error}`);
+    }
+
+    console.log('Offline Manager: Bill synced successfully', result);
   }
 
   public async cacheData(url: string, data: any): Promise<void> {
@@ -375,8 +397,8 @@ export class OfflineManager {
       return;
     }
 
-    const stores = ['orders', 'inventory', 'feedback', 'cache', 'syncQueue'];
-    
+    const stores = ['orders', 'bills', 'inventory', 'feedback', 'cache', 'syncQueue'];
+
     for (const storeName of stores) {
       return new Promise((resolve, reject) => {
         const transaction = this.db!.transaction(storeName, 'readwrite');
