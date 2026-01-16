@@ -930,7 +930,7 @@ export function DineInOrderDialog({
                           onClick={(e) => addItem(item, e)}
                         >
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-white text-[11px] leading-tight line-clamp-1 group-hover:text-[#2fd180] transition-colors">
+                            <h4 className="font-bold text-white text-[11px] leading-tight break-words group-hover:text-[#2fd180] transition-colors">
                               {item.name}
                             </h4>
                             <span className="font-black text-white/30 text-[9px] tracking-wide mt-0.5 block">₹{Number(item.price).toFixed(0)}</span>
