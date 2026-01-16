@@ -231,19 +231,19 @@ export function DineInOrderDialog({
       setIsWaiterlessMode(isUnitWaiterless);
       setIsCustomerExpanded(isUnitWaiterless);
 
-      // Initialize GST
+      // Initialize GST - respect global gstEnabled toggle
       if (settings?.gstEnabled) {
         if (businessUnit === 'bar' && settings.barGstEnabled) {
-          setGstEnabled(true);
+          setGstEnabled(!!(settings.gstEnabled && settings.barGstEnabled));
           setGstPercentage(settings.barGstPercentage || 0);
         } else if (businessUnit === 'cafe' && settings.cafeGstEnabled) {
-          setGstEnabled(true);
+          setGstEnabled(!!(settings.gstEnabled && settings.cafeGstEnabled));
           setGstPercentage(settings.cafeGstPercentage || 0);
         } else if (businessUnit === 'hotel' && settings.hotelGstEnabled) {
-          setGstEnabled(true);
+          setGstEnabled(!!(settings.gstEnabled && settings.hotelGstEnabled));
           setGstPercentage(settings.hotelGstPercentage || 0);
         } else if (businessUnit === 'garden' && settings.gardenGstEnabled) {
-          setGstEnabled(true);
+          setGstEnabled(!!(settings.gstEnabled && settings.gardenGstEnabled));
           setGstPercentage(settings.gardenGstPercentage || 0);
         }
       }
