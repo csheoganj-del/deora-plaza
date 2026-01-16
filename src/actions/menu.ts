@@ -17,7 +17,8 @@ export async function getMenuItems(businessUnit?: string): Promise<any[]> {
         // Fetch ALL menu items regardless of businessUnit to create a unified menu
         const filters: any[] = []
         if (businessUnit) {
-            filters.push({ field: 'businessUnit', operator: '==', value: businessUnit })
+            // Include both the specific unit AND 'shared' items
+            filters.push({ field: 'businessUnit', operator: 'in', value: [businessUnit, 'shared'] })
         }
 
         const items = await queryDocuments('menu_items', filters, 'name', 'asc')
