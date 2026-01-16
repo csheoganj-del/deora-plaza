@@ -204,7 +204,7 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <TakeawayOrderButton businessUnit={userBusinessUnit === 'bar' ? 'bar' : 'cafe'} />
 
                     <TableManager businessUnit={activeTab === 'all' ? 'cafe' : activeTab} initialTables={tables}>
@@ -219,7 +219,7 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 <PremiumStatsCard
                     title="Total Tables"
                     value={stats.total.toString()}

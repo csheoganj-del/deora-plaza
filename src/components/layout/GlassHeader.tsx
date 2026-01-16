@@ -11,6 +11,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { BusinessSettingsForm } from "@/components/dashboard/BusinessSettingsForm";
 import { useRouter } from "next/navigation";
 
+import MobileSidebar from "./MobileSidebar";
+
 export default function GlassHeader() {
     const { data: session } = useServerAuth();
     const { notifications, unreadCount, markAllAsRead, clearAll, markAsRead } = useNotificationSystem();
@@ -60,8 +62,9 @@ export default function GlassHeader() {
         <header className="sticky top-0 right-0 z-40 p-4 pb-0">
             <div className="rounded-2xl border border-white/10 bg-[#1a1a1a]/40 backdrop-blur-xl shadow-lg p-3 flex items-center justify-between gap-4">
 
-                {/* Left: Breadcrumb Placeholder / Welcome Message */}
+                {/* Left: Mobile Sidebar Toggle & Welcome */}
                 <div className="flex-1 flex items-center gap-4">
+                    <MobileSidebar />
                     <div className="flex flex-col">
                         <span className="text-white font-semibold flex items-center gap-2">
                             Welcome back, {session?.user?.username || 'User'}

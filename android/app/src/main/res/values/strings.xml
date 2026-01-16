@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Deora Plaza</string>
+    <string name="title_activity_main">Deora Plaza</string>
+    <string name="package_name">com.deoraplaza.app</string>
+    <string name="custom_url_scheme">com.deoraplaza.app</string>
+</resources>

@@ -111,7 +111,7 @@ export default function DashboardLayout({
 
                     <main
                         id="main-content"
-                        className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-6 pt-2 pb-24"
+                        className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-4 md:p-6 pt-2 pb-24"
                         role="main"
                         aria-label="Dashboard main content"
                     >
