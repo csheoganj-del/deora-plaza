@@ -47,6 +47,32 @@ export function BillGenerator({ order, onClose, onBillGenerated }: BillGenerator
     fetchMenu();
   }, []);
 
+  // Fetch latest order data to ensure we have updated items
+  useEffect(() => {
+    const fetchLatestOrderData = async () => {
+      try {
+        const { getOrderById } = await import("@/actions/orders");
+        const latestOrder = await getOrderById(order.id);
+        if (latestOrder && latestOrder.items) {
+          // Update items with latest data from database
+          const parsedItems = Array.isArray(latestOrder.items)
+            ? latestOrder.items
+            : JSON.parse(latestOrder.items);
+          setItems(parsedItems);
+          console.log('✅ Fetched latest order items:', parsedItems.length, 'items');
+        }
+      } catch (error) {
+        console.error("Failed to fetch latest order data:", error);
+        // Fallback to order.items if fetch fails
+        setItems(order.items || []);
+      }
+    };
+
+    if (order.id) {
+      fetchLatestOrderData();
+    }
+  }, [order.id]);
+
   // Calculations
   const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
   const discountAmount = (subtotal * discountPercent) / 100;
