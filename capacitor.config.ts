@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Deora Plaza',
   webDir: 'public',
   server: {
-    // This points to your live Vercel deployment
-    // Ensure this URL is correct and up-to-date!
+    // Local Development URL (Hot Reload)
+    // Live Production Server
     url: 'https://deora-plaza-master.vercel.app',
     cleartext: true
   },

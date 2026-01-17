@@ -107,7 +107,7 @@ export function DineInOrderDialog({
   const [isCustomerExpanded, setIsCustomerExpanded] = useState(false);
   const [isGstExpanded, setIsGstExpanded] = useState(false);
   const [isBillingOnlyMode, setIsBillingOnlyMode] = useState(false);
-  const [isBillingOnlyMode, setIsBillingOnlyMode] = useState(false);
+
 
 
   const isManagerRole = [

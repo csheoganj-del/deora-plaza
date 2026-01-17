@@ -147,7 +147,7 @@ async function loginWithCustomUserInternal(
             sameSite: "lax",
             maxAge: 60 * 60 * 24,
             path: "/",
-            domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+            domain: undefined,
         });
 
         cookieStore.set("deora-auth-token", token, {
@@ -156,7 +156,7 @@ async function loginWithCustomUserInternal(
             sameSite: "lax",
             maxAge: 60 * 60 * 24, // 24 hours
             path: "/",
-            domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+            domain: undefined,
         })
 
         const cookieDuration = Date.now() - cookieStartTime;
