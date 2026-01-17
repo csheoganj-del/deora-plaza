@@ -1,0 +1,202 @@
+/* Mobile-First Native App Styling */
+/* This file makes the app feel like a native Android app with larger touch targets */
+
+@media (max-width: 768px) {
+
+    /* Increase base font size for better readability */
+    html {
+        font-size: 16px !important;
+    }
+
+    body {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* Larger headings */
+    h1 {
+        font-size: 28px !important;
+    }
+
+    h2 {
+        font-size: 24px !important;
+    }
+
+    h3 {
+        font-size: 20px !important;
+    }
+
+    /* Larger buttons with better touch targets */
+    button,
+    .btn,
+    [role="button"],
+    a.button {
+        min-height: 48px !important;
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Larger input fields */
+    input,
+    textarea,
+    select {
+        min-height: 48px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Larger table cards */
+    [class*="table-card"],
+    [class*="card"] {
+        padding: 16px !important;
+        min-height: 120px !important;
+    }
+
+    /* Larger text in cards */
+    [class*="card"] span,
+    [class*="card"] p {
+        font-size: 15px !important;
+    }
+
+    /* Larger table numbers */
+    [class*="table"] [class*="number"],
+    [class*="tableNumber"] {
+        font-size: 24px !important;
+    }
+
+    /* Larger icons */
+    svg,
+    [class*="icon"] {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    /* Larger badges and status indicators */
+    [class*="badge"],
+    [class*="status"] {
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+        min-height: 28px !important;
+    }
+
+    /* Larger stats cards */
+    [class*="stats"] [class*="value"],
+    [class*="stat"] [class*="value"] {
+        font-size: 32px !important;
+    }
+
+    [class*="stats"] [class*="title"],
+    [class*="stat"] [class*="title"] {
+        font-size: 14px !important;
+    }
+
+    /* Larger menu items */
+    [class*="menu-item"],
+    [class*="menuItem"] {
+        padding: 16px !important;
+        min-height: 100px !important;
+    }
+
+    [class*="menu-item"] h3,
+    [class*="menuItem"] h3 {
+        font-size: 18px !important;
+    }
+
+    [class*="menu-item"] .price,
+    [class*="menuItem"] .price {
+        font-size: 20px !important;
+        font-weight: 700 !important;
+    }
+
+    /* Larger dialog/modal content */
+    [role="dialog"] {
+        font-size: 16px !important;
+    }
+
+    [role="dialog"] h2,
+    [role="dialog"] h3 {
+        font-size: 22px !important;
+    }
+
+    /* Better spacing for lists */
+    ul,
+    ol {
+        padding-left: 24px !important;
+    }
+
+    li {
+        margin-bottom: 12px !important;
+        font-size: 16px !important;
+    }
+
+    /* Larger tabs */
+    [role="tab"],
+    [class*="tab"] {
+        min-height: 48px !important;
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+    }
+
+    /* Increase spacing between grid items */
+    [class*="grid"] {
+        gap: 16px !important;
+    }
+
+    /* Larger search bars */
+    [type="search"],
+    [placeholder*="Search"],
+    [placeholder*="search"] {
+        min-height: 48px !important;
+        font-size: 16px !important;
+        padding: 12px 16px !important;
+    }
+
+    /* Larger checkboxes and radio buttons */
+    [type="checkbox"],
+    [type="radio"] {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    /* Better touch targets for links */
+    a {
+        padding: 8px 4px !important;
+        font-size: 16px !important;
+    }
+
+    /* Larger dropdown menus */
+    [role="menu"],
+    [role="listbox"] {
+        font-size: 16px !important;
+    }
+
+    [role="menuitem"],
+    [role="option"] {
+        min-height: 48px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+    }
+
+    /* Prevent text from being too small */
+    * {
+        font-size: inherit !important;
+    }
+
+    small,
+    .text-xs,
+    .text-sm {
+        font-size: 14px !important;
+    }
+
+    /* Ensure minimum touch target size (44x44px) */
+    button,
+    a,
+    [role="button"],
+    [onclick],
+    [class*="clickable"] {
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "./styles/animations.css";
+import "./mobile.css";
 import { Toaster } from "sonner";
 import { BusinessSettingsProvider } from "@/contexts/BusinessSettingsContext";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
