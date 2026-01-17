@@ -9,6 +9,12 @@ const config: CapacitorConfig = {
     // Ensure this URL is correct and up-to-date!
     url: 'https://deora-plaza-master.vercel.app',
     cleartext: true
+  },
+  android: {
+    // Disable overview mode to prevent desktop-like scaling
+    webContentsDebuggingEnabled: true,
+    // Additional Android-specific settings
+    allowMixedContent: true
   }
 };
 
