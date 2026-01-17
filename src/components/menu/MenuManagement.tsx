@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { PlusCircle, MoreHorizontal, Edit, Trash2, Search, Utensils, Tag, IndianRupee } from "lucide-react"
 import { MenuItemDialog } from "./MenuItemDialog"
+import { MenuImportExport } from "./MenuImportExport"
 import { PasswordDialog } from "@/components/ui/PasswordDialog"
 import { deleteMenuItem } from "@/actions/menu"
 import { getBusinessSettings } from "@/actions/businessSettings"
@@ -191,6 +192,7 @@ export default function MenuManagement({ initialItems }: MenuManagementProps) {
                             Delete {selectedItems.size}
                         </Button>
                     )}
+                    <MenuImportExport items={items} />
                     <Button onClick={handleAdd} className="bg-primary hover:bg-primary/90 text-white">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Item
