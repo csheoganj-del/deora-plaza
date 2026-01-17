@@ -107,6 +107,7 @@ export function DineInOrderDialog({
   const [isCustomerExpanded, setIsCustomerExpanded] = useState(false);
   const [isGstExpanded, setIsGstExpanded] = useState(false);
   const [isBillingOnlyMode, setIsBillingOnlyMode] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'menu' | 'cart'>('menu');
 
 
 
@@ -858,11 +859,29 @@ export function DineInOrderDialog({
             </div>
           </div>
 
+          {/* Mobile Tab Navigation */}
+          <div className="flex lg:hidden border-b border-white/[0.06] bg-black/20 shrink-0">
+            <button
+              onClick={() => setMobileTab('menu')}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider relative ${mobileTab === 'menu' ? 'text-[#2fd180]' : 'text-white/40'}`}
+            >
+              Menu
+              {mobileTab === 'menu' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2fd180]" />}
+            </button>
+            <button
+              onClick={() => setMobileTab('cart')}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider relative ${mobileTab === 'cart' ? 'text-[#2fd180]' : 'text-white/40'}`}
+            >
+              Cart ({Object.values(cart).reduce((s, c) => s + c.qty, 0)})
+              {mobileTab === 'cart' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2fd180]" />}
+            </button>
+          </div>
+
           {/* Main Content Area - Split Pane */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
 
-            {/* LEFT: Menu Area (Adaptive: Top 40% on Mobile, 65% width on Desktop) */}
-            <div className="w-full h-[40vh] lg:h-auto lg:w-[65%] flex flex-col border-r border-white/[0.06] bg-black/20 shrink-0 lg:shrink">
+            {/* LEFT: Menu Area */}
+            <div className={`flex-col border-r border-white/[0.06] bg-black/20 shrink-0 lg:shrink w-full lg:w-[65%] ${mobileTab === 'menu' ? 'flex h-full' : 'hidden lg:flex'}`}>
               {/* Search & Categories */}
               <div className="p-4 bg-white/[0.03] border-b border-white/[0.06] space-y-4 shrink-0">
                 <div className="flex items-center gap-3">
@@ -955,10 +974,10 @@ export function DineInOrderDialog({
               </div>
             </div>
 
-            {/* RIGHT: Order Summary (Adaptive: Bottom 60% on Mobile, 35% width on Desktop) */}
+            {/* RIGHT: Order Summary */}
             <div
               data-fly-target
-              className="w-full flex-1 lg:flex-none lg:w-[35%] flex flex-col bg-[#1c1c1c] lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] lg:shadow-none overflow-hidden"
+              className={`flex-col bg-[#1c1c1c] lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] lg:shadow-none overflow-hidden w-full lg:w-[35%] shrink-0 lg:shrink-0 ${mobileTab === 'cart' ? 'flex h-full' : 'hidden lg:flex'}`}
             >
               {/* Header */}
               {/* Header */}
