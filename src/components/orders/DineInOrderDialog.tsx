@@ -755,9 +755,9 @@ export function DineInOrderDialog({
       />
 
       {/* Modal Container - CLEAR glass, NO blur, Crisp layers */}
-      <div className="fixed inset-0 z-[1001] flex items-center justify-center p-8 pointer-events-none animate-in fade-in zoom-in-95 duration-200">
+      <div className="fixed inset-0 z-[1001] flex items-center justify-center p-0 sm:p-4 md:p-8 pointer-events-none animate-in fade-in zoom-in-95 duration-200">
         <div
-          className="bg-[#1c1c1c]/95 w-full max-w-7xl h-[85vh] rounded-[24px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/[0.08] flex flex-col overflow-hidden pointer-events-auto"
+          className="bg-[#1c1c1c]/95 w-full max-w-7xl h-[100dvh] sm:h-[85vh] rounded-none sm:rounded-[24px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] border-0 sm:border border-white/[0.08] flex flex-col overflow-hidden pointer-events-auto"
           role="dialog"
           aria-modal="true"
         >
@@ -776,7 +776,7 @@ export function DineInOrderDialog({
           </div>
 
           {/* 1. Header Row - Clean & Grouped */}
-          <div className="flex items-center justify-between px-8 py-4 border-b border-white/[0.06] bg-white/[0.02] shrink-0">
+          <div className="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 border-b border-white/[0.06] bg-white/[0.02] shrink-0">
             <div className="flex items-center gap-6">
               <div className="flex flex-col">
                 <h3 className="text-xl font-semibold text-white tracking-tight flex items-center gap-2">
