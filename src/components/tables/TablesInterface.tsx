@@ -14,6 +14,7 @@ import { PremiumLiquidGlass, PremiumContainer, PremiumStatsCard } from "@/compon
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TableManager } from "./TableManager";
 import { TakeawayOrderButton } from "@/components/orders/TakeawayOrderButton";
+import { useServerAuth } from "@/hooks/useServerAuth";
 
 type Table = {
     id: string;
@@ -186,6 +187,10 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
         setSelectedTables(newSelected);
     };
 
+    const { data: session } = useServerAuth();
+    const userRole = (session?.user as any)?.role;
+    const isManager = ['super_admin', 'owner', 'manager', 'admin'].includes(userRole);
+
     return (
         <div className="space-y-6 pb-20">
             {/* Header */}
@@ -207,42 +212,46 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
                 <div className="flex flex-wrap items-center gap-3">
                     <TakeawayOrderButton businessUnit={userBusinessUnit === 'bar' ? 'bar' : 'cafe'} />
 
-                    <TableManager businessUnit={activeTab === 'all' ? 'cafe' : activeTab} initialTables={tables}>
-                        <Button
-                            variant="outline"
-                            className="bg-white/5 border-white/10 text-white hover:bg-white/10"
-                        >
-                            <Settings className="mr-2 h-4 w-4" /> Manage
-                        </Button>
-                    </TableManager>
+                    {isManager && (
+                        <TableManager businessUnit={activeTab === 'all' ? 'cafe' : activeTab} initialTables={tables}>
+                            <Button
+                                variant="outline"
+                                className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                            >
+                                <Settings className="mr-2 h-4 w-4" /> Manage
+                            </Button>
+                        </TableManager>
+                    )}
                 </div>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-                <PremiumStatsCard
-                    title="Total Tables"
-                    value={stats.total.toString()}
-                    icon={<Utensils className="h-4 w-4 text-blue-400" />}
-                />
-                <PremiumStatsCard
-                    title="Available"
-                    value={stats.available.toString()}
-                    icon={<CheckCircle className="h-4 w-4 text-green-400" />}
-                    trend={{ value: 0, label: "Ready to seat", positive: true }}
-                />
-                <PremiumStatsCard
-                    title="Occupied"
-                    value={stats.occupied.toString()}
-                    icon={<Users className="h-4 w-4 text-red-400" />}
-                    trend={{ value: 0, label: "Active orders", positive: false }}
-                />
-                <PremiumStatsCard
-                    title="Reserved"
-                    value={stats.reserved.toString()}
-                    icon={<RotateCcw className="h-4 w-4 text-amber-400" />}
-                />
-            </div>
+            {/* Stats Cards - Only for Managers */}
+            {isManager && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                    <PremiumStatsCard
+                        title="Total Tables"
+                        value={stats.total.toString()}
+                        icon={<Utensils className="h-4 w-4 text-blue-400" />}
+                    />
+                    <PremiumStatsCard
+                        title="Available"
+                        value={stats.available.toString()}
+                        icon={<CheckCircle className="h-4 w-4 text-green-400" />}
+                        trend={{ value: 0, label: "Ready to seat", positive: true }}
+                    />
+                    <PremiumStatsCard
+                        title="Occupied"
+                        value={stats.occupied.toString()}
+                        icon={<Users className="h-4 w-4 text-red-400" />}
+                        trend={{ value: 0, label: "Active orders", positive: false }}
+                    />
+                    <PremiumStatsCard
+                        title="Reserved"
+                        value={stats.reserved.toString()}
+                        icon={<RotateCcw className="h-4 w-4 text-amber-400" />}
+                    />
+                </div>
+            )}
 
             {/* Tabs / Filters + Grid */}
             <PremiumLiquidGlass className="flex flex-col min-h-[600px]">
@@ -289,7 +298,7 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
                                 className="bg-black/20 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 w-full md:w-48"
                             />
                         </div>
-                        {selectedTables.size > 0 && (
+                        {isManager && selectedTables.size > 0 && (
                             <Button
                                 onClick={handleBulkDelete}
                                 variant="destructive"
@@ -363,9 +372,11 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
                                             <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" onClick={(e) => { e.stopPropagation(); handleTableClick(table); }}>
                                                 New Order
                                             </Button>
-                                            <Button size="icon" variant="destructive" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleSingleDelete(table.id, table.tableNumber); }}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                            {isManager && (
+                                                <Button size="icon" variant="destructive" className="h-9 w-9" onClick={(e) => { e.stopPropagation(); handleSingleDelete(table.id, table.tableNumber); }}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
                                         </div>
                                     )}
                                 </div>
