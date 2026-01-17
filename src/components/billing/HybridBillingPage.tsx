@@ -847,7 +847,7 @@ export default function HybridBillingPage() {
                       <div>{bill.customerName || "Walk-in"}</div>
                       {bill.customerMobile && <div className="text-xs text-white/30">{bill.customerMobile}</div>}
                     </td>
-                    <td className="p-3 text-right font-medium text-white">₹{bill.grandTotal.toFixed(2)}</td>
+                    <td className="p-3 text-right font-medium text-white">₹{(bill.grandTotal || 0).toFixed(2)}</td>
                     <td className="p-3 text-center">
                       <Badge variant="outline" className={bill.paymentStatus === "paid" ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-orange-500/10 text-orange-400 border-orange-500/20"}>
                         {bill.paymentStatus}
