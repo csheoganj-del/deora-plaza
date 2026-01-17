@@ -107,6 +107,7 @@ export function DineInOrderDialog({
   const [isCustomerExpanded, setIsCustomerExpanded] = useState(false);
   const [isGstExpanded, setIsGstExpanded] = useState(false);
   const [isBillingOnlyMode, setIsBillingOnlyMode] = useState(false);
+  const [isBillingOnlyMode, setIsBillingOnlyMode] = useState(false);
 
 
   const isManagerRole = [
@@ -858,10 +859,10 @@ export function DineInOrderDialog({
           </div>
 
           {/* Main Content Area - Split Pane */}
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
 
-            {/* LEFT: Menu Area (65%) */}
-            <div className="w-[65%] flex flex-col border-r border-white/[0.06] bg-black/20">
+            {/* LEFT: Menu Area (Adaptive: Top 40% on Mobile, 65% width on Desktop) */}
+            <div className="w-full h-[40vh] lg:h-auto lg:w-[65%] flex flex-col border-r border-white/[0.06] bg-black/20 shrink-0 lg:shrink">
               {/* Search & Categories */}
               <div className="p-4 bg-white/[0.03] border-b border-white/[0.06] space-y-4 shrink-0">
                 <div className="flex items-center gap-3">
@@ -918,7 +919,7 @@ export function DineInOrderDialog({
                     <p className="text-sm font-bold uppercase tracking-widest">No items found</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 lg:gap-3 pb-20 lg:pb-0">
                     {filteredMenu.map((item) => {
                       const inCart = cart[item.id]?.qty || 0;
                       return (
@@ -954,8 +955,12 @@ export function DineInOrderDialog({
               </div>
             </div>
 
-            {/* RIGHT: Order Summary (35%) */}
-            <div data-fly-target className="w-[35%] flex flex-col bg-black/40 border-l border-white/[0.06] overflow-hidden">
+            {/* RIGHT: Order Summary (Adaptive: Bottom 60% on Mobile, 35% width on Desktop) */}
+            <div
+              data-fly-target
+              className="w-full flex-1 lg:flex-none lg:w-[35%] flex flex-col bg-[#1c1c1c] lg:bg-black/40 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:border-white/[0.06] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] lg:shadow-none overflow-hidden"
+            >
+              {/* Header */}
               {/* Header */}
               <div className="px-5 py-3 border-b border-white/[0.04] bg-white/[0.02] flex items-center justify-between shrink-0">
                 <h4 className="text-sm font-bold text-white tracking-tight">Order Summary</h4>
