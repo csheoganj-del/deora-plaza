@@ -53,6 +53,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 type Bill = {
   id: string;
@@ -788,9 +789,20 @@ export default function HybridBillingPage() {
 
       {/* Dialogs */}
       <PasswordDialog isOpen={isPasswordDialogOpen} onClose={() => setIsPasswordDialogOpen(false)} onConfirm={handlePasswordSuccess} title="Confirm Deletion" description="Are you sure you want to delete this bill? This action cannot be undone." />
-      {selectedBill && <ReprintBill bill={selectedBill} open={showReprint} onOpenChange={setShowReprint} />}
+
+      <Dialog open={showReprint} onOpenChange={setShowReprint}>
+        <DialogContent className="max-w-[800px] bg-zinc-900 border-zinc-800 text-zinc-100 p-0 overflow-hidden">
+          {selectedBill && <ReprintBill bill={selectedBill} onClose={() => setShowReprint(false)} />}
+        </DialogContent>
+      </Dialog>
+
       {billToEdit && <EditBillDialog bill={billToEdit} open={showEditDialog} onOpenChange={setShowEditDialog} onBillUpdated={handleBillUpdated} />}
-      {orderToBill && <BillGenerator order={orderToBill} open={showBillGenerator} onOpenChange={setShowBillGenerator} onBillGenerated={() => loadBills(effectiveUnit)} />}
+
+      <Dialog open={showBillGenerator} onOpenChange={setShowBillGenerator}>
+        <DialogContent className="max-w-[95vw] h-[90vh] p-0 border-none bg-zinc-950">
+          {orderToBill && <BillGenerator order={orderToBill} onClose={() => setShowBillGenerator(false)} onBillGenerated={() => { setShowBillGenerator(false); loadBills(effectiveUnit); }} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
