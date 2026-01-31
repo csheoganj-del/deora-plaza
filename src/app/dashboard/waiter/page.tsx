@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
-import WaiterDashboard from '@/components/waiter/WaiterDashboard';
-import { DashboardPageWrapper } from '@/components/layout/DashboardPageWrapper';
+import WaiterPageClient from './WaiterPageClient';
 
 export const metadata: Metadata = {
   title: 'Waiter Dashboard - DEORA Plaza',
@@ -8,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function WaiterPage() {
-  return (
-    <div className="pb-20">
-      <WaiterDashboard />
-    </div>
-  );
+  return <WaiterPageClient />;
 }

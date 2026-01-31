@@ -189,7 +189,7 @@ export default function TablesInterface({ initialTables, userBusinessUnit, canSe
 
     const { data: session } = useServerAuth();
     const userRole = (session?.user as any)?.role;
-    const isManager = ['super_admin', 'owner', 'manager', 'admin'].includes(userRole);
+    const isManager = ['super_admin', 'owner', 'manager', 'admin', 'cafe_manager', 'bar_manager'].includes(userRole);
 
     return (
         <div className="space-y-6 pb-20">

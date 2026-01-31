@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
     PremiumLiquidGlass,
     PremiumContainer,
@@ -41,8 +42,6 @@ import { getBusinessSettings } from "@/actions/businessSettings";
 import { PasswordDialog } from "@/components/ui/PasswordDialog";
 import { formatDistanceToNow } from "date-fns";
 import { cn, playBeep, speakKitchenAlert } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
-import { balloonFly } from "@/lib/balloonFly";
 import { clearKitchenHistory } from "@/actions/kitchen";
 import CustomerAutocomplete from "@/components/billing/CustomerAutocomplete";
 import DiscountPanel from "@/components/billing/DiscountPanel";
@@ -98,11 +97,8 @@ interface Order {
 const supabase = createClient();
 
 export default function WaiterDashboard({ initialTab = "new-order", soloMode = false }: { initialTab?: string; soloMode?: boolean }) {
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState(initialTab);
-    const [loading, setLoading] = useState(true);
-    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-    const [tables, setTables] = useState<Table[]>([]);
-    const [activeOrders, setActiveOrders] = useState<Order[]>([]);
 
     // New Order State
     const [currentCart, setCurrentCart] = useState<OrderItem[]>([]);
@@ -134,6 +130,41 @@ export default function WaiterDashboard({ initialTab = "new-order", soloMode = f
     const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
 
     const [audioEnabled, setAudioEnabled] = useState(false);
+
+    // Use React Query for data - instant updates!
+    const { data: menuItems = [], isLoading: menuLoading } = useQuery<MenuItem[]>({
+        queryKey: ["menu", selectedBusinessUnit],
+        queryFn: () => getMenuItems(selectedBusinessUnit),
+        staleTime: Infinity, // Menu rarely changes
+    });
+
+    const { data: tables = [], isLoading: tablesLoading } = useQuery<Table[]>({
+        queryKey: ["tables", selectedBusinessUnit],
+        queryFn: () => getTables(selectedBusinessUnit),
+    });
+
+    const { data: allOrders = [], isLoading: ordersLoading } = useQuery<Order[]>({
+        queryKey: ["orders", "waiter"],
+        queryFn: async () => {
+            const ordersData = await getOrders();
+            // Filter for waiter-relevant orders
+            return (ordersData || []).filter((o: any) => {
+                const status = (o.status || "").toLowerCase();
+                const type = (o.type || "").toLowerCase();
+                const statusMatch = ['pending', 'preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status);
+                const typeMatch = type === 'dine-in' ||
+                    (type === 'takeaway' && ['preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status)) ||
+                    (type === 'room-service' && ['preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status));
+                return statusMatch && typeMatch;
+            });
+        },
+        refetchInterval: false, // Realtime handles it
+    });
+
+    const loading = menuLoading || tablesLoading || ordersLoading;
+    const activeOrders = allOrders;
+
+
     // TTS Test Functions
     const testItemReady = () => {
         speakKitchenAlert("Table 5 ke liye Masala Chai taiyaar hai", true);
@@ -179,17 +210,10 @@ export default function WaiterDashboard({ initialTab = "new-order", soloMode = f
         document.addEventListener('keydown', handleInteraction);
         document.addEventListener('touchstart', handleInteraction);
 
-        return () => {
-            document.removeEventListener('click', handleInteraction);
-            document.removeEventListener('keydown', handleInteraction);
-            document.removeEventListener('touchstart', handleInteraction);
-        };
     }, [audioEnabled]);
 
-
+    // Restore Alerts: Listen for changes purely for TTS/Beeps (Data is handled by React Query)
     useEffect(() => {
-        fetchInitialData();
-
         // Fetch business settings for password protection
         getBusinessSettings().then(settings => {
             if (settings) {
@@ -197,22 +221,20 @@ export default function WaiterDashboard({ initialTab = "new-order", soloMode = f
             }
         });
 
-        // Set up real-time subscriptions
-        console.log("[WaiterDashboard] Setting up Realtime subscription for orders...");
+        console.log("[WaiterDashboard] Setting up Safe Alert Subscription...");
         const channel = supabase
-            .channel("waiter-dashboard-orders")
+            .channel("waiter-alerts-safe")
             .on(
                 "postgres_changes",
-                { event: "*", schema: "public", table: "orders" },
+                { event: "UPDATE", schema: "public", table: "orders" },
                 (payload: any) => {
-                    console.log("[WaiterDashboard] Realtime order change detected:", payload.eventType, payload.new?.orderNumber || payload.old?.id);
-
+                    // Only process if we have both old and new data for comparison
                     if (payload.new && payload.old) {
                         const newOrder = payload.new;
                         const oldOrder = payload.old;
 
-                        // Construct user-friendly location string
-                        const isTakeaway = newOrder.businessUnit === 'takeaway' || newOrder.type === 'takeaway'; // Handle both flags
+                        // Identify Location
+                        const isTakeaway = newOrder.businessUnit === 'takeaway' || newOrder.type === 'takeaway';
                         const locationName = newOrder.businessUnit === 'hotel'
                             ? `Room ${newOrder.roomNumber || 'Unknown'}`
                             : isTakeaway
@@ -221,18 +243,17 @@ export default function WaiterDashboard({ initialTab = "new-order", soloMode = f
 
                         // 1. Whole Order Ready Alert
                         if (newOrder.status === 'ready' && oldOrder.status !== 'ready') {
-                            console.log("[Waiter] Order is READY, playing alert...");
+                            console.log("[Waiter] Order READY Alert Triggered");
                             playBeep(1000, 200);
                             toast.success(`Order ${newOrder.orderNumber} is READY!`, { duration: 5000 });
 
-                            // Speak: "Order X for Table Y is ready"
                             const message = `Order number ${newOrder.orderNumber}, ${locationName} ke liye pura taiyaar hai`;
                             speakKitchenAlert(message, true);
                         }
 
-                        // 2. Individual Item Ready Alert (Prevent items from getting cold!)
-                        // Check if specific items changed to "prepared" (Kitchen finished cooking)
-                        if (newOrder.items && oldOrder.items) {
+                        // 2. Individual Item Ready Alert
+                        // Only check if items string changed to avoid parsing unchanged JSON
+                        if (newOrder.items !== oldOrder.items) {
                             try {
                                 const newItems: any[] = typeof newOrder.items === 'string' ? JSON.parse(newOrder.items) : newOrder.items;
                                 const oldItems: any[] = typeof oldOrder.items === 'string' ? JSON.parse(oldOrder.items) : oldOrder.items;
@@ -240,122 +261,32 @@ export default function WaiterDashboard({ initialTab = "new-order", soloMode = f
                                 newItems.forEach(newItem => {
                                     const oldPageItem = oldItems.find((oi: any) => (oi.menuItemId === newItem.menuItemId) || (oi.id === newItem.id));
 
-                                    // Trigger if status changed to 'prepared' (Kitchen -> Waiter handoff)
-                                    // We ignore 'served' here as that's done by the waiter themselves
+                                    // Trigger if status changed to 'prepared'
                                     if (newItem.status === 'prepared' && oldPageItem?.status !== 'prepared') {
-                                        console.log(`[Waiter] Item Ready: ${newItem.name}`);
-                                        playBeep(800, 100); // Shorter beep for items
+                                        console.log(`[Waiter] Item Ready Alert: ${newItem.name}`);
+                                        playBeep(800, 100);
                                         toast.info(`${newItem.name} Ready for ${locationName}`);
 
-                                        // Speak: "Item X for Table Y is ready"
                                         const itemMessage = `${locationName} ke liye ${newItem.name} taiyaar hai`;
                                         speakKitchenAlert(itemMessage, true);
                                     }
                                 });
                             } catch (e) {
-                                console.error("Error parsing items for TTS diff:", e);
+                                console.error("[Waiter] Error parsing items for alerts:", e);
                             }
                         }
                     }
-
-                    // Provide visual feedback for sync
-                    if (payload.eventType !== 'DELETE') {
-                        toast.info(`Update: Order ${payload.new?.orderNumber || 'synced'}`, {
-                            duration: 2000,
-                            position: 'bottom-right'
-                        });
-                    }
-                    fetchOrdersOnly();
                 }
             )
-            .subscribe((status) => {
-                console.log(`[WaiterDashboard] Realtime subscription status: ${status}`);
-            });
-
-        // Polling fallback (every 10 seconds)
-        const pollInterval = setInterval(() => {
-            console.log("[WaiterDashboard] Polling fallback triggered");
-            fetchOrdersOnly();
-        }, 10000);
+            .subscribe();
 
         return () => {
-            console.log("[WaiterDashboard] Cleaning up Realtime subscription and polling");
-            channel.unsubscribe();
-            clearInterval(pollInterval);
+            supabase.removeChannel(channel);
         };
-    }, [selectedBusinessUnit]);
+    }, []);
 
-    const fetchInitialData = async () => {
-        console.log(`[WaiterDashboard] Fetching initial data for unit: ${selectedBusinessUnit}`);
-        setLoading(true);
-        try {
-            const [menuData, tablesData, ordersData] = await Promise.all([
-                getMenuItems(selectedCategory === 'all' ? selectedBusinessUnit : undefined),
-                getTables(selectedBusinessUnit),
-                getOrders()
-            ]);
 
-            console.log(`[WaiterDashboard] Fetched ${menuData?.length || 0} menu items`);
-            console.log(`[WaiterDashboard] Fetched ${tablesData?.length || 0} tables`);
-            console.log(`[WaiterDashboard] Fetched ${ordersData?.length || 0} orders`);
 
-            setMenuItems(menuData || []);
-            setTables(tablesData || []);
-
-            // Filter for orders that waiters need to handle (dine-in, takeaway, and room-service)
-            const filtered = (ordersData || []).filter((o: any) => {
-                const status = (o.status || "").toLowerCase();
-                const type = (o.type || "").toLowerCase();
-                const statusMatch = ['pending', 'preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status);
-                // Include dine-in (all statuses), takeaway (when ready), and room-service (when ready for delivery)
-                const typeMatch = type === 'dine-in' ||
-                    (type === 'takeaway' && ['preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status)) ||
-                    (type === 'room-service' && ['preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status));
-                return statusMatch && typeMatch;
-            });
-            console.log(`[WaiterDashboard] Active orders after filter: ${filtered.length}`);
-            setActiveOrders(filtered);
-        } catch (error) {
-            console.error("[WaiterDashboard] Error fetching initial data:", error);
-            toast.error("Failed to load dashboard data");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchOrdersOnly = async () => {
-        console.log("[WaiterDashboard] Refreshing orders list...");
-        try {
-            const ordersData = await getOrders();
-            console.log(`[WaiterDashboard] Refreshed ${ordersData?.length || 0} orders`);
-
-            // Filter for orders that waiters need to handle (dine-in, takeaway, and room-service)
-            const filtered = (ordersData || []).filter((o: any) => {
-                const status = (o.status || "").toLowerCase();
-                const type = (o.type || "").toLowerCase();
-                const statusMatch = ['pending', 'preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status);
-                // Include dine-in (all statuses), takeaway (when ready), and room-service (when ready for delivery)
-                // We added 'preparing' to takeaway so that partial item ready alerts show up
-                const typeMatch = type === 'dine-in' ||
-                    (type === 'takeaway' && ['preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status)) ||
-                    (type === 'room-service' && ['preparing', 'ready', 'served', 'bill_requested', 'completed'].includes(status));
-                return statusMatch && typeMatch;
-            });
-
-            console.log(`[WaiterDashboard] Active orders after filter: ${filtered.length}`);
-            setActiveOrders(filtered);
-
-            // Update editing order if it changed in DB
-            if (editingOrder) {
-                const updated = ordersData.find((o: any) => o.id === editingOrder.id);
-                if (updated && JSON.stringify(updated.items) !== JSON.stringify(editingOrder.items)) {
-                    // Handle merge if needed
-                }
-            }
-        } catch (error) {
-            console.error("[WaiterDashboard] Error refreshing orders:", error);
-        }
-    };
 
     // --- Handlers: New Order ---
     const addToCart = (item: MenuItem, e?: React.MouseEvent) => {

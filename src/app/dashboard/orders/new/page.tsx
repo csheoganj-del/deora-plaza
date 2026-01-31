@@ -1,8 +1,9 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import MenuGrid from "@/components/cafe/MenuGrid";
 import OrderCart from "@/components/cafe/OrderCart";
 import { getMenuItems } from "@/actions/menu";
@@ -43,27 +44,20 @@ function NewOrderContent() {
   const tableNumber = searchParams.get("tableNumber");
 
   const { data: session, status } = useServerAuth();
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+  // Use React Query for menu items - instant loading after first fetch!
+  const { data: menuItems = [], isLoading: menuLoading } = useQuery({
+    queryKey: ["menu", "cafe"],
+    queryFn: () => getMenuItems("cafe"),
+    staleTime: 5 * 60 * 1000, // Menu stays fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Cache persists for 30 minutes
+  });
+
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [customer, setCustomer] = useState<any>(null);
 
   console.log("NewOrderContent rendered with cart length:", cart.length);
-
-  useEffect(() => {
-    const fetchMenuItems = async () => {
-      try {
-        console.log("Fetching menu items...");
-        const items = await getMenuItems();
-        console.log("Menu items fetched:", items.length);
-        setMenuItems(items);
-      } catch (error) {
-        console.error("Error fetching menu items:", error);
-      }
-    };
-
-    fetchMenuItems();
-  }, []);
 
   const handleAddItem = (item: MenuItem, quantityChange: number) => {
     console.log(
@@ -214,16 +208,22 @@ function NewOrderContent() {
 
         <CustomerLookup onSelectCustomer={setCustomer} />
 
-        <MenuGrid
-          items={menuItems}
-          onAddItem={handleAddItem}
-          cartItems={cart.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-          }))}
-        />
+        {menuLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <MenuGrid
+            items={menuItems}
+            onAddItem={handleAddItem}
+            cartItems={cart.map((item) => ({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+            }))}
+          />
+        )}
       </div>
 
       <div className="w-96 border-l border-[#E5E7EB] flex flex-col">

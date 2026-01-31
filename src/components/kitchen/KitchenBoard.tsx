@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox"
@@ -53,8 +54,15 @@ type Order = {
 
 export default function KitchenBoard() {
   const { syncFromDatabase } = useNotificationSystem();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  // Use React Query for orders - instant updates via Realtime!
+  const { data: orders = [], isLoading: loading } = useQuery<Order[]>({
+    queryKey: ["orders", "kitchen"],
+    queryFn: () => getKitchenOrders(),
+    refetchInterval: false, // No polling! Realtime handles it
+  });
+
   const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -167,106 +175,68 @@ export default function KitchenBoard() {
   }, [audioEnabled]);
 
 
-  const fetchOrders = async () => {
-    try {
-      const data = await getKitchenOrders();
-      // @ts-ignore - Date serialization issue from server action
-      const newOrders = data as Order[];
+  // Track order count for new order detection
+  useEffect(() => {
+    if (!orders) return;
 
-      const pendingOrders = newOrders.filter(o => o.status === 'pending');
-      setHasPendingOrders(pendingOrders.length > 0);
+    const pendingOrders = orders.filter(o => o.status === 'pending');
+    setHasPendingOrders(pendingOrders.length > 0);
 
-      // On first load, just sync state and don't play alerts
-      if (!isInitializedRef.current) {
-        setLastCheckCount(newOrders.length);
-        setIsInitialized(true);
-        setOrders(newOrders);
-        return;
-      }
-
-      // Check for truly NEW orders (count increased)
-      // Use ref for comparison to avoid stale closure in interval
-      const prevCount = lastCheckCountRef.current;
-
-      console.log('🔍 [ORDER COUNT CHECK] newOrders.length:', newOrders.length, 'lastCheckCount (ref):', prevCount, 'Will trigger alert?', newOrders.length > prevCount);
-
-      if (newOrders.length > prevCount) {
-        console.log('🆕 [NEW ORDER DETECTED] Order count increased from', prevCount, 'to', newOrders.length);
-        const latestOrder = newOrders[newOrders.length - 1];
-
-        console.log('[Kitchen TTS DEBUG] Latest order:', {
-          type: latestOrder.type,
-          table: latestOrder.table,
-          tableNumber: latestOrder.table?.tableNumber,
-          roomNumber: latestOrder.roomNumber
-        });
-
-        // Determine location for toast description
-        const location = latestOrder.type === 'takeaway'
-          ? "takeaway"
-          : latestOrder.table?.tableNumber
-            ? `table number ${latestOrder.table.tableNumber}`
-            : latestOrder.roomNumber
-              ? `room number ${latestOrder.roomNumber}`
-              : "counter";
-
-        console.log('[Kitchen TTS DEBUG] Determined location:', location);
-        const ttsMessage = `${location} ke liye naya order aaya hai, kripya ise taiyar karein`;
-        console.log('[Kitchen TTS DEBUG] Full message:', ttsMessage);
-
-        // Use ref to check audio enabled state inside closure
-        console.log('📢 [NEW ORDER DETECTED] Triggering voice alert via KitchenBoard.');
-
-        // Ensure audio is enabled (just to be safe for future interactions)
-        if (!audioEnabledRef.current) {
-          console.log('[Kitchen TTS] Audio not enabled, asking to enable...');
-        }
-
-        // Alert message is already constructed above (ttsMessage)
-        speakKitchenAlert(ttsMessage);
-
-        // Also show a visual confirmation
-        showToast(`🔊 Kitchen Alert: ${ttsMessage}`, "info");
-
-        // Flash title for background visibility
-        const originalTitle = document.title;
-        let blinkApi: NodeJS.Timeout;
-        let isAlertTitle = false;
-
-        // Blink title for 10 seconds
-        const blinkTitle = () => {
-          document.title = isAlertTitle ? "🔔 NEW ORDER!" : "Kitchen Display System";
-          isAlertTitle = !isAlertTitle;
-        };
-
-        blinkApi = setInterval(blinkTitle, 1000);
-        setTimeout(() => {
-          clearInterval(blinkApi);
-          document.title = originalTitle;
-        }, 10000);
-
-        console.log('✅ [UI UPDATED] New order detected, UI refreshed.');
-
-        syncFromDatabase(); // Refresh the bell icon notifications immediately
-        setTimerResetKey(prev => prev + 1); // Reset persistent timer
-        console.log('⏱️ [TIMER RESET] Timer key incremented, reminder will start in 20 seconds');
-
-        toast.info("🚨 New Kitchen Order Received!", {
-          description: `Order #${latestOrder.orderNumber} for ${location === 'takeaway' ? 'Takeaway' : latestOrder.table?.tableNumber ? `Table ${latestOrder.table.tableNumber}` : latestOrder.roomNumber ? `Room ${latestOrder.roomNumber}` : 'Counter'}`,
-        });
-
-        setLastCheckCount(newOrders.length);
-      } else if (newOrders.length < prevCount) {
-        setLastCheckCount(newOrders.length);
-      }
-
-      setOrders(newOrders);
-    } catch (err) {
-      console.error("Fetch orders error:", err);
-    } finally {
-      setLoading(false);
+    // On first load, just sync state and don't play alerts
+    if (!isInitializedRef.current) {
+      setLastCheckCount(orders.length);
+      setIsInitialized(true);
+      return;
     }
-  };
+
+    // Check for truly NEW orders (count increased)
+    const prevCount = lastCheckCountRef.current;
+
+    console.log('🔍 [ORDER COUNT CHECK] orders.length:', orders.length, 'lastCheckCount (ref):', prevCount, 'Will trigger alert?', orders.length > prevCount);
+
+    if (orders.length > prevCount) {
+      console.log('🆕 [NEW ORDER DETECTED] Order count increased from', prevCount, 'to', orders.length);
+      const latestOrder = orders[orders.length - 1];
+
+      // Determine location for toast description
+      const location = latestOrder.type === 'takeaway'
+        ? "takeaway"
+        : latestOrder.table?.tableNumber
+          ? `table number ${latestOrder.table.tableNumber}`
+          : latestOrder.roomNumber
+            ? `room number ${latestOrder.roomNumber}`
+            : "counter";
+
+      const ttsMessage = `${location} ke liye naya order aaya hai, kripya ise taiyar karein`;
+      speakKitchenAlert(ttsMessage);
+      showToast(`🔊 Kitchen Alert: ${ttsMessage}`, "info");
+
+      // Flash title
+      const originalTitle = document.title;
+      let blinkApi: NodeJS.Timeout;
+      let isAlertTitle = false;
+      const blinkTitle = () => {
+        document.title = isAlertTitle ? "🔔 NEW ORDER!" : "Kitchen Display System";
+        isAlertTitle = !isAlertTitle;
+      };
+      blinkApi = setInterval(blinkTitle, 1000);
+      setTimeout(() => {
+        clearInterval(blinkApi);
+        document.title = originalTitle;
+      }, 10000);
+
+      syncFromDatabase();
+      setTimerResetKey(prev => prev + 1);
+
+      toast.info("🚨 New Kitchen Order Received!", {
+        description: `Order #${latestOrder.orderNumber} for ${location === 'takeaway' ? 'Takeaway' : latestOrder.table?.tableNumber ? `Table ${latestOrder.table.tableNumber}` : latestOrder.roomNumber ? `Room ${latestOrder.roomNumber}` : 'Counter'}`,
+      });
+
+      setLastCheckCount(orders.length);
+    } else if (orders.length < prevCount) {
+      setLastCheckCount(orders.length);
+    }
+  }, [orders, syncFromDatabase]);
 
   // Sound Alert Loop - Sounds if any order is still 'pending'
   useEffect(() => {
@@ -319,60 +289,51 @@ export default function KitchenBoard() {
     };
   }, [hasPendingOrders, timerResetKey]);
 
+  // Fetch business settings on mount
   useEffect(() => {
-    fetchOrders();
-    const interval = setInterval(fetchOrders, 5000); // Faster polling (5s)
-
-    // Fetch business settings for password protection
     getBusinessSettings().then(settings => {
       if (settings) {
         setPasswordProtectionEnabled(settings.enablePasswordProtection ?? true);
       }
     });
-
-    return () => clearInterval(interval);
   }, []);
 
-  const handleItemStatusUpdate = async (orderId: string, menuItemId: string, status: string) => {
-    try {
-      setLoading(true);
-      const result = await updateOrderItemStatus(orderId, menuItemId, status, { actor: 'kitchen' });
-      if (result.success) {
-        await fetchOrders();
-        toast.success(`Item marked as ${status}`);
-        if (status === 'preparing') playBeep(700, 150);
-        if (status === 'prepared') playBeep(1200, 180);
-      }
-    } catch (error) {
-      console.error("Error updating item status:", error);
-    } finally {
-      setLoading(false);
-    }
+  // Mutation for item status updates with optimistic UI
+  const itemStatusMutation = useMutation({
+    mutationFn: ({ orderId, menuItemId, status }: { orderId: string; menuItemId: string; status: string }) =>
+      updateOrderItemStatus(orderId, menuItemId, status, { actor: 'kitchen' }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orders", "kitchen"] });
+      toast.success(`Item marked as ${variables.status}`);
+      if (variables.status === 'preparing') playBeep(700, 150);
+      if (variables.status === 'prepared') playBeep(1200, 180);
+    },
+  });
+
+  const handleItemStatusUpdate = (orderId: string, menuItemId: string, status: string) => {
+    itemStatusMutation.mutate({ orderId, menuItemId, status });
   };
 
   const handleClearHistory = async () => {
     if (!confirm("Are you sure you want to CLEAR ALL HISTORY? This cannot be undone.")) return;
 
     try {
-      setLoading(true);
       const result = await clearKitchenHistory();
       if (result.success) {
         toast.success("History cleared successfully");
-        fetchOrders();
+        queryClient.invalidateQueries({ queryKey: ["orders", "kitchen"] });
       } else {
         toast.error("Failed to clear history");
       }
     } catch (error) {
       console.error("Error clearing history:", error);
       toast.error("Error clearing history");
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     await updateOrderStatus(orderId, newStatus);
-    fetchOrders();
+    queryClient.invalidateQueries({ queryKey: ["orders", "kitchen"] });
     if (newStatus === "preparing") {
       playBeep(700, 150);
       toast.info("Order marked as Preparing");
@@ -392,7 +353,7 @@ export default function KitchenBoard() {
         const result = await deleteOrder(orderId);
         if (result.success) {
           toast.success("Order deleted successfully");
-          fetchOrders();
+          queryClient.invalidateQueries({ queryKey: ["orders", "kitchen"] });
           setSelectedOrders(prev => prev.filter(id => id !== orderId));
         } else {
           toast.error("Failed to delete order");
@@ -447,8 +408,7 @@ export default function KitchenBoard() {
         const result = await deleteOrder(orderToDelete);
         if (result.success) {
           toast.success("Order deleted successfully");
-          fetchOrders();
-          // Remove from selected orders if it was selected
+          queryClient.invalidateQueries({ queryKey: ["orders", "kitchen"] });
           setSelectedOrders(prev => prev.filter(id => id !== orderToDelete));
         } else {
           toast.error("Failed to delete order");
@@ -467,7 +427,7 @@ export default function KitchenBoard() {
 
       if (successCount > 0) {
         toast.success(`${successCount} order(s) deleted successfully`);
-        fetchOrders();
+        queryClient.invalidateQueries({ queryKey: ["orders", "kitchen"] });
         setSelectedOrders([]);
       }
 
@@ -498,8 +458,9 @@ export default function KitchenBoard() {
     }
   };
 
-  const liveOrders = orders.filter(o => ["pending", "preparing"].includes(o.status));
-  const historyOrders = orders.filter(o => ["ready", "served", "completed", "cancelled"].includes(o.status));
+  // Memoize filtered orders for performance
+  const liveOrders = useMemo(() => orders.filter(o => ["pending", "preparing"].includes(o.status)), [orders]);
+  const historyOrders = useMemo(() => orders.filter(o => ["ready", "served", "completed", "cancelled"].includes(o.status)), [orders]);
 
   if (loading) {
     return (

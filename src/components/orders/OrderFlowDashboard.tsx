@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { PremiumLiquidGlass, PremiumStatsCard, PremiumContainer } from "@/components/ui/glass/premium-liquid-glass"
 import { ShoppingBag, Loader2, Clock, CheckCircle2, TrendingUp, DollarSign, AlertCircle, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -31,8 +32,15 @@ type Order = {
 }
 
 export default function OrderFlowDashboard() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+
+  // Use React Query for orders - instant updates via Realtime!
+  const { data: orders = [], isLoading: loading } = useQuery<Order[]>({
+    queryKey: ["orders", "all"],
+    queryFn: () => getKitchenOrders(),
+    refetchInterval: false, // No polling! Realtime handles it
+  })
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [activeTab, setActiveTab] = useState("all")
 
@@ -42,44 +50,29 @@ export default function OrderFlowDashboard() {
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null)
   const [passwordProtection, setPasswordProtection] = useState(true)
 
+  // Fetch password protection settings on mount
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(false)
-      console.log('[OrderFlow DEBUG] Fetching orders...');
-      const data = await getKitchenOrders()
-      console.log('[OrderFlow DEBUG] Received orders:', data);
-      console.log('[OrderFlow DEBUG] Order count:', data?.length);
-      if (data && data.length > 0) {
-        console.log('[OrderFlow DEBUG] Sample order:', data[0]);
-      }
-      setOrders(data as Order[])
-    }
-    fetchOrders()
-
-    // Fetch password protection settings
     getBusinessSettings().then(settings => {
       if (settings) {
         setPasswordProtection(settings.enablePasswordProtection ?? true)
       }
     })
-
-    const interval = setInterval(fetchOrders, 10000)
-    return () => clearInterval(interval)
   }, [])
 
-  const stats = {
+  // Memoize stats for performance
+  const stats = useMemo(() => ({
     pending: orders.filter(o => o.status === 'pending').length,
     preparing: orders.filter(o => o.status === 'preparing').length,
     ready: orders.filter(o => o.status === 'ready').length,
     totalRevenue: orders.reduce((sum, o) => sum + o.totalAmount, 0),
     avgPrepTime: calculateAvgPrepTime(orders)
-  }
+  }), [orders])
 
-  const byDepartment = {
+  const byDepartment = useMemo(() => ({
     hotel: orders.filter(o => o.businessUnit === 'hotel'),
     cafe: orders.filter(o => o.businessUnit === 'cafe' || o.businessUnit === 'restaurant'),
     bar: orders.filter(o => o.businessUnit === 'bar')
-  }
+  }), [orders])
 
   const handleSingleDelete = (orderId: string) => {
     setOrderToDelete(orderId)
@@ -101,18 +94,16 @@ export default function OrderFlowDashboard() {
   }
 
   const handlePasswordSuccess = async (password: string) => {
-    setLoading(true)
     if (passwordAction === 'single' && orderToDelete) {
       await deleteOrderAction(orderToDelete, password)
-      setOrders(prev => prev.filter(o => o.id !== orderToDelete))
+      queryClient.invalidateQueries({ queryKey: ["orders"] })
       if (selectedOrder?.id === orderToDelete) setSelectedOrder(null)
     } else if (passwordAction === 'bulk') {
       await Promise.all(selectedOrders.map(id => deleteOrderAction(id, password)))
-      setOrders(prev => prev.filter(o => !selectedOrders.includes(o.id)))
+      queryClient.invalidateQueries({ queryKey: ["orders"] })
       if (selectedOrder && selectedOrders.includes(selectedOrder.id)) setSelectedOrder(null)
       setSelectedOrders([])
     }
-    setLoading(false)
     setIsPasswordDialogOpen(false)
     setOrderToDelete(null)
   }

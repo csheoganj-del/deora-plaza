@@ -6,6 +6,7 @@ import "./mobile.css";
 import { Toaster } from "sonner";
 import { BusinessSettingsProvider } from "@/contexts/BusinessSettingsContext";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
+import { RealtimeOrdersProvider } from "@/providers/RealtimeOrdersProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,10 +35,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning>
         <ReactQueryProvider>
-          <BusinessSettingsProvider>
-            {children}
-            <Toaster position="top-right" />
-          </BusinessSettingsProvider>
+          <RealtimeOrdersProvider>
+            <BusinessSettingsProvider>
+              {children}
+              <Toaster position="top-right" />
+            </BusinessSettingsProvider>
+          </RealtimeOrdersProvider>
         </ReactQueryProvider>
       </body>
     </html>
