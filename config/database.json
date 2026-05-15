@@ -1,0 +1,16 @@
+{
+  "primary": {
+    "type": "firebase",
+    "connectionString": "[REDACTED]",
+    "isHealthy": true,
+    "lastSync": "2024-01-01T00:00:00.000Z"
+  },
+  "secondary": {
+    "type": "firebase",
+    "connectionString": "[REDACTED]",
+    "isHealthy": true,
+    "lastSync": "2024-01-01T00:00:00.000Z"
+  },
+  "sync_interval": 60000,
+  "auto_failover": true
+}

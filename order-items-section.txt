@@ -1,0 +1,78 @@
+// This is the updated Order Items section for BillGenerator
+// Replace lines 273-301 in BillGenerator.tsx with this code
+
+                {/* Order Items - Editable with Item Selector */}
+                <Card>
+                    <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                        <CardTitle className="text-base">Order Items ({localItems.length})</CardTitle>
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                                setShowItemSelector(!showItemSelector)
+                                if (!showItemSelector && menuItems.length === 0) {
+                                    fetchMenuItems()
+                                }
+                            }}
+                        >
+                            {showItemSelector ? <X className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
+                            {showItemSelector ? 'Close' : 'Add Items'}
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        {/* Item Selector */}
+                        {showItemSelector && (
+                            <div className="mb-4 p-3 bg-slate-50 rounded-lg border">
+                                <Label className="text-sm font-medium mb-2 block">Select Items to Add</Label>
+                                {loadingMenu ? (
+                                    <div className="flex items-center justify-center py-4">
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    </div>
+                                ) : (
+                                    <div className="max-h-48 overflow-y-auto space-y-1">
+                                        {menuItems.map((menuItem: any) => (
+                                            <div 
+                                                key={menuItem.id} 
+                                                className="flex items-center justify-between p-2 hover:bg-white rounded cursor-pointer"
+                                                onClick={() => handleAddMenuItem(menuItem)}
+                                            >
+                                                <div className="flex-1">
+                                                    <span className="text-sm font-medium">{menuItem.name}</span>
+                                                    <span className="text-xs text-gray-500 ml-2">₹{menuItem.price}</span>
+                                                </div>
+                                                <Plus className="h-4 w-4 text-gray-400" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Current Items - Editable */}
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {localItems.map((item: any, index: number) => (
+                                <div key={index} className="flex items-center justify-between text-sm py-1 border-b last:border-0">
+                                    <span className="flex-1">{item.name}</span>
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) => handleUpdateQuantity(index, parseInt(e.target.value) || 0)}
+                                            className="w-16 h-7 text-center"
+                                            min="0"
+                                        />
+                                        <span className="w-16 text-right font-medium">₹{(item.price * item.quantity).toFixed(0)}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveItem(index)}
+                                            className="h-7 w-7 p-0"
+                                        >
+                                            <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>

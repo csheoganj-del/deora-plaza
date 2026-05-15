@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor" class="w-full h-full">
+  <circle cx="50" cy="50" r="10" opacity="0.5"/>
+  <path d="M50,20c-2,5-8,8-12,8s-5,5-5,10s5,8,10,10s8,8,8,12s-3,10-8,12s-8,5-12,5s-5-5-5-10s-5-8-10-10s-8-8-8-12s3-10,8-12
+    s8-5,12-5s5,5,5,10s5,8,10,10s8,8,8,12s-3,10-8,12s-8,5-12,5s-5-5-5-10s-5-8-10-10s-8-8-8-12S28,25,33,23S45,20,50,20z" 
+    transform="rotate(0 50 50)" opacity="0.3"/>
+  <path d="M50,5c2,8,8,12,15,12s10,8,10,15s-2,12-8,15s-12,5-15,10s-5,10-10,10s-10-5-12-10s-8-8-15-10s-12-5-15-12s8-12,15-15
+    s12-5,15-12S50,5,50,5z" transform="rotate(45 50 50)" opacity="0.3"/>
+    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+</svg>

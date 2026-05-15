@@ -1,0 +1,22 @@
+{
+  "primary": {
+    "id": "A",
+    "name": "Primary Server",
+    "host": "localhost",
+    "port": 3002,
+    "isHealthy": true,
+    "lastHealthCheck": "2024-01-01T00:00:00.000Z",
+    "weight": 70,
+    "priority": 1
+  },
+  "secondary": {
+    "id": "B",
+    "name": "Secondary Server",
+    "host": "localhost",
+    "port": 3003,
+    "isHealthy": true,
+    "lastHealthCheck": "2024-01-01T00:00:00.000Z",
+    "weight": 30,
+    "priority": 2
+  }
+}

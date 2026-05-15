@@ -1,0 +1,224 @@
+/* 🎨 APPLE-GRADE TYPOGRAPHY SYSTEM */
+
+/* Base Typography Classes */
+.apple-text-display {
+  font-family: var(--font-primary);
+  font-size: clamp(28px, 5vw, 36px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.apple-text-heading {
+  font-family: var(--font-primary);
+  font-size: clamp(20px, 4vw, 24px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.apple-text-subheading {
+  font-family: var(--font-primary);
+  font-size: clamp(16px, 3.5vw, 18px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+  color: var(--text-secondary);
+}
+
+.apple-text-body {
+  font-family: var(--font-primary);
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+
+.apple-text-body-large {
+  font-family: var(--font-primary);
+  font-size: clamp(16px, 3.5vw, 18px);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+
+.apple-text-caption {
+  font-family: var(--font-primary);
+  font-size: clamp(12px, 2.5vw, 14px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+}
+
+.apple-text-small {
+  font-family: var(--font-primary);
+  font-size: clamp(11px, 2vw, 12px);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+/* Special Typography */
+.apple-app-title {
+  font-family: var(--font-primary);
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+  background: var(--text-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.apple-text-gradient {
+  background: var(--text-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Typography Modifiers */
+.text-semibold {
+  font-weight: 600;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+.text-regular {
+  font-weight: 400;
+}
+
+.text-light {
+  font-weight: 300;
+}
+
+/* Text Colors */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+/* Text Alignment */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Line Height Utilities */
+.leading-tight {
+  line-height: 1.2;
+}
+
+.leading-normal {
+  line-height: 1.5;
+}
+
+.leading-relaxed {
+  line-height: 1.6;
+}
+
+/* Letter Spacing */
+.tracking-tight {
+  letter-spacing: -0.02em;
+}
+
+.tracking-normal {
+  letter-spacing: 0;
+}
+
+.tracking-wide {
+  letter-spacing: 0.02em;
+}
+
+/* Text Truncation */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Responsive Typography Helpers */
+@media (max-width: 640px) {
+  .apple-text-display {
+    font-size: 28px;
+    line-height: 1.1;
+  }
+  
+  .apple-text-heading {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+  
+  .apple-app-title {
+    font-size: 32px;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .apple-text-display {
+    font-size: 36px;
+  }
+  
+  .apple-text-heading {
+    font-size: 24px;
+  }
+  
+  .apple-app-title {
+    font-size: 48px;
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "models": [
+    {
+      "title": "Llama 3.1 8B (Local)",
+      "provider": "ollama",
+      "model": "llama3.1:8b"
+    }
+  ],
+  "embeddings": {
+    "provider": "ollama",
+    "model": "nomic-embed-text"
+  }
+}

@@ -1,0 +1,976 @@
+{
+    "menu": [
+        {
+            "id": "54",
+            "name": "Margaret Pizza (Big/Small)",
+            "category": "PIZZA",
+            "price": 270
+        },
+        {
+            "id": "26",
+            "name": "Bread Butter Cheese Sandwich",
+            "category": "SANDWICH",
+            "price": 59
+        },
+        {
+            "id": "22",
+            "name": "Veg Grill Sandwich",
+            "category": "SANDWICH",
+            "price": 129
+        },
+        {
+            "id": "36",
+            "name": "Chilli Potato",
+            "category": "CHINESE",
+            "price": 199
+        },
+        {
+            "id": "12",
+            "name": "Blue Lugan",
+            "category": "MOCKTAIL",
+            "price": 149
+        },
+        {
+            "id": "43",
+            "name": "Schezwan Rice",
+            "category": "RICE",
+            "price": 169
+        },
+        {
+            "id": "14",
+            "name": "Fresh Lemon Soda",
+            "category": "MOCKTAIL",
+            "price": 99
+        },
+        {
+            "id": "13",
+            "name": "Panch Mel",
+            "category": "MOCKTAIL",
+            "price": 179
+        },
+        {
+            "id": "30",
+            "name": "Tomato Soup",
+            "category": "SOUP",
+            "price": 129
+        },
+        {
+            "id": "1762002132417",
+            "name": "Veg Pizza- Big",
+            "category": "PIZZA",
+            "price": 229
+        },
+        {
+            "id": "9",
+            "name": "Oreo Shake",
+            "category": "SHAKE",
+            "price": 169
+        },
+        {
+            "id": "27",
+            "name": "Paneer Sandwich",
+            "category": "SANDWICH",
+            "price": 169
+        },
+        {
+            "id": "42",
+            "name": "Fried Rice",
+            "category": "RICE",
+            "price": 179
+        },
+        {
+            "id": "45",
+            "name": "Paneer Tikka",
+            "category": "TANDOOR",
+            "price": 269
+        },
+        {
+            "id": "19",
+            "name": "Rosperel Ice Cream",
+            "category": "DESERT",
+            "price": 89
+        },
+        {
+            "id": "8",
+            "name": "Kit Kat Shake",
+            "category": "SHAKE",
+            "price": 179
+        },
+        {
+            "id": "16",
+            "name": "Vanilla Ice Cream",
+            "category": "DESERT",
+            "price": 49
+        },
+        {
+            "id": "1762002187750",
+            "name": "Margret Pizza- Big",
+            "category": "PIZZA",
+            "price": 270
+        },
+        {
+            "id": "58",
+            "name": "White Sauce Pasta",
+            "category": "PASTA",
+            "price": 199
+        },
+        {
+            "id": "15",
+            "name": "Virgin Mojito",
+            "category": "MOCKTAIL",
+            "price": 139
+        },
+        {
+            "id": "39",
+            "name": "Noodles",
+            "category": "CHINESE",
+            "price": 169
+        },
+        {
+            "id": "41",
+            "name": "Schezwan Noodles",
+            "category": "CHINESE",
+            "price": 179
+        },
+        {
+            "id": "32",
+            "name": "Lemon Coriander Soup",
+            "category": "SOUP",
+            "price": 130
+        },
+        {
+            "id": "31",
+            "name": "Sweet Corn Soup",
+            "category": "SOUP",
+            "price": 99
+        },
+        {
+            "id": "29",
+            "name": "Manchau Soup",
+            "category": "SOUP",
+            "price": 109
+        },
+        {
+            "id": "34",
+            "name": "Paneer Chilli",
+            "category": "CHINESE",
+            "price": 239
+        },
+        {
+            "id": "3",
+            "name": "Cookies Tea / Masala Tea",
+            "category": "COLD COFFEE",
+            "price": 49
+        },
+        {
+            "id": "44",
+            "name": "Bloom Special Rice",
+            "category": "RICE",
+            "price": 189
+        },
+        {
+            "id": "1762002093117",
+            "name": "Veg Pizza- Small",
+            "category": "PIZZA",
+            "price": 179
+        },
+        {
+            "id": "1762002219932",
+            "name": "Margret Pizza- Small",
+            "category": "PIZZA",
+            "price": 179
+        },
+        {
+            "id": "7",
+            "name": "Chocolate Shake",
+            "category": "SHAKE",
+            "price": 159
+        },
+        {
+            "id": "6",
+            "name": "Vanilla Shake",
+            "category": "SHAKE",
+            "price": 149
+        },
+        {
+            "id": "11",
+            "name": "Sunny Setup",
+            "category": "MOCKTAIL",
+            "price": 169
+        },
+        {
+            "id": "21",
+            "name": "Veg Cheese Burger",
+            "category": "BURGER",
+            "price": 89
+        },
+        {
+            "id": "59",
+            "name": "Red Sauce Pasta",
+            "category": "PASTA",
+            "price": 189
+        },
+        {
+            "id": "48",
+            "name": "Hara Bhara Kabab",
+            "category": "TANDOOR",
+            "price": 199
+        },
+        {
+            "id": "2",
+            "name": "Cold Coffee With Ice Cream",
+            "category": "COLD COFFEE",
+            "price": 179
+        },
+        {
+            "id": "17",
+            "name": "Butter Scotch Ice Cream",
+            "category": "DESERT",
+            "price": 59
+        },
+        {
+            "id": "25",
+            "name": "Chipotle Sandwich",
+            "category": "SANDWICH",
+            "price": 89
+        },
+        {
+            "id": "1762002324333",
+            "name": "Paneer Tikka Pizza- Small",
+            "category": "PIZZA",
+            "price": 199
+        },
+        {
+            "id": "23",
+            "name": "Veg Sandwich & French Fry",
+            "category": "SANDWICH",
+            "price": 79
+        },
+        {
+            "id": "53",
+            "name": "Veg Pizza (Big/Small)",
+            "category": "PIZZA",
+            "price": 229
+        },
+        {
+            "id": "52",
+            "name": "Malai Soya Chap",
+            "category": "TANDOOR",
+            "price": 259
+        },
+        {
+            "id": "1761996158971",
+            "name": "watter bottle 750ml",
+            "category": "DESERT",
+            "price": 30
+        },
+        {
+            "id": "1762002361366",
+            "name": "Farm House Pizza- Big",
+            "category": "PIZZA",
+            "price": 279
+        },
+        {
+            "id": "61",
+            "name": "Hang Over Smoothie",
+            "category": "SMOOTHIE",
+            "price": 189
+        },
+        {
+            "id": "1",
+            "name": "Cold Coffee",
+            "category": "COLD COFFEE",
+            "price": 149
+        },
+        {
+            "id": "37",
+            "name": "Chilli Mushroom",
+            "category": "CHINESE",
+            "price": 239
+        },
+        {
+            "id": "56",
+            "name": "Farm House Pizza (Big/Small)",
+            "category": "PIZZA",
+            "price": 279
+        },
+        {
+            "id": "57",
+            "name": "Pasto Pasta",
+            "category": "PASTA",
+            "price": 249
+        },
+        {
+            "id": "50",
+            "name": "Tandoori Soya Chap",
+            "category": "TANDOOR",
+            "price": 199
+        },
+        {
+            "id": "40",
+            "name": "Hakka Noodles",
+            "category": "CHINESE",
+            "price": 139
+        },
+        {
+            "id": "5",
+            "name": "Hot Coffee",
+            "category": "COLD COFFEE",
+            "price": 59
+        },
+        {
+            "id": "18",
+            "name": "Chocolate Ice Cream",
+            "category": "DESERT",
+            "price": 69
+        },
+        {
+            "id": "4",
+            "name": "Black Tea",
+            "category": "COLD COFFEE",
+            "price": 39
+        },
+        {
+            "id": "38",
+            "name": "Manchurian (Gravy/Dry)",
+            "category": "CHINESE",
+            "price": 199
+        },
+        {
+            "id": "33",
+            "name": "Cream Mushroom Soup",
+            "category": "SOUP",
+            "price": 149
+        },
+        {
+            "id": "10",
+            "name": "Butter Scotch Shake",
+            "category": "SHAKE",
+            "price": 169
+        },
+        {
+            "id": "47",
+            "name": "Malai Paneer Tikka",
+            "category": "TANDOOR",
+            "price": 299
+        },
+        {
+            "id": "46",
+            "name": "Achari Paneer Tikka",
+            "category": "TANDOOR",
+            "price": 239
+        },
+        {
+            "id": "55",
+            "name": "Paneer Tikka Pizza (Big/Small)",
+            "category": "PIZZA",
+            "price": 249
+        },
+        {
+            "id": "1762002288765",
+            "name": "Paneer Tikka Pizza- Big",
+            "category": "PIZZA",
+            "price": 249
+        },
+        {
+            "id": "24",
+            "name": "Bombay Sandwich",
+            "category": "SANDWICH",
+            "price": 99
+        },
+        {
+            "id": "35",
+            "name": "Honey Chilli",
+            "category": "CHINESE",
+            "price": 289
+        },
+        {
+            "id": "49",
+            "name": "Corn Kabab",
+            "category": "TANDOOR",
+            "price": 219
+        },
+        {
+            "id": "28",
+            "name": "Hot & Sour Soup",
+            "category": "SOUP",
+            "price": 119
+        },
+        {
+            "id": "20",
+            "name": "Veg Burger",
+            "category": "BURGER",
+            "price": 59
+        },
+        {
+            "id": "1762002391283",
+            "name": "Farm House Pizza- Small",
+            "category": "PIZZA",
+            "price": 209
+        },
+        {
+            "id": "51",
+            "name": "Aacharya Soya Chap",
+            "category": "TANDOOR",
+            "price": 209
+        },
+        {
+            "id": "1766486259468",
+            "name": "Jeera rice ",
+            "category": "RICE",
+            "price": 120
+        },
+        {
+            "id": "1766486229299",
+            "name": "Steam rice ",
+            "category": "RICE",
+            "price": 90
+        },
+        {
+            "id": "1766486997383",
+            "name": "Triple Fried rice",
+            "category": "RICE",
+            "price": 200
+        },
+        {
+            "id": "1765546460454",
+            "name": "paneer pakode ",
+            "category": "CHINESE",
+            "price": 200
+        },
+        {
+            "id": "1765018806233",
+            "name": "water bottle 250 ml",
+            "category": "DESERT",
+            "price": 10
+        },
+        {
+            "id": "1765646177388",
+            "name": "plan roti ",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1766488244466",
+            "name": "ROASTED PAPAD ",
+            "category": "DESERT",
+            "price": 17
+        },
+        {
+            "id": "1766490348290",
+            "name": "WATERMELON ",
+            "category": "MOCKTAIL",
+            "price": 140
+        },
+        {
+            "id": "1766488637161",
+            "name": "PANEER MASALA KHICHIYA ",
+            "category": "DESERT",
+            "price": 75
+        },
+        {
+            "id": "1766489700210",
+            "name": "ORANGE SHAKE ",
+            "category": "SHAKE",
+            "price": 130
+        },
+        {
+            "id": "1766489662850",
+            "name": "PINEAPPLE SHAKE ",
+            "category": "SHAKE",
+            "price": 130
+        },
+        {
+            "id": "1766490191162",
+            "name": "SWEETS (2PCS)",
+            "category": "DESERT",
+            "price": 30
+        },
+        {
+            "id": "1766489744857",
+            "name": "ORANGE JUICE ",
+            "category": "SHAKE",
+            "price": 120
+        },
+        {
+            "id": "1766488528649",
+            "name": "MASALA KHICHIYA ",
+            "category": "DESERT",
+            "price": 60
+        },
+        {
+            "id": "1766488348496",
+            "name": "FRY PAPAD",
+            "category": "DESERT",
+            "price": 40
+        },
+        {
+            "id": "1765646437407",
+            "name": "sev tamatar ",
+            "category": "DESERT",
+            "price": 140
+        },
+        {
+            "id": "1766486467992",
+            "name": "Veg Biryani",
+            "category": "RICE",
+            "price": 180
+        },
+        {
+            "id": "1766488590640",
+            "name": "CHEESE MASALA KHICHIYA ",
+            "category": "DESERT",
+            "price": 75
+        },
+        {
+            "id": "1766487358833",
+            "name": "PANEER BURGER SPICY",
+            "category": "BURGER",
+            "price": 120
+        },
+        {
+            "id": "1766486412535",
+            "name": "Paneer pulao ",
+            "category": "RICE",
+            "price": 180
+        },
+        {
+            "id": "1766486698155",
+            "name": "Veg Handi Biryani ",
+            "category": "RICE",
+            "price": 190
+        },
+        {
+            "id": "1766486811656",
+            "name": "Chinesee Fried rice ",
+            "category": "RICE",
+            "price": 150
+        },
+        {
+            "id": "1766488859802",
+            "name": "KACHUMBER SALAD ",
+            "category": "DESERT",
+            "price": 79
+        },
+        {
+            "id": "1766485167826",
+            "name": "Mixed fruit juice",
+            "category": "DESERT",
+            "price": 140
+        },
+        {
+            "id": "1766488421576",
+            "name": "PAPAD CHURI IN PURE GHEE ",
+            "category": "DESERT",
+            "price": 89
+        },
+        {
+            "id": "1766329115189",
+            "name": "Pinat Masala",
+            "category": "DESERT",
+            "price": 199
+        },
+        {
+            "id": "1766489043314",
+            "name": "EXTRA GHEE (10ML)",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1766486615491",
+            "name": "Veg Hyderabadi Biryani ",
+            "category": "RICE",
+            "price": 180
+        },
+        {
+            "id": "1766488776681",
+            "name": "GREEN SALAD ",
+            "category": "DESERT",
+            "price": 59
+        },
+        {
+            "id": "1765645604042",
+            "name": "Dal fry ",
+            "category": "TANDOOR",
+            "price": 160
+        },
+        {
+            "id": "1766486313223",
+            "name": "Peas pulao",
+            "category": "RICE",
+            "price": 150
+        },
+        {
+            "id": "1766488274001",
+            "name": "MASALA PAPAD ",
+            "category": "DESERT",
+            "price": 45
+        },
+        {
+            "id": "1762002777836",
+            "name": "Cheese French Fries",
+            "category": "BURGER",
+            "price": 209
+        },
+        {
+            "id": "1765646525957",
+            "name": "sev tamatar",
+            "category": "TANDOOR",
+            "price": 140
+        },
+        {
+            "id": "1766488681297",
+            "name": "FRY MASALA KHICHIYA",
+            "category": "DESERT",
+            "price": 70
+        },
+        {
+            "id": "1765384572085",
+            "name": "Crispy Corn",
+            "category": "CHINESE",
+            "price": 250
+        },
+        {
+            "id": "1766487824104",
+            "name": "VEG CHEESE BURGER ",
+            "category": "BURGER",
+            "price": 109
+        },
+        {
+            "id": "1765558807713",
+            "name": "cheese pakode",
+            "category": "DESERT",
+            "price": 300
+        },
+        {
+            "id": "1766489587546",
+            "name": "PINEAPPLE JUICE ",
+            "category": "SHAKE",
+            "price": 130
+        },
+        {
+            "id": "1766487058496",
+            "name": "Manchurian Fried rice ",
+            "category": "RICE",
+            "price": 190
+        },
+        {
+            "id": "1762002742956",
+            "name": "French Fries Peri Peri",
+            "category": "BURGER",
+            "price": 189
+        },
+        {
+            "id": "1766489327969",
+            "name": "STRAWBERRY SHAKE ",
+            "category": "SHAKE",
+            "price": 130
+        },
+        {
+            "id": "1766490314402",
+            "name": "MINT MOJITO",
+            "category": "MOCKTAIL",
+            "price": 140
+        },
+        {
+            "id": "1765645701900",
+            "name": "plane roti ",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1766490090274",
+            "name": "RAJ BHOG ICE CREAM ",
+            "category": "DESERT",
+            "price": 49
+        },
+        {
+            "id": "1766489965770",
+            "name": "APPLE JUICE ",
+            "category": "SHAKE",
+            "price": 140
+        },
+        {
+            "id": "1766488814241",
+            "name": "RING ONION SALAD",
+            "category": "DESERT",
+            "price": 59
+        },
+        {
+            "id": "1766488488984",
+            "name": "ROASTED KHICHIYA ",
+            "category": "DESERT",
+            "price": 30
+        },
+        {
+            "id": "1766486349592",
+            "name": "Veg pulao",
+            "category": "RICE",
+            "price": 150
+        },
+        {
+            "id": "1765646988884",
+            "name": "plan roti with butter ",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1765645661315",
+            "name": "paneer angara ",
+            "category": "TANDOOR",
+            "price": 260
+        },
+        {
+            "id": "1765645939050",
+            "name": "Tandoori roti ",
+            "category": "TANDOOR",
+            "price": 30
+        },
+        {
+            "id": "1765645747225",
+            "name": "Masala khichiya ",
+            "category": "DESERT",
+            "price": 130
+        },
+        {
+            "id": "1765645897166",
+            "name": "Kaju curry ",
+            "category": "TANDOOR",
+            "price": 230
+        },
+        {
+            "id": "1766489043314",
+            "name": "EXTRA GHEE (10ML)",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1766486615491",
+            "name": "Veg Hyderabadi Biryani ",
+            "category": "RICE",
+            "price": 180
+        },
+        {
+            "id": "1766488776681",
+            "name": "GREEN SALAD ",
+            "category": "DESERT",
+            "price": 59
+        },
+        {
+            "id": "1765645604042",
+            "name": "Dal fry ",
+            "category": "TANDOOR",
+            "price": 160
+        },
+        {
+            "id": "1766486313223",
+            "name": "Peas pulao",
+            "category": "RICE",
+            "price": 150
+        },
+        {
+            "id": "1766488274001",
+            "name": "MASALA PAPAD ",
+            "category": "DESERT",
+            "price": 45
+        },
+        {
+            "id": "1762002777836",
+            "name": "Cheese French Fries",
+            "category": "BURGER",
+            "price": 209
+        },
+        {
+            "id": "1765646525957",
+            "name": "sev tamatar",
+            "category": "TANDOOR",
+            "price": 140
+        },
+        {
+            "id": "1766488681297",
+            "name": "FRY MASALA KHICHIYA",
+            "category": "DESERT",
+            "price": 70
+        },
+        {
+            "id": "1765384572085",
+            "name": "Crispy Corn",
+            "category": "CHINESE",
+            "price": 250
+        },
+        {
+            "id": "1766487824104",
+            "name": "VEG CHEESE BURGER ",
+            "category": "BURGER",
+            "price": 109
+        },
+        {
+            "id": "1765558807713",
+            "name": "cheese pakode",
+            "category": "DESERT",
+            "price": 300
+        },
+        {
+            "id": "1766489587546",
+            "name": "PINEAPPLE JUICE ",
+            "category": "SHAKE",
+            "price": 130
+        },
+        {
+            "id": "1766487058496",
+            "name": "Manchurian Fried rice ",
+            "category": "RICE",
+            "price": 190
+        },
+        {
+            "id": "1762002742956",
+            "name": "French Fries Peri Peri",
+            "category": "BURGER",
+            "price": 189
+        },
+        {
+            "id": "1766489327969",
+            "name": "STRAWBERRY SHAKE ",
+            "category": "SHAKE",
+            "price": 130
+        },
+        {
+            "id": "1766490314402",
+            "name": "MINT MOJITO",
+            "category": "MOCKTAIL",
+            "price": 140
+        },
+        {
+            "id": "1765645701900",
+            "name": "plane roti ",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1766490090274",
+            "name": "RAJ BHOG ICE CREAM ",
+            "category": "DESERT",
+            "price": 49
+        },
+        {
+            "id": "1766489965770",
+            "name": "APPLE JUICE ",
+            "category": "SHAKE",
+            "price": 140
+        },
+        {
+            "id": "1766488814241",
+            "name": "RING ONION SALAD",
+            "category": "DESERT",
+            "price": 59
+        },
+        {
+            "id": "1766488488984",
+            "name": "ROASTED KHICHIYA ",
+            "category": "DESERT",
+            "price": 30
+        },
+        {
+            "id": "1766486349592",
+            "name": "Veg pulao",
+            "category": "RICE",
+            "price": 150
+        },
+        {
+            "id": "1765646988884",
+            "name": "plan roti with butter ",
+            "category": "DESERT",
+            "price": 20
+        },
+        {
+            "id": "1765645661315",
+            "name": "paneer angara ",
+            "category": "TANDOOR",
+            "price": 260
+        },
+        {
+            "id": "1765645939050",
+            "name": "Tandoori roti ",
+            "category": "TANDOOR",
+            "price": 30
+        },
+        {
+            "id": "1765645747225",
+            "name": "Masala khichiya ",
+            "category": "DESERT",
+            "price": 130
+        },
+        {
+            "id": "1765645897166",
+            "name": "Kaju curry ",
+            "category": "TANDOOR",
+            "price": 230
+        },
+        {
+            "id": "1766490136522",
+            "name": "AMERICAN NUTS ICE CREAM ",
+            "category": "DESERT",
+            "price": 40
+        },
+        {
+            "id": "1764163871773",
+            "name": "Peanut Masala",
+            "category": "DESERT",
+            "price": 199
+        },
+        {
+            "id": "1766486537138",
+            "name": "Veg cheese Biryani ",
+            "category": "RICE",
+            "price": 210
+        },
+        {
+            "id": "1766487645384",
+            "name": "VEG GRILLED BURGER.",
+            "category": "BURGER",
+            "price": 100
+        },
+        {
+            "id": "1762002492672",
+            "name": "Cheese Masala Khichiya",
+            "category": "TANDOOR",
+            "price": 99
+        }
+    ],
+    "bills": [
+        {
+            "id": "3ab8869a-d4d4-479c-a716-50a68ded5d9d",
+            "date": "2025-12-30T15:57:42.558Z",
+            "items": [
+                {
+                    "id": "1766580876966",
+                    "name": "CHAPATI BUTTER ",
+                    "price": 17,
+                    "category": "DESERT",
+                    "quantity": 15
+                },
+                {
+                    "id": "1766592348194",
+                    "name": "DAL TADKA I N (GHEE) ",
+                    "price": 150,
+                    "category": "DESERT",
+                    "quantity": 1
+                },
+                {
+                    "id": "1766591506231",
+                    "name": "MALAI KOFTA ",
+                    "price": 200,
+                    "category": "DESERT",
+                    "quantity": 2
+                }
+            ],
+            "subtotal": 805,
+            "discount": 0,
+            "gst": 0,
+            "total": 805,
+            "rounded": 805,
+            "paymentMethod": "cash",
+            "billNumber": 173
+        }
+    ]
+}
