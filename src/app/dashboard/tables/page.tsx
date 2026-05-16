@@ -3,8 +3,6 @@ import { requireAuth } from "@/lib/auth-helpers";
 import { getTables } from "@/actions/tables";
 import TablesInterface from "@/components/tables/TablesInterface";
 
-export const dynamic = "force-dynamic";
-
 export default async function TablesPage() {
     const session = await requireAuth();
     const userRole = session.user.role;
@@ -21,9 +19,11 @@ export default async function TablesPage() {
     let allTables: any[] = [];
 
     if (canSeeAllTables) {
-        // Fetch tables from both business units
-        cafeTables = await getTables('cafe');
-        barTables = await getTables('bar');
+        // Fetch tables from both business units IN PARALLEL
+        [cafeTables, barTables] = await Promise.all([
+            getTables('cafe'),
+            getTables('bar')
+        ]);
         allTables = [...cafeTables, ...barTables];
     } else {
         // Fetch only user's business unit tables

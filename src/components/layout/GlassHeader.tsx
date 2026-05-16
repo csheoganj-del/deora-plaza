@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, lazy, Suspense } from "react";
 import { Bell, Calendar, Clock, User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { useServerAuth } from "@/hooks/useServerAuth";
 import { useNotificationSystem } from "@/hooks/useNotificationSystem";
@@ -8,10 +8,13 @@ import NotificationList from "@/components/notifications/NotificationList";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Dialog } from "@/components/ui/dialog";
-import { BusinessSettingsForm } from "@/components/dashboard/BusinessSettingsForm";
 import { useRouter } from "next/navigation";
-
 import MobileSidebar from "./MobileSidebar";
+
+// Lazy load heavy settings form — only mount when dialog actually opens
+const BusinessSettingsForm = lazy(() =>
+  import("@/components/dashboard/BusinessSettingsForm").then(m => ({ default: m.BusinessSettingsForm }))
+);
 
 export default function GlassHeader() {
     const { data: session } = useServerAuth();
@@ -46,17 +49,20 @@ export default function GlassHeader() {
         }
     };
 
-    const currentDate = new Date().toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    });
-
-    const currentTime = new Date().toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+    // Stable date/time — update every minute, not on every render
+    const [currentDate, setCurrentDate] = useState(() =>
+        new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })
+    );
+    const [currentTime, setCurrentTime] = useState(() =>
+        new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    );
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentDate(new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" }));
+            setCurrentTime(new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }));
+        }, 60000); // update every 60 seconds
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <header className="sticky top-0 right-0 z-40 p-4 pb-0">
@@ -235,14 +241,16 @@ export default function GlassHeader() {
 
             </div>
 
-            {/* Settings Dialog */}
+            {/* Settings Dialog - only mount BusinessSettingsForm when dialog is open */}
             <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
-                <BusinessSettingsForm
-                    onClose={() => setShowSettingsDialog(false)}
-                    onSaveSuccess={() => {
-                        setShowSettingsDialog(false);
-                    }}
-                />
+                {showSettingsDialog && (
+                    <Suspense fallback={null}>
+                        <BusinessSettingsForm
+                            onClose={() => setShowSettingsDialog(false)}
+                            onSaveSuccess={() => setShowSettingsDialog(false)}
+                        />
+                    </Suspense>
+                )}
             </Dialog>
         </header>
     );

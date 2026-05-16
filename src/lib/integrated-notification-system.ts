@@ -101,6 +101,8 @@ class IntegratedNotificationSystem {
   private listeners: Set<(state: { notifications: IntegratedNotification[], unreadCount: number }) => void> = new Set();
   private supabase = createClient();
   private channel: any = null;
+  private lastSyncTime: number = 0;
+  private isSyncing: boolean = false;
 
   private constructor() {
     this.settings = this.getDefaultSettings();
@@ -135,11 +137,19 @@ class IntegratedNotificationSystem {
    * Sync notifications from database
    */
   async syncFromDatabase() {
-    console.log('🔄 [NotificationSystem] Syncing notifications from database...');
-    const result = await getRecentNotifications();
-    console.log('🔄 [NotificationSystem] Sync result:', result);
+    const now = Date.now();
+    if (this.isSyncing || (now - this.lastSyncTime < 5000)) {
+        console.log('🔄 [NotificationSystem] Skipping sync (throttled or already syncing)');
+        return;
+    }
 
-    if (result.success && result.data) {
+    this.isSyncing = true;
+    try {
+        console.log('🔄 [NotificationSystem] Syncing notifications from database...');
+        const result = await getRecentNotifications();
+        console.log('🔄 [NotificationSystem] Sync result:', result);
+
+        if (result.success && result.data) {
       console.log(`🔄 [NotificationSystem] Found ${result.data.length} notifications in DB`);
       const dbNotifications = result.data.map((n: any) => this.mapDbToIntegrated(n));
 
@@ -172,13 +182,17 @@ class IntegratedNotificationSystem {
       }
     }
 
+    this.lastSyncTime = Date.now();
     this.setupRealtimeListener();
+    } finally {
+        this.isSyncing = false;
+    }
   }
 
   /**
-   * Set up real-time listener for notifications table
+   * Set up real-time listener for notifications table (public)
    */
-  private setupRealtimeListener() {
+  setupRealtimeListener() {
     if (this.channel) {
       console.log('📡 [NotificationSystem] Realtime listener already active');
       return;

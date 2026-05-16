@@ -181,26 +181,28 @@ export default function HybridBillingPage() {
   }, [effectiveUnit]);
 
   useEffect(() => {
-    loadBills(effectiveUnit);
-    if (!effectiveUnit || effectiveUnit === 'hotel' || effectiveUnit === 'garden') {
-      loadBookings();
+    loadBills(effectiveUnit)
+    // Only load hotel/garden bookings for users who need them
+    const needsBookings = !effectiveUnit || effectiveUnit === 'hotel' || effectiveUnit === 'garden'
+    if (needsBookings) {
+      loadBookings()
     }
     if ((unitParam || '').toLowerCase() === 'all') {
-      setView('bills');
+      setView('bills')
     }
 
-    const filterParam = searchParams?.get('filter');
+    const filterParam = searchParams?.get('filter')
     if (filterParam === 'paid' || filterParam === 'settled') {
-      setActiveTab('billed');
+      setActiveTab('billed')
     } else if (filterParam === 'pending' || filterParam === 'unpaid') {
-      setActiveTab('pending');
+      setActiveTab('pending')
     } else if (filterParam === 'live' || filterParam === 'active') {
-      setActiveTab('live');
+      setActiveTab('live')
     }
 
-    const orderIdParam = searchParams?.get('orderId');
+    const orderIdParam = searchParams?.get('orderId')
     if (orderIdParam) {
-      handleAutoOpenBillGenerator(orderIdParam);
+      handleAutoOpenBillGenerator(orderIdParam)
     }
   }, [searchParams, session, session?.user?.businessUnit, session?.user, effectiveUnit]);
 
@@ -254,11 +256,11 @@ export default function HybridBillingPage() {
   const loadBills = async (unit?: string) => {
     setLoading(true);
     try {
-      const data = await getBills(unit);
+      const [data, liveData] = await Promise.all([
+        getBills(unit),
+        import("@/actions/orders").then(m => m.getLiveOrders(unit))
+      ]);
       setBills(data);
-
-      const { getLiveOrders } = await import("@/actions/orders");
-      const liveData = await getLiveOrders(unit);
       setServerLiveOrders(liveData || []);
     } catch (error) {
       console.error("Error loading bills:", error);

@@ -54,12 +54,17 @@ export function clearSessionCache() {
  * resolves from sessionStorage cache after hydration — no loading flash on navigation.
  */
 export function useServerAuth() {
-  // Always start with loading=true so server & client first render match (no hydration mismatch)
+  // Must start with server-safe defaults to avoid hydration mismatch.
+  // The layout no longer blocks on loading, so the useEffect cache
+  // resolution is instant and causes no visible flash.
   const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // After hydration, check sessionStorage cache first for instant resolution
+    // If we already resolved synchronously (session loaded from cache in useState init), skip
+    if (!loading && session) return;
+
+    // Check sessionStorage cache first for instant resolution
     const cached = getCachedSession();
     if (cached) {
       setSession(cached);

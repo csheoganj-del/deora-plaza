@@ -265,14 +265,6 @@ export async function createOrder(data: {
 
     console.log("=== CREATE ORDER ACTION COMPLETED SUCCESSFULLY ===");
 
-    try {
-      revalidatePath('/dashboard/cafe');
-      revalidatePath('/dashboard/restaurant');
-
-    } catch (e) {
-      console.warn("Error revalidating paths:", e);
-    }
-
     return { success: true, orderId: result.data?.id, orderNumber };
   } catch (error) {
     console.error("=== CREATE ORDER ACTION FAILED ===");

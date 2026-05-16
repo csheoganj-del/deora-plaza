@@ -7,7 +7,6 @@ import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useServerAuth } from "@/hooks/useServerAuth";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
-import { createClient } from "@/lib/supabase/client";
 import { logoutCustomUser } from "@/actions/custom-auth";
 import {
     LayoutDashboard, UtensilsCrossed, Armchair, FileText, Users, Hotel,
@@ -16,7 +15,7 @@ import {
     Trophy, Calendar, Coffee, ChevronLeft, Plus, CheckCircle, ChefHat
 } from "lucide-react";
 
-const supabase = createClient();
+
 
 // Sidebar Item Component
 const SidebarItem = ({

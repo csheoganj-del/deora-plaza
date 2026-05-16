@@ -17,18 +17,16 @@ export function useNotificationSystem() {
     const system = getIntegratedNotificationSystem();
 
     if (!isInitialized.current) {
-      // Try to get toast system, but don't fail if it's not available
       try {
         const { useToast } = require('@/components/ui/feedback/notification-toast');
         const toast = useToast();
         system.setToastSystem(toast);
       } catch (error) {
-        console.warn('Toast system not available yet, will work without visual notifications');
+        // Toast system not available yet
       }
-      
       isInitialized.current = true;
-      console.log('🔔 Notification system initialized');
-      system.syncFromDatabase();
+      // NOTE: Removed syncFromDatabase() initial poll — it adds 300-600ms per navigation.
+      // Realtime subscription (setupRealtimeListener) handles all live updates.
     }
 
     // Subscribe to state changes
@@ -36,14 +34,11 @@ export function useNotificationSystem() {
       setState(newState);
     });
 
-    // Fallback polling
-    const pollInterval = setInterval(() => {
-      system.syncFromDatabase();
-    }, 30000); // Every 30 seconds
+    // Setup realtime listener once (skips if already active)
+    system.setupRealtimeListener?.();
 
     return () => {
       unsubscribe();
-      clearInterval(pollInterval);
     };
   }, []);
 

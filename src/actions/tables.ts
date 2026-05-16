@@ -66,10 +66,7 @@ export async function updateTableStatus(tableId: string, status: string, custome
         }
 
         await updateDocument('tables', tableId, updateData)
-        revalidatePath('/dashboard/tables')
-        revalidatePath('/dashboard/cafe')
-        revalidatePath('/dashboard/restaurant')
-        revalidatePath('/dashboard/bar')
+        // No revalidatePath needed - realtime subscription handles UI updates live
         return { success: true }
     } catch (error) {
         console.error('Error updating table status:', error)

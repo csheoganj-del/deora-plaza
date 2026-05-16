@@ -85,7 +85,8 @@ export function DineInOrderDialog({
   }>({});
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isMenuLoading, setIsMenuLoading] = useState(false);
+  const [isCartLoading, setIsCartLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderType, setOrderType] = useState((businessUnit === 'restaurant' ? 'cafe' : businessUnit) || "cafe");
@@ -137,7 +138,8 @@ export function DineInOrderDialog({
 
   useEffect(() => {
     if (isOpen) {
-      setIsLoading(true);
+      setIsMenuLoading(true);
+      setIsCartLoading(true);
       setError(null);
       setCart({});
       setOrderType((businessUnit === 'restaurant' ? 'cafe' : businessUnit) || "cafe");
@@ -148,11 +150,16 @@ export function DineInOrderDialog({
       setManualCustomerName("");
       setManualCustomerMobile("");
 
-      // First, try to load running order (persistent cart)
-      if (tableId) {
-        getRunningOrderByTable(tableId).then((runningOrder) => {
+      // Fetch cart/order data
+      const loadCartData = async () => {
+        if (!tableId) {
+          setIsCartLoading(false);
+          return;
+        }
+        
+        try {
+          const runningOrder = await getRunningOrderByTable(tableId);
           if (runningOrder && runningOrder.items.length > 0) {
-            // Load items into cart from running order
             const newCart: any = {};
             runningOrder.items.forEach((item: any) => {
               newCart[item.menuItemId] = {
@@ -167,37 +174,23 @@ export function DineInOrderDialog({
               };
             });
             setCart(newCart);
-
-            // Load customer info
             if (runningOrder.customerName) setManualCustomerName(runningOrder.customerName);
             if (runningOrder.customerMobile) setManualCustomerMobile(runningOrder.customerMobile);
             if (runningOrder.discountPercent) setDiscountPercent(runningOrder.discountPercent);
-
-            console.log('✅ Loaded running order for table:', tableId);
-            setIsLoading(false);
+            setIsCartLoading(false);
             return;
           }
-        }).catch(err => {
-          console.error("Failed to load running order:", err);
-        });
-      }
 
-      // If no running order, load existing order if table is occupied
-      if (status === 'occupied' && orderId) {
-        setIsLoading(true);
-        import('@/actions/orders').then(({ getOrderById }) => {
-          getOrderById(orderId).then((existingOrder) => {
+          if (status === 'occupied' && orderId) {
+            const { getOrderById } = await import('@/actions/orders');
+            const existingOrder = await getOrderById(orderId);
             if (existingOrder) {
-              // Populate guest count
               if (existingOrder.guestCount) setGuestCount(existingOrder.guestCount);
-
-              // Populate customer info
               if (existingOrder.customerName) setManualCustomerName(existingOrder.customerName);
               if (existingOrder.customerMobile) setManualCustomerMobile(existingOrder.customerMobile);
               if (existingOrder.discountPercent) setDiscountPercent(existingOrder.discountPercent);
               if (existingOrder.discountAmount) setDiscountAmount(existingOrder.discountAmount);
-
-              // Populate cart
+              
               if (existingOrder.items) {
                 const newCart: any = {};
                 existingOrder.items.forEach((item: any) => {
@@ -215,14 +208,15 @@ export function DineInOrderDialog({
                 setCart(newCart);
               }
             }
-            setIsLoading(false);
-          }).catch(err => {
-            console.error("Failed to load existing order:", err);
-            setIsLoading(false);
-          });
-        });
-      }
-
+          }
+        } catch (error) {
+          console.error("Failed to load order data:", error);
+        } finally {
+          setIsCartLoading(false);
+        }
+      };
+      
+      loadCartData();
     }
 
     // Load business settings and check modes in parallel (no delay for faster opening)
@@ -274,7 +268,7 @@ export function DineInOrderDialog({
       if (cached) {
         setMenuItems(cached);
         setFilteredMenuItems(cached);
-        setIsLoading(false);
+        setIsMenuLoading(false);
       } else {
         import('@/actions/menu').then(({ getMenuItems }) => {
           getMenuItems(businessUnit).then((rawItems) => {
@@ -282,14 +276,14 @@ export function DineInOrderDialog({
             setCachedMenu(businessUnit, availableItems);
             setMenuItems(availableItems);
             setFilteredMenuItems(availableItems);
-            setIsLoading(false);
+            setIsMenuLoading(false);
           }).catch(() => {
             setError("Failed to load menu. Please try again.");
-            setIsLoading(false);
+            setIsMenuLoading(false);
           });
         }).catch(() => {
           setError("Failed to load menu actions.");
-          setIsLoading(false);
+          setIsMenuLoading(false);
         });
       }
     } else if (businessUnit === 'bar') {
@@ -301,7 +295,7 @@ export function DineInOrderDialog({
         const active = barMenuMode === 'drinks' ? cachedDrinks : cachedFood;
         setMenuItems(active);
         setFilteredMenuItems(active);
-        setIsLoading(false);
+        setIsMenuLoading(false);
       } else {
         import('@/actions/bar').then(({ getBarMenu }) => {
           getBarMenu().then((barMenu) => {
@@ -314,18 +308,18 @@ export function DineInOrderDialog({
             const active = barMenuMode === 'drinks' ? drinks : food;
             setMenuItems(active);
             setFilteredMenuItems(active);
-            setIsLoading(false);
+            setIsMenuLoading(false);
           }).catch(() => {
             setError("Failed to load bar menu. Please try again.");
-            setIsLoading(false);
+            setIsMenuLoading(false);
           });
         }).catch(() => {
           setError("Failed to load bar actions.");
-          setIsLoading(false);
+          setIsMenuLoading(false);
         });
       }
     } else {
-      setIsLoading(false);
+      setIsMenuLoading(false);
     }
   }, [isOpen, userRole, isManagerRole, businessUnit]);
 
@@ -966,7 +960,7 @@ export function DineInOrderDialog({
 
               {/* Items Grid */}
               <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                {isLoading ? (
+                {isMenuLoading ? (
                   <div className="flex items-center justify-center h-full"><LoadingLogo /></div>
                 ) : filteredMenu.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-white/20">
@@ -1079,7 +1073,12 @@ export function DineInOrderDialog({
                 </div>
 
                 {/* Items List */}
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
+                  {isCartLoading && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[2px] rounded-2xl">
+                       <Loader2 className="animate-spin h-6 w-6 text-[#2fd180]" />
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-white/40 mb-3">
                     <ShoppingBag className="h-3.5 w-3.5" />
                     <span className="text-[8px] font-black uppercase tracking-[0.2em]">Items ({Object.values(cart).reduce((s, c) => s + c.qty, 0)})</span>

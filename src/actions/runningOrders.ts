@@ -131,7 +131,6 @@ export async function saveRunningOrder(data: {
                 .eq('id', data.tableId)
         }
 
-        revalidatePath('/dashboard/tables')
         return { success: true }
     } catch (error) {
         console.error('Error saving running order:', error)
@@ -161,7 +160,6 @@ export async function deleteRunningOrder(tableId: string) {
             .update({ status: 'available' })
             .eq('id', tableId)
 
-        revalidatePath('/dashboard/tables')
         return { success: true }
     } catch (error) {
         console.error('Error deleting running order:', error)
@@ -185,7 +183,6 @@ export async function finalizeRunningOrder(tableId: string) {
 
         if (error) throw error
 
-        revalidatePath('/dashboard/tables')
         return { success: true }
     } catch (error) {
         console.error('Error finalizing running order:', error)
