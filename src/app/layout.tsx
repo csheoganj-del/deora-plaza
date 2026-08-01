@@ -11,8 +11,8 @@ import { RealtimeOrdersProvider } from "@/providers/RealtimeOrdersProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Bloom Cafe & Restaurant - Management System",
-  description: "Comprehensive restaurant and cafe management platform",
+  title: "Deora Plaza - Hospitality Management System",
+  description: "Comprehensive hospitality and restaurant management platform",
 };
 
 export const viewport: Viewport = {
