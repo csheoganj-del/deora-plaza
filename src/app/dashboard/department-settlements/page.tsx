@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Handshake } from "lucide-react"
 import DepartmentSettlementList from "@/components/settlements/DepartmentSettlementList"
 import InterDepartmentalSettlement from "@/components/settlements/InterDepartmentalSettlement"

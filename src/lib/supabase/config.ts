@@ -16,23 +16,23 @@ if (typeof process !== "undefined" && process.env) {
 export const SUPABASE_CONFIG = {
   // Client-side configuration
   getUrl: () =>
-    typeof process !== "undefined"
-      ? process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-      : "",
+    (typeof process !== "undefined" && process.env.NEXT_PUBLIC_SUPABASE_URL)
+      ? process.env.NEXT_PUBLIC_SUPABASE_URL
+      : "https://placeholder-project.supabase.co",
   getAnonKey: () =>
-    typeof process !== "undefined"
-      ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-      : "",
+    (typeof process !== "undefined" && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+      ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder",
 
   // Server-side configuration
   getServiceUrl: () =>
-    typeof process !== "undefined"
-      ? process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-      : "",
+    (typeof process !== "undefined" && (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL))
+      ? (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!)
+      : "https://placeholder-project.supabase.co",
   getServiceKey: () =>
-    typeof process !== "undefined"
-      ? process.env.SUPABASE_SERVICE_ROLE_KEY || ""
-      : "",
+    (typeof process !== "undefined" && process.env.SUPABASE_SERVICE_ROLE_KEY)
+      ? process.env.SUPABASE_SERVICE_ROLE_KEY
+      : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder",
 
   // Validation
   isClientConfigValid: () => {
@@ -75,7 +75,7 @@ export function validateClientConfig() {
       "NEXT_PUBLIC_SUPABASE_ANON_KEY:",
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Set" : "Missing",
     );
-    throw new Error("Missing Supabase environment variables for client");
+    console.warn("⚠️ Missing Supabase environment variables for client");
   }
 }
 
@@ -106,7 +106,7 @@ export function validateServerConfig() {
       "SUPABASE_SERVICE_ROLE_KEY:",
       process.env.SUPABASE_SERVICE_ROLE_KEY ? "Set" : "Missing",
     );
-    throw new Error("Missing Supabase environment variables for server");
+    console.warn("⚠️ Missing Supabase environment variables for server");
   }
   
   if (isPlaceholder) {

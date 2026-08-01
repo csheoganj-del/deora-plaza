@@ -1,7 +1,7 @@
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from "@/lib/auth-helpers"
 import GSTReportComponent from "@/components/gst/GSTReportComponent"
-
-export const dynamic = "force-dynamic"
 
 export default async function CafeGSTReportPage() {
     const session = await requireAuth()

@@ -1,4 +1,6 @@
 
+export const dynamic = 'force-dynamic';
+
 import { requireAuth } from "@/lib/auth-helpers";
 import { getTables } from "@/actions/tables";
 import TablesInterface from "@/components/tables/TablesInterface";

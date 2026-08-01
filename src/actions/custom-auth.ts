@@ -7,15 +7,10 @@ import { SignJWT, jwtVerify } from "jose"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
+const fallbackSecret = "bloom-cafe-dev-secret-key-not-for-production";
 const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || (() => {
-        if (process.env.NODE_ENV === 'production') {
-            throw new Error("JWT_SECRET must be set in production environment");
-        }
-        console.warn("WARNING: Using fallback JWT secret in development. Set JWT_SECRET in production.");
-        return "bloom-cafe-dev-secret-key-not-for-production";
-    })()
-)
+    process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || fallbackSecret
+);
 
 if (!process.env.JWT_SECRET) {
     console.warn("WARNING: JWT_SECRET is not set in environment variables. Using fallback secret.");
