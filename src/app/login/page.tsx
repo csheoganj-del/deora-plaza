@@ -113,7 +113,7 @@ export default function LoginPage() {
           <div className="logo-container" style={{ marginBottom: '8px' }}>
             <div className="steam-effect steam-1"></div>
             <div className="steam-effect steam-2"></div>
-            <h1 className="cinematic-title" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>BLOOM CAFÉ</h1>
+            <h1 className="cinematic-title" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>DEORA PLAZA</h1>
           </div>
           <div style={{
             display: 'flex',
@@ -428,7 +428,7 @@ export default function LoginPage() {
             letterSpacing: '0.02em',
             margin: 0
           }}>
-            © {new Date().getFullYear()} Bloom Cafe & Restaurant • Secure Staff Access Portal
+            © {new Date().getFullYear()} Deora Plaza • Secure Staff Access Portal
           </p>
         </div>
       </div>
