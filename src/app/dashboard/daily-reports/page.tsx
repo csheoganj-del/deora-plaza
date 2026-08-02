@@ -1,19 +1,7 @@
-import { Metadata } from 'next';
-import DailyReports from '@/components/reports/DailyReports';
-import { DashboardPageWrapper } from '@/components/layout/DashboardPageWrapper';
+"use client";
 
-export const metadata: Metadata = {
-  title: 'Daily Reports - DEORA Plaza',
-  description: 'Automated daily business summary and insights',
-};
+import DailyReports from "@/components/reports/DailyReports";
 
 export default function DailyReportsPage() {
-  return (
-    <DashboardPageWrapper
-      title="Daily Reports"
-      description="Automated daily business summary and insights"
-    >
-      <DailyReports />
-    </DashboardPageWrapper>
-  );
+  return <DailyReports />;
 }

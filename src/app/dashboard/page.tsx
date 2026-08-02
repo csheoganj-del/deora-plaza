@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import UnifiedDashboard from "@/components/dashboard/UnifiedDashboard";
+import { UnifiedDashboard } from "@/components/dashboard/UnifiedDashboard";
 import { useServerAuth } from "@/hooks/useServerAuth";
 
 export default function DashboardPage() {
