@@ -22,8 +22,6 @@ import {
   Armchair as ArmchairIcon,
   FileText,
   Users as UsersIcon,
-  Hotel,
-  Flower2,
   ChevronRight,
   Plus,
   Search,
@@ -70,7 +68,6 @@ export function Header() {
       icon: UtensilsCrossed,
       roles: ["cafe_manager", "waiter", "kitchen", "super_admin", "owner"],
     },
-
     {
       name: "Billing",
       href: "/dashboard/billing",
@@ -85,49 +82,38 @@ export function Header() {
     },
   ];
 
-  // Dynamic CTA button based on user role and current page
-  const getContextualCTA = (): { text: string; href: string; icon: typeof Plus; show: boolean } | { show: false } => {
-    // Hotel-related roles or pages
-    if (role === "hotel_manager" || role === "hotel_reception" || pathname.includes("/hotel")) {
-      return {
-        text: "New Booking",
-        href: "/dashboard/hotel",
-        icon: Plus,
-        show: true
-      };
+  const getContextualCTA = ():
+    | { text: string; href: string; icon: typeof Plus; show: boolean }
+    | { show: false } => {
+    if (
+      role === "hotel_manager" ||
+      role === "hotel_reception" ||
+      pathname.includes("/hotel")
+    ) {
+      return { text: "New Booking", href: "/dashboard/hotel", icon: Plus, show: true };
     }
 
-    // Garden-related roles or pages
     if (role === "garden_manager" || pathname.includes("/garden")) {
-      return {
-        text: "New Event",
-        href: "/dashboard/garden",
-        icon: Plus,
-        show: true
-      };
+      return { text: "New Event", href: "/dashboard/garden", icon: Plus, show: true };
     }
 
-    // Cafe/Restaurant-related roles or pages
-    if (role === "cafe_manager" || role === "waiter" || pathname.includes("/tables") || pathname.includes("/orders")) {
-      return {
-        text: "New Order",
-        href: "/dashboard/orders/new",
-        icon: Plus,
-        show: true
-      };
+    if (
+      role === "cafe_manager" ||
+      role === "waiter" ||
+      pathname.includes("/tables") ||
+      pathname.includes("/orders")
+    ) {
+      return { text: "New Order", href: "/dashboard/orders/new", icon: Plus, show: true };
     }
 
-    // Bar-related roles or pages
-    if (role === "bar_manager" || role === "bartender" || pathname.includes("/bar")) {
-      return {
-        text: "New Order",
-        href: "/dashboard/bar/tables",
-        icon: Plus,
-        show: true
-      };
+    if (
+      role === "bar_manager" ||
+      role === "bartender" ||
+      pathname.includes("/bar")
+    ) {
+      return { text: "New Order", href: "/dashboard/bar/tables", icon: Plus, show: true };
     }
 
-    // Admin/Owner - show most relevant action based on current page
     if (role === "super_admin" || role === "owner") {
       if (pathname.includes("/hotel")) {
         return { text: "New Booking", href: "/dashboard/hotel", icon: Plus, show: true };
@@ -141,52 +127,51 @@ export function Header() {
       if (pathname.includes("/users")) {
         return { text: "Add User", href: "/dashboard/users", icon: Plus, show: true };
       }
-      // Default for admin - don't show CTA on main dashboard
       return { show: false };
     }
 
-    // Default - no CTA
     return { show: false };
   };
 
   const contextualCTA = getContextualCTA();
 
   return (
-    <header className="dashboard-header">
-      <div className="dashboard-header-content">
-        <div className="dashboard-header-left">
+    <header className="w-full bg-[#0a0806]/80 backdrop-blur-2xl border-b border-[#d9a441]/15 px-4 md:px-6 py-3 sticky top-0 z-20 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+      <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+        {/* Left: Mobile Menu & Title */}
+        <div className="flex items-center gap-3 min-w-0">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden dashboard-icon-button"
+                className="md:hidden text-white/80 hover:text-white hover:bg-white/10 rounded-xl"
               >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="dashboard-mobile-menu"
+              className="bg-[#0a0806] border-r border-[#d9a441]/20 text-white p-6"
             >
-              <div className="dashboard-mobile-header">
-                <SheetTitle className="dashboard-mobile-title">
-                  <div className="dashboard-logo">
-                    <div className="dashboard-logo-icon">
-                      <span className="dashboard-logo-text">D</span>
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <SheetTitle className="text-left">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#F2B94B] to-[#D9A441] rounded-lg flex items-center justify-center font-bold text-[#0A0806]">
+                      D
                     </div>
-                  </div>
-                  <div>
-                    <span className="dashboard-brand-name">
-                      Bloom Cafe & Restaurant
-                    </span>
-                    <span className="dashboard-brand-subtitle">
-                      Management
-                    </span>
+                    <div>
+                      <span className="font-serif font-bold text-white tracking-wide text-base block">
+                        DEORA PLAZA
+                      </span>
+                      <span className="text-[11px] text-[#F2B94B] font-mono tracking-widest uppercase block">
+                        Staff Portal
+                      </span>
+                    </div>
                   </div>
                 </SheetTitle>
               </div>
-              <nav className="dashboard-mobile-nav" aria-label="Mobile navigation">
+              <nav className="space-y-2">
                 {links.map((link) => {
                   const Icon = link.icon;
                   const isActive = pathname === link.href;
@@ -205,14 +190,14 @@ export function Header() {
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
-                        "dashboard-mobile-nav-item",
-                        isActive && "dashboard-mobile-nav-item-active"
+                        "flex items-center justify-between p-3 rounded-xl transition-all text-sm font-medium",
+                        isActive
+                          ? "bg-[#F2B94B]/20 text-[#F2B94B] border border-[#F2B94B]/40"
+                          : "text-white/70 hover:text-white hover:bg-white/5"
                       )}
                     >
-                      <div className="dashboard-mobile-nav-content">
-                        <div className="dashboard-mobile-nav-icon">
-                          <Icon className="h-5 w-5" />
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <Icon className="h-5 w-5" />
                         <span>{link.name}</span>
                       </div>
                       {isActive && <ChevronRight className="h-4 w-4" />}
@@ -223,35 +208,35 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          <div className="dashboard-title-container">
-            <h2 className="dashboard-title select-text">
+          <div className="min-w-0">
+            <h2 className="text-lg md:text-xl font-bold font-serif text-[#F5F5F7] tracking-wide truncate">
               {session?.user?.businessUnit
                 ? `${session.user.businessUnit.charAt(0).toUpperCase() + session.user.businessUnit.slice(1)} Dashboard`
-                : "Dashboard"}
+                : "DEORA PLAZA Dashboard"}
             </h2>
           </div>
         </div>
 
-        {/* MD3 Search Bar - Centered Pill */}
-        <div className="hidden md:flex flex-1 justify-center max-w-[600px] mx-auto px-4">
+        {/* Center: Search Bar */}
+        <div className="hidden md:flex flex-1 justify-center max-w-md mx-4">
           <div className="relative w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#5F6368]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
             <Input
-              placeholder="Search"
-              className="w-full bg-white/50 backdrop-blur-md border border-white/30 rounded-full pl-12 h-12 focus-visible:ring-2 focus-visible:ring-[#1A73E8] transition-all text-[16px] hover:bg-white/60"
+              placeholder="Search tables, orders, bills..."
+              className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 h-10 text-sm text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-[#F2B94B]/60 focus-visible:border-[#F2B94B]/60 transition-all"
             />
           </div>
         </div>
 
-        <div className="dashboard-header-right">
-          {/* MD3 Primary Extended FAB */}
-          {contextualCTA.show && 'text' in contextualCTA && (
+        {/* Right: Actions & User Avatar */}
+        <div className="flex items-center gap-3 shrink-0">
+          {contextualCTA.show && "text" in contextualCTA && (
             <Button
-              className="h-12 px-6 bg-[#1A73E8] hover:bg-[#1557B0] text-white rounded-full shadow-lg hover:shadow-xl transition-all gap-3 flex items-center font-medium"
+              className="h-10 px-4 bg-gradient-to-r from-[#F2B94B] to-[#D9A441] text-[#0A0806] font-semibold rounded-xl shadow-lg shadow-[#D9A441]/15 hover:brightness-110 transition-all gap-2 flex items-center text-sm"
               asChild
             >
               <Link href={contextualCTA.href}>
-                <Plus className="h-5 w-5" />
+                <Plus className="h-4 w-4" />
                 <span>{contextualCTA.text}</span>
               </Link>
             </Button>
@@ -260,71 +245,67 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-12 w-12 rounded-full text-[#5F6368] hover:bg-white/40 backdrop-blur-sm active:bg-white/50 transition-all"
+            className="h-10 w-10 rounded-xl text-white/70 hover:text-white hover:bg-white/10 border border-white/10 relative transition-all"
           >
-            <Bell className="h-6 w-6" />
-            <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#B3261E] rounded-full border-2 border-white" />
+            <Bell className="h-4 w-4" />
+            <div className="absolute top-2 right-2 w-2 h-2 bg-[#F2B94B] rounded-full shadow-[0_0_8px_#F2B94B]" />
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="dashboard-avatar-button"
+                className="h-10 w-10 p-0 rounded-xl border border-[#D9A441]/30 hover:border-[#D9A441]/60 transition-all overflow-hidden"
               >
-                <Avatar className="dashboard-avatar">
+                <Avatar className="h-full w-full rounded-xl">
                   <AvatarImage
                     src="/avatars/01.png"
                     alt={session?.user?.username || ""}
                   />
-                  <AvatarFallback className="dashboard-avatar-fallback">
-                    {session?.user?.username?.charAt(0) || "U"}
+                  <AvatarFallback className="bg-gradient-to-br from-[#F2B94B] to-[#D9A441] text-[#0A0806] font-bold text-sm rounded-xl">
+                    {session?.user?.username?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="dashboard-dropdown"
+              className="bg-[#0a0806]/95 border border-[#d9a441]/25 text-white backdrop-blur-2xl w-56 rounded-xl shadow-2xl p-1"
               align="end"
               forceMount
             >
-              <DropdownMenuLabel className="dashboard-dropdown-label">
-                <div className="dashboard-user-info">
-                  <p className="dashboard-user-name">
-                    {session?.user?.username}
+              <DropdownMenuLabel className="p-3 border-b border-white/10">
+                <div className="flex flex-col gap-0.5">
+                  <p className="font-semibold text-sm text-[#F5F5F7]">
+                    {session?.user?.username || "Staff Member"}
                   </p>
-                  <p className="dashboard-user-role">
-                    {session?.user?.role
-                      ? session.user.role.replace("_", " ")
-                      : session
-                        ? "Role not loaded"
-                        : "Loading..."}
+                  <p className="text-[11px] text-[#F2B94B] font-mono capitalize">
+                    {session?.user?.role?.replace("_", " ") || "User"}
                   </p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="dashboard-dropdown-separator" />
+              <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem
                 onSelect={() => setIsSettingsDialogOpen(true)}
-                className="dashboard-dropdown-item"
+                className="p-2.5 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 cursor-pointer flex items-center gap-2"
               >
-                <User className="mr-2 h-4 w-4" />
+                <User className="h-4 w-4 text-[#F2B94B]" />
                 <span>Profile</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => setIsSettingsDialogOpen(true)}
-                className="dashboard-dropdown-item"
+                className="p-2.5 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 cursor-pointer flex items-center gap-2"
               >
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings className="h-4 w-4 text-[#F2B94B]" />
                 <span>Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="dashboard-dropdown-separator" />
+              <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem
-                className="dashboard-dropdown-item dashboard-logout-item"
+                className="p-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer flex items-center gap-2"
                 onClick={async () => {
                   await logoutCustomUser();
                 }}
               >
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogOut className="h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -337,6 +318,3 @@ export function Header() {
     </header>
   );
 }
-
-export default Header;
-
