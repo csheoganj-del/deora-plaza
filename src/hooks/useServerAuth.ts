@@ -1,114 +1,70 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { getCurrentCustomUser } from '@/actions/custom-auth';
+import { useEffect, useState } from "react";
 
-export interface CustomUser {
-  userId: string;
-  username: string;
+interface ServerAuthUser {
+  id: string;
+  username?: string;
+  name?: string;
   role: string;
   businessUnit: string;
-  email?: string;
-  phoneNumber?: string;
 }
 
-export interface AuthSession {
-  user: CustomUser;
+interface ServerAuthSession {
+  user: ServerAuthUser | null;
 }
 
-const SESSION_CACHE_KEY = 'bloom-auth-session-cache';
-const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes in ms
+type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
-function getCachedSession(): AuthSession | null {
-  try {
-    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
-    if (!raw) return null;
-    const { session, timestamp } = JSON.parse(raw);
-    if (Date.now() - timestamp > SESSION_CACHE_TTL) {
-      sessionStorage.removeItem(SESSION_CACHE_KEY);
-      return null;
-    }
-    return session;
-  } catch {
-    return null;
-  }
+interface UseServerAuthReturn {
+  data: ServerAuthSession | null;
+  status: AuthStatus;
 }
 
-function setCachedSession(session: AuthSession | null) {
-  try {
-    if (session) {
-      sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ session, timestamp: Date.now() }));
-    } else {
-      sessionStorage.removeItem(SESSION_CACHE_KEY);
-    }
-  } catch {}
-}
-
-export function clearSessionCache() {
-  try { sessionStorage.removeItem(SESSION_CACHE_KEY); } catch {}
-}
-
-/**
- * Hook for custom JWT-based authentication state management.
- * Always starts with loading=true to match server render, then instantly
- * resolves from sessionStorage cache after hydration — no loading flash on navigation.
- */
-export function useServerAuth() {
-  // Must start with server-safe defaults to avoid hydration mismatch.
-  // The layout no longer blocks on loading, so the useEffect cache
-  // resolution is instant and causes no visible flash.
-  const [session, setSession] = useState<AuthSession | null>(null);
-  const [loading, setLoading] = useState(true);
+export function useServerAuth(): UseServerAuthReturn {
+  const [data, setData] = useState<ServerAuthSession | null>(null);
+  const [status, setStatus] = useState<AuthStatus>("loading");
 
   useEffect(() => {
-    // If we already resolved synchronously (session loaded from cache in useState init), skip
-    if (!loading && session) return;
-
-    // Check sessionStorage cache first for instant resolution
-    const cached = getCachedSession();
-    if (cached) {
-      setSession(cached);
-      setLoading(false);
-      return;
-    }
-
-    // No cache — do the server call once
     const checkAuth = async () => {
       try {
-        const user = await getCurrentCustomUser();
-        if (user) {
-          const authSession: AuthSession = {
-            user: {
-              userId: user.userId as string,
-              username: user.username as string || user.phoneNumber as string || '',
-              role: user.role as string,
-              businessUnit: user.businessUnit as string,
-              email: user.email as string,
-              phoneNumber: user.phoneNumber as string,
-            }
-          };
-          setSession(authSession);
-          setCachedSession(authSession);
-        } else {
-          setSession(null);
-          setCachedSession(null);
+        // First try the cookie directly from document.cookie
+        const cookies = document.cookie.split(";");
+        const authCookie = cookies.find((c) =>
+          c.trim().startsWith("bloom-auth-token=")
+        );
+
+        if (!authCookie) {
+          setStatus("unauthenticated");
+          setData(null);
+          return;
         }
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        setSession(null);
-      } finally {
-        setLoading(false);
+
+        // Verify the token via API
+        const response = await fetch("/api/auth/me", { credentials: "include" });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.user) {
+            setData({ user: result.user });
+            setStatus("authenticated");
+          } else {
+            setData(null);
+            setStatus("unauthenticated");
+          }
+        } else {
+          setData(null);
+          setStatus("unauthenticated");
+        }
+      } catch (err) {
+        console.error("[useServerAuth] Error checking auth:", err);
+        setData(null);
+        setStatus("unauthenticated");
       }
     };
 
     checkAuth();
   }, []);
 
-  return {
-    data: session,
-    status: loading ? 'loading' : (session ? 'authenticated' : 'unauthenticated'),
-    loading,
-    user: session?.user || null,
-    isAuthenticated: !!session
-  };
+  return { data, status };
 }

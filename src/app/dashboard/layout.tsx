@@ -2,11 +2,11 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import GlassHeader from "@/components/layout/GlassHeader"
-import GlassSidebar from "@/components/layout/GlassSidebar"
-import { Button } from "@/components/ui/hybrid/button"
+import Header from "@/components/layout/Header"
+import Sidebar from "@/components/layout/Sidebar"
+import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/toaster"
-import { EnhancedErrorBoundary } from "@/components/ui/enhanced-error-boundary"
+import { EnhancedErrorBoundary } from "@/components/ui/error/enhanced-error-boundary"
 import { ProgressIndicator } from "@/components/ui/progress-indicator"
 import { useServerAuth } from "@/hooks/useServerAuth"
 import { ToastProvider } from "@/components/ui/feedback/notification-toast"
@@ -56,10 +56,10 @@ export default function DashboardLayout({
             </div>
 
             <div className="relative z-10 min-h-screen flex text-white overflow-hidden font-sans antialiased">
-                <GlassSidebar />
+                <Sidebar />
 
                 <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
-                    <GlassHeader />
+                    <Header />
 
                     <main
                         id="main-content"
