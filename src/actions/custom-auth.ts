@@ -19,6 +19,7 @@ if (!process.env.JWT_SECRET) {
 export interface LoginResult {
     success: boolean
     error?: string
+    token?: string
     user?: {
         id: string
         username?: string

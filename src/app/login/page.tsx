@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Instagram } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { loginWithCustomUser } from "@/actions/custom-auth";
 
 
@@ -44,10 +44,17 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
+    // Safety fallback: reset loading after 10s in case navigation hangs
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+      setError("Login is taking too long. Please try again.");
+    }, 10000);
+
     try {
       const result = await loginWithCustomUser(formData.username, formData.password);
 
       if (!result.success) {
+        clearTimeout(loadingTimeout);
         setError(result.error || "Invalid username or password");
         setLoading(false);
         return;
@@ -58,13 +65,20 @@ export default function LoginPage() {
           // Manually set cookie on client side to ensure it's saved before navigation
           document.cookie = `bloom-auth-token=${result.token}; path=/; max-age=86400; SameSite=Lax`;
         }
-        
+
         const redirectPath = getRedirectPath(result.user.role, result.user.businessUnit || "");
-        
-        // Force hard navigation to bypass any Next.js client-side router bugs
+
+        // Force hard navigation — loading state stays true during redirect (intentional)
+        clearTimeout(loadingTimeout);
         window.location.href = redirectPath;
+      } else {
+        // Fallback: success=true but no user returned
+        clearTimeout(loadingTimeout);
+        setError("Login failed. Please try again.");
+        setLoading(false);
       }
     } catch (err: any) {
+      clearTimeout(loadingTimeout);
       console.error("Login error:", err);
       setError("An unexpected error occurred. Please try again.");
       setLoading(false);
@@ -433,18 +447,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Instagram Link - Placed outside relative container so it uses viewport coordinates */}
-      <div className={`cinematic-insta-float ${isVisible ? 'visible' : ''}`}>
-        <a 
-          href="https://www.instagram.com/pixncraftstudio/" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="insta-link"
-        >
-          <Instagram size={20} className="insta-icon" />
-          <span>pixncraftstudio</span>
-        </a>
-      </div>
     </main>
 
     {/* Add keyframes for spinner animation and autofill styles */}
