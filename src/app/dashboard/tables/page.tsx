@@ -1,42 +1,47 @@
+export const dynamic = "force-dynamic";
 
-export const dynamic = 'force-dynamic';
-
-import { requireAuth } from "@/lib/auth-helpers";
+import { redirect } from "next/navigation";
+import { getCurrentCustomUser } from "@/actions/custom-auth";
 import { getTables } from "@/actions/tables";
 import TablesInterface from "@/components/tables/TablesInterface";
 
 export default async function TablesPage() {
-    const session = await requireAuth();
-    const userRole = session.user.role;
-    const userBusinessUnit = session.user.businessUnit;
+  const user = await getCurrentCustomUser();
 
-    // Determine if user can see all tables
-    const canSeeAllTables =
-        userRole === 'super_admin' ||
-        userRole === 'owner' ||
-        userBusinessUnit === 'all';
+  if (!user) {
+    redirect("/login");
+  }
 
-    let cafeTables: any[] = [];
-    let barTables: any[] = [];
-    let allTables: any[] = [];
+  const userRole = String(user.role || "");
+  const userBusinessUnit = String(user.businessUnit || "cafe");
 
+  const canSeeAllTables =
+    userRole === "super_admin" ||
+    userRole === "owner" ||
+    userBusinessUnit === "all";
+
+  let allTables: any[] = [];
+
+  try {
     if (canSeeAllTables) {
-        // Fetch tables from both business units IN PARALLEL
-        [cafeTables, barTables] = await Promise.all([
-            getTables('cafe'),
-            getTables('bar')
-        ]);
-        allTables = [...cafeTables, ...barTables];
+      const [cafeTables, barTables] = await Promise.all([
+        getTables("cafe"),
+        getTables("bar"),
+      ]);
+      allTables = [...cafeTables, ...barTables];
     } else {
-        // Fetch only user's business unit tables
-        allTables = await getTables(userBusinessUnit);
+      allTables = await getTables(userBusinessUnit);
     }
+  } catch (err) {
+    console.error("[tables page] failed to load tables:", err);
+    allTables = [];
+  }
 
-    return (
-        <TablesInterface
-            initialTables={allTables}
-            userBusinessUnit={userBusinessUnit}
-            canSeeAllTables={canSeeAllTables}
-        />
-    );
+  return (
+    <TablesInterface
+      initialTables={allTables}
+      userBusinessUnit={userBusinessUnit}
+      canSeeAllTables={canSeeAllTables}
+    />
+  );
 }

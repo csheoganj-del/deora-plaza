@@ -3,8 +3,10 @@ import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
 
 
-const secretKey = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "deora-plaza-default-secret-key-fallback";
-const JWT_SECRET = new TextEncoder().encode(secretKey);
+import { getJwtSecretKey } from "@/lib/auth-token";
+
+// Resolved at use-time via getJwtSecretKey(); keep alias for existing helpers below
+const JWT_SECRET = getJwtSecretKey();
 
 if (!process.env.JWT_SECRET && !process.env.NEXTAUTH_SECRET) {
   console.warn("WARNING: JWT_SECRET or NEXTAUTH_SECRET is not set. Using fallback secret key.");

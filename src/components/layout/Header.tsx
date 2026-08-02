@@ -61,7 +61,7 @@ export function Header() {
     {
       name: "Tables",
       href: "/dashboard/tables",
-      icon: Armchair,
+      icon: ArmchairIcon,
       roles: ["cafe_manager", "waiter", "super_admin", "owner"],
     },
     {
@@ -337,4 +337,6 @@ export function Header() {
     </header>
   );
 }
+
+export default Header;
 

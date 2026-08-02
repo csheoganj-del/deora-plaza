@@ -1,32 +1,19 @@
 // Unified Customer Loyalty Program System
-export interface BusinessUnitType {
-  CAFE: 'cafe';
-  RESTAURANT: 'restaurant';
-  BAR: 'bar';
-  HOTEL: 'hotel';
-  MARRIAGE_GARDEN: 'marriage_garden';
-}
-
-export interface LoyaltyTier {
-  BRONZE: 'bronze';
-  SILVER: 'silver';
-  GOLD: 'gold';
-  PLATINUM: 'platinum';
-  DIAMOND: 'diamond';
-}
+export type BusinessUnitType = 'cafe' | 'restaurant' | 'bar' | 'hotel' | 'marriage_garden';
+export type LoyaltyTier = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND';
 
 export interface LoyaltyCustomer {
   id: string;
   customerId: string; // Reference to main customer
   loyaltyNumber: string;
-  currentTier: keyof LoyaltyTier;
+  currentTier: LoyaltyTier;
   points: number;
   lifetimePoints: number;
   totalSpent: number;
   visitCount: number;
   lastVisitDate: string;
   enrollmentDate: string;
-  preferredBusinessUnits: (keyof BusinessUnitType)[];
+  preferredBusinessUnits: (BusinessUnitType)[];
   preferences: {
     communication: 'email' | 'sms' | 'both' | 'none';
     marketing: boolean;
@@ -45,7 +32,7 @@ export interface LoyaltyCustomer {
 export interface LoyaltyTransaction {
   id: string;
   customerId: string;
-  businessUnit: keyof BusinessUnitType;
+  businessUnit: BusinessUnitType;
   orderId?: string;
   type: 'earn' | 'redeem' | 'expire' | 'adjust' | 'bonus';
   points: number;
@@ -63,7 +50,7 @@ export interface LoyaltyReward {
   description: string;
   type: 'discount' | 'free_item' | 'upgrade' | 'experience' | 'cashback';
   category: 'food' | 'beverage' | 'accommodation' | 'event' | 'general';
-  businessUnits: (keyof BusinessUnitType)[];
+  businessUnits: (BusinessUnitType)[];
   requiredPoints: number;
   value: number; // Monetary value or percentage
   validFrom: string;
@@ -84,7 +71,7 @@ export interface LoyaltyAchievement {
   description: string;
   type: 'visits' | 'spending' | 'milestone' | 'special' | 'referral';
   category: 'frequency' | 'value' | 'engagement' | 'loyalty';
-  businessUnits: (keyof BusinessUnitType)[];
+  businessUnits: (BusinessUnitType)[];
   criteria: {
     visits?: number;
     spending?: number;
@@ -104,14 +91,14 @@ export interface LoyaltyPromotion {
   name: string;
   description: string;
   type: 'points_multiplier' | 'bonus_points' | 'tier_upgrade' | 'special_reward';
-  businessUnits: (keyof BusinessUnitType)[];
+  businessUnits: (BusinessUnitType)[];
   validFrom: string;
   validTo: string;
   conditions: {
     minSpending?: number;
     dayOfWeek?: number[];
     timeSlot?: { start: string; end: string };
-    customerTier?: (keyof LoyaltyTier)[];
+    customerTier?: (LoyaltyTier)[];
     items?: string[];
   };
   multiplier?: number; // For points_multiplier type
@@ -127,7 +114,7 @@ export interface LoyaltyStats {
   totalPointsIssued: number;
   totalPointsRedeemed: number;
   totalRewardsRedeemed: number;
-  customerTierDistribution: Record<keyof LoyaltyTier, number>;
+  customerTierDistribution: Record<LoyaltyTier, number>;
   businessUnitDistribution: Record<string, number>;
   averagePointsPerCustomer: number;
   averageSpendingPerCustomer: number;
@@ -161,7 +148,7 @@ export interface LoyaltyAnalytics {
   tierProgression: {
     upgrades: number;
     downgrades: number;
-    tierChanges: Record<keyof LoyaltyTier, number>;
+    tierChanges: Record<LoyaltyTier, number>;
   };
 }
 
@@ -267,7 +254,7 @@ export class UnifiedLoyaltyManager {
   }
 
   // Points Management
-  public awardPoints(customerId: string, points: number, description: string, type: LoyaltyTransaction['type'], orderId?: string, businessUnit?: keyof BusinessUnitType): boolean {
+  public awardPoints(customerId: string, points: number, description: string, type: LoyaltyTransaction['type'], orderId?: string, businessUnit?: BusinessUnitType): boolean {
     const customer = this.customers.find(c => c.id === customerId);
     if (!customer || !customer.isActive) return false;
 
@@ -345,7 +332,7 @@ export class UnifiedLoyaltyManager {
     return true;
   }
 
-  private getPointsMultiplier(businessUnit?: keyof BusinessUnitType): number {
+  private getPointsMultiplier(businessUnit?: BusinessUnitType): number {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const currentTime = today.getHours() * 60 + today.getMinutes();
@@ -404,7 +391,7 @@ export class UnifiedLoyaltyManager {
 
     for (const [tier, threshold] of Object.entries(tierThresholds)) {
       if (customer.lifetimePoints >= threshold) {
-        newTier = tier as keyof LoyaltyTier;
+        newTier = tier as LoyaltyTier;
       }
     }
 
@@ -413,7 +400,7 @@ export class UnifiedLoyaltyManager {
       customer.updatedAt = new Date().toISOString();
       
       // Award tier upgrade bonus
-      const tierBonus: Record<keyof LoyaltyTier, number> = {
+      const tierBonus: Record<LoyaltyTier, number> = {
         BRONZE: 0,
         SILVER: 100,
         GOLD: 250,
@@ -467,7 +454,7 @@ export class UnifiedLoyaltyManager {
   public getLoyaltyStats(): LoyaltyStats {
     const activeCustomers = this.customers.filter(c => c.isActive);
     
-    const tierDistribution: Record<keyof LoyaltyTier, number> = {
+    const tierDistribution: Record<LoyaltyTier, number> = {
       BRONZE: 0,
       SILVER: 0,
       GOLD: 0,
@@ -570,7 +557,7 @@ export class UnifiedLoyaltyManager {
 
   // Reward Management
   public getRewards(filter?: {
-    businessUnit?: keyof BusinessUnitType;
+    businessUnit?: BusinessUnitType;
     category?: string;
     activeOnly?: boolean;
     customerPoints?: number; // Only show rewards customer can afford
@@ -609,7 +596,7 @@ export class UnifiedLoyaltyManager {
   }
 
   // Customer Visit Tracking
-  public recordVisit(customerId: string, businessUnit: keyof BusinessUnitType, amount: number, orderId?: string): boolean {
+  public recordVisit(customerId: string, businessUnit: BusinessUnitType, amount: number, orderId?: string): boolean {
     const customer = this.customers.find(c => c.id === customerId);
     if (!customer || !customer.isActive) return false;
 

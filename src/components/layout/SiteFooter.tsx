@@ -20,15 +20,13 @@ export default function SiteFooter() {
             </p>
             <div className="flex gap-4">
               {[Facebook, Instagram, Twitter, Linkedin].map((Icon, i) => (
-                <a
+                <span
                   key={i}
-                  href="https://www.instagram.com/pixncraftstudio/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-[#111827] border border-[#111827] flex items-center justify-center hover:bg-[hsl(var(--soft-gold))] hover:text-white hover:border-[hsl(var(--soft-gold))] transition-all duration-300"
+                  className="h-10 w-10 rounded-full bg-[#111827] border border-[#111827] flex items-center justify-center text-[#9CA3AF]"
+                  aria-hidden="true"
                 >
                   <Icon className="h-4 w-4" />
-                </a>
+                </span>
               ))}
             </div>
           </div>
@@ -88,10 +86,6 @@ export default function SiteFooter() {
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
             <a href="#" className="hover:text-white transition-colors">Sitemap</a>
           </div>
-          <div className="text-[#6B7280] text-xs">
-            Designed by <a href="https://www.instagram.com/pixncraftstudio/" target="_blank" rel="noopener noreferrer" className="text-[#9CA3AF] hover:text-[hsl(var(--soft-gold))] transition-colors">PixnCraft Studio</a>
-          </div>
-
         </div>
       </div>
     </footer>

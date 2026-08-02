@@ -118,6 +118,32 @@ import { unstable_noStore as noStore } from "next/cache";
 export async function getBusinessSettings(): Promise<BusinessSettings | null> {
     noStore();
     try {
+        const isPlaceholder =
+            process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("placeholder") ||
+            !process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+        if (isPlaceholder) {
+            // Demo defaults — never block login/dashboard on missing DB
+            return {
+                name: "Deora Plaza",
+                address: "Demo Address",
+                mobile: "0000000000",
+                gstEnabled: false,
+                cafeWaiterlessMode: false,
+                barWaiterlessMode: false,
+                enablePasswordProtection: false,
+                enableBarModule: true,
+                enableHotelModule: true,
+                enableGardenModule: true,
+                enableKitchenModule: true,
+                enableBillingModule: true,
+                enableTablesModule: true,
+                enableMenuModule: true,
+                enableCashPayments: true,
+                enableUPIPayments: true,
+            } as BusinessSettings;
+        }
+
         console.log("getBusinessSettings: Fetching settings...")
         const settingsDoc = await getDocument(BUSINESS_SETTINGS_COLLECTION, BUSINESS_SETTINGS_DOC_ID)
 
@@ -127,9 +153,6 @@ export async function getBusinessSettings(): Promise<BusinessSettings | null> {
         }
 
         const { id, ...settings } = settingsDoc
-        console.log("getBusinessSettings: Raw settings retrieved:", JSON.stringify(settings, null, 2))
-        console.log("getBusinessSettings: enablePasswordProtection:", settings.enablePasswordProtection);
-
         // Sanitization to ensure serialization compatibility
         return JSON.parse(JSON.stringify(settings as BusinessSettings))
     } catch (error) {

@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import LiquidOverview from "@/components/dashboard/LiquidOverview";
+import UnifiedDashboard from "@/components/dashboard/UnifiedDashboard";
 import { useServerAuth } from "@/hooks/useServerAuth";
 
 export default function DashboardPage() {
@@ -39,7 +39,7 @@ export default function DashboardPage() {
 
   return (
     <Suspense fallback={<LoadingSkeleton />}>
-      <LiquidOverview />
+      <UnifiedDashboard />
     </Suspense>
   );
 }

@@ -2,70 +2,71 @@
 
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 
 /**
  * Global Realtime Provider for Orders
- * Listens to Supabase Realtime changes and invalidates React Query cache
+ * Skips Supabase realtime when using placeholder/demo credentials.
  */
-export function RealtimeOrdersProvider({ children }: { children: React.ReactNode }) {
-    const queryClient = useQueryClient();
-    const supabase = createClient();
+export function RealtimeOrdersProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const queryClient = useQueryClient();
 
-    useEffect(() => {
-        console.log("[RealtimeOrdersProvider] Setting up Realtime subscriptions...");
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const isPlaceholder = !url || url.includes("placeholder");
+    if (isPlaceholder) {
+      return;
+    }
 
-        // Subscribe to orders table changes
-        const ordersChannel = supabase
-            .channel("realtime-orders")
-            .on(
-                "postgres_changes",
-                { event: "*", schema: "public", table: "orders" },
-                (payload) => {
-                    console.log("[RealtimeOrdersProvider] Orders change detected:", payload.eventType);
+    let cancelled = false;
+    let ordersChannel: { unsubscribe: () => void } | null = null;
+    let tablesChannel: { unsubscribe: () => void } | null = null;
 
-                    // Invalidate all order-related queries
-                    queryClient.invalidateQueries({ queryKey: ["orders"] });
-                }
-            )
-            .subscribe((status) => {
-                console.log("[RealtimeOrdersProvider] Orders subscription status:", status);
-            });
+    (async () => {
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        if (cancelled) return;
+        const supabase = createClient();
 
-        // Subscribe to order_items changes (if they're in a separate table)
-        // This ensures item-level updates also trigger refreshes
-        const itemsChannel = supabase
-            .channel("realtime-order-items")
-            .on(
-                "postgres_changes",
-                { event: "*", schema: "public", table: "orders" },
-                (payload) => {
-                    console.log("[RealtimeOrdersProvider] Order items change detected");
-                    queryClient.invalidateQueries({ queryKey: ["orders"] });
-                }
-            )
-            .subscribe();
+        ordersChannel = supabase
+          .channel("realtime-orders")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "orders" },
+            () => {
+              queryClient.invalidateQueries({ queryKey: ["orders"] });
+            }
+          )
+          .subscribe();
 
-        // Subscribe to tables changes (ADD, UPDATE, DELETE)
-        const tablesChannel = supabase
-            .channel("realtime-tables")
-            .on(
-                "postgres_changes",
-                { event: "*", schema: "public", table: "tables" },
-                (payload) => {
-                    console.log("[RealtimeOrdersProvider] Tables change detected:", payload.eventType);
-                    queryClient.invalidateQueries({ queryKey: ["tables"] });
-                }
-            )
-            .subscribe();
+        tablesChannel = supabase
+          .channel("realtime-tables")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "tables" },
+            () => {
+              queryClient.invalidateQueries({ queryKey: ["tables"] });
+            }
+          )
+          .subscribe();
+      } catch (e) {
+        console.warn("[RealtimeOrdersProvider] disabled:", e);
+      }
+    })();
 
-        return () => {
-            console.log("[RealtimeOrdersProvider] Cleaning up subscriptions");
-            ordersChannel.unsubscribe();
-            itemsChannel.unsubscribe();
-            tablesChannel.unsubscribe();
-        };
-    }, [queryClient, supabase]);
+    return () => {
+      cancelled = true;
+      try {
+        ordersChannel?.unsubscribe();
+        tablesChannel?.unsubscribe();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, [queryClient]);
 
-    return <>{children}</>;
+  return <>{children}</>;
 }

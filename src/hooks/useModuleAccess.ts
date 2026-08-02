@@ -1,98 +1,61 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from 'react'
-import { useServerAuth } from '@/hooks/useServerAuth'
-import type { ModuleName } from '@/types/permissions'
+import { useMemo } from "react";
 
-interface ModuleSettings {
-  enableBarModule?: boolean;
-  enableCafeModule?: boolean;
-  enableHotelModule?: boolean;
-  enableGardenModule?: boolean;
-  enableInventoryModule?: boolean;
-  enableAnalyticsModule?: boolean;
-  enableKitchenModule?: boolean;
-  enableBillingModule?: boolean;
-  enableCustomerModule?: boolean;
-  enableMenuModule?: boolean;
-  enableUserManagementModule?: boolean;
-  enableOrderManagementModule?: boolean;
-  enableTablesModule?: boolean;
-  enableStatisticsModule?: boolean;
-  enableLocationsModule?: boolean;
-  enableGSTReportModule?: boolean;
-  enableSettlementsModule?: boolean;
-  enableDiscountsModule?: boolean;
-  enableRealtimeModule?: boolean;
-  enableAutomationModule?: boolean;
-  enableStaffPerformanceModule?: boolean;
-  enableDailyReportsModule?: boolean;
-  enableKitchenDisplayModule?: boolean;
-  enableWaiterInterfaceModule?: boolean;
-}
+// Module access keys that match what Sidebar uses
+export type ModuleKey =
+  | "enableTablesModule"
+  | "enableAnalyticsModule"
+  | "enableOrderManagementModule"
+  | "enableBillingModule"
+  | "enableStatisticsModule"
+  | "enableGSTReportModule"
+  | "enableSettlementsModule"
+  | "enableCustomerModule"
+  | "enableDiscountsModule"
+  | "enableMenuModule"
+  | "enableUserManagementModule";
 
 interface NavigationItem {
   name: string;
   href: string;
   icon: React.ElementType;
   roles: string[];
-  moduleKey?: keyof ModuleSettings;
-  module?: ModuleName;
+  moduleKey?: ModuleKey;
+}
+
+interface UseModuleAccessReturn {
+  hasModuleAccess: (moduleKey: ModuleKey) => boolean;
+  filterNavigationItems: (items: NavigationItem[]) => NavigationItem[];
+  loading: boolean;
 }
 
 /**
- * Stripped down Module Access Hook
- * Instantly resolves to true for cafe application
+ * Hook that controls which modules/features are visible in the navigation.
+ * All modules are enabled by default. Can be extended to fetch from DB settings.
  */
-export function useModuleAccess() {
-  const { data: session } = useServerAuth();
-  
-  // All modules are considered enabled in the stripped down version
-  const isModuleEnabled = useCallback((moduleKey: keyof ModuleSettings): boolean => {
-    return true;
-  }, []);
+export function useModuleAccess(): UseModuleAccessReturn {
+  const hasModuleAccess = useMemo(
+    () =>
+      (_moduleKey: ModuleKey): boolean => {
+        // All modules enabled by default
+        return true;
+      },
+    []
+  );
 
-  // Instantly return true to bypass slow RBAC/DB checks
-  const hasModuleAccess = useCallback((
-    moduleKey: keyof ModuleSettings,
-    permissionModule?: ModuleName,
-    requiredRoles?: string[]
-  ): boolean => {
-    return true; 
-  }, []);
-
-  const filterNavigationItems = useCallback((items: NavigationItem[]): NavigationItem[] => {
-    // Only filter based on basic roles to keep navigation clean, but without async delays
-    return items.filter(item => {
-      const userRole = session?.user?.role;
-      const isSuperAdmin = userRole === "super_admin" || userRole === "owner";
-      return isSuperAdmin || (userRole && item.roles.includes(userRole));
-    });
-  }, [session?.user?.role]);
-
-  const getModuleStatus = useCallback(() => {
-    return [];
-  }, []);
+  const filterNavigationItems = useMemo(
+    () =>
+      (items: NavigationItem[]): NavigationItem[] => {
+        // Return all items — module filtering is all-enabled by default
+        return items;
+      },
+    []
+  );
 
   return {
-    moduleSettings: {},
-    loading: false, // Instantly resolved
-    isModuleEnabled,
     hasModuleAccess,
     filterNavigationItems,
-    getModuleStatus,
-    refreshSettings: async () => {}
-  };
-}
-
-export function useModuleGuard(
-  moduleKey: keyof ModuleSettings,
-  permissionModule?: ModuleName,
-  requiredRoles?: string[]
-) {
-  return {
     loading: false,
-    hasAccess: true,
-    isModuleAccessible: () => true
   };
 }

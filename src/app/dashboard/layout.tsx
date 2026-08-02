@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import Header from "@/components/layout/Header"
+import { Header } from "@/components/layout/Header"
 import Sidebar from "@/components/layout/Sidebar"
 import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/toaster"
@@ -27,12 +27,13 @@ export default function DashboardLayout({
         document.body.classList.add("hybrid-dashboard");
     }, []);
 
-    // Redirect to login if not authenticated
+    // Redirect to login if not authenticated (only after auth check finishes)
     useEffect(() => {
         if (status === "unauthenticated") {
-            router.push("/login"); // Use router.push instead of window.location.href to avoid reload loops
+            // Full navigation avoids partial-state loops between dashboard pages
+            window.location.assign("/login");
         }
-    }, [status, router])
+    }, [status])
 
     // Show nothing while loading - layout shell renders immediately, content loads independently
     // DO NOT block here - this causes full-screen spinner on EVERY tab switch
@@ -67,14 +68,14 @@ export default function DashboardLayout({
                         role="main"
                         aria-label="Dashboard main content"
                     >
-                        <EnhancedErrorBoundary fallback={({ error, resetError }) => (
+                        <EnhancedErrorBoundary fallback={({ error, retry }) => (
                             <div className="p-6">
                                 <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 backdrop-blur-md">
                                     <p className="font-medium text-red-400 mb-2">
                                         Dashboard content error: {error?.message}
                                     </p>
                                     <Button
-                                        onClick={resetError}
+                                        onClick={retry}
                                         variant="destructive"
                                     >
                                         Retry
