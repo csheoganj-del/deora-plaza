@@ -56,7 +56,7 @@ export default function DashboardLayout({
                 </div>
             </div>
 
-            <div className="relative z-10 min-h-screen flex text-white overflow-hidden font-sans antialiased">
+            <div className="relative z-10 h-screen flex text-white overflow-hidden font-sans antialiased">
                 <Sidebar />
 
                 <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">

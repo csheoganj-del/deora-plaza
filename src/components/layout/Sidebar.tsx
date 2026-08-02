@@ -217,7 +217,7 @@ export default function Sidebar() {
   return (
     <div
       className={cn(
-        "h-full bg-[#0a0806]/85 backdrop-blur-2xl border-r border-[#d9a441]/15 flex flex-col transition-all duration-300 z-30 shadow-[4px_0_24px_rgba(0,0,0,0.5)]",
+        "h-screen flex-shrink-0 bg-[#0a0806]/85 backdrop-blur-2xl border-r border-[#d9a441]/15 flex flex-col transition-all duration-300 z-30 shadow-[4px_0_24px_rgba(0,0,0,0.5)]",
         isCollapsed ? "w-16" : "w-64"
       )}
       onMouseEnter={() => setIsCollapsed(false)}
